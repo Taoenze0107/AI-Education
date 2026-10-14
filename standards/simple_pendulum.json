@@ -1,0 +1,145 @@
+{
+  "experiment_id": "simple_pendulum",
+  "version": "ms-recommended-v0.1",
+  "note": "建议初值，须用真实标注数据重新标定；g参考值应替换为实验所在地公布值",
+  "physics": "small angle(theta<=5deg): T=2*pi*sqrt(L/g)  =>  T^2 = (4*pi^2/g)*L",
+  "model_linearized": "y=T^2 = k*L + c,  k=4*pi^2/g  =>  g=4*pi^2/slope",
+  "linearization": {
+    "y": "T^2 (s^2)",
+    "x": "L (m)",
+    "slope_k_unit": "s^2/m",
+    "g": "4*pi^2/k",
+    "intercept_expected": 0.0,
+    "intercept_nonzero_meaning": "显著非零常提示摆长零点系统偏差(漏加摆球半径 r=L_string+d/2)"
+  },
+  "experimental_requirements": {
+    "max_angle_deg": 5.0,
+    "period_measurement": "T=t/n_total_cycles",
+    "n_total_cycles_recommended": [
+      30,
+      50
+    ],
+    "length_definition": "L = suspension_length + ball_radius",
+    "min_points": 6
+  },
+  "local_g_reference_mps2": {
+    "range_China": [
+      9.78,
+      9.83
+    ],
+    "default": 9.8,
+    "instruction": "以实验地官方公布重力加速度为准"
+  },
+  "meter": {
+    "length_accuracy_relative": 0.001,
+    "time_accuracy_relative": 0.001,
+    "distribution": "uniform",
+    "b_type_divisor": 1.732
+  },
+  "fit": {
+    "method": "OLS_T2_vs_L",
+    "slope_is_result": true,
+    "residual_dof": "n-2",
+    "r2_good": 0.99,
+    "r2_warn": 0.95,
+    "preferred_over": "逐差法(等间距可用，但最小二乘利用全部数据并可给不确定度)"
+  },
+  "acceptance": {
+    "g_relative_error_pct": 1.0,
+    "intercept_abs_threshold_s2": 0.02,
+    "large_angle_warning": "theta>5deg 时应提示小角近似失效"
+  },
+  "uncertainty": {
+    "propagation_relative": "(u_g/g)^2 = (u_L/L)^2 + 4*(u_T/T)^2",
+    "dominant_term": "周期项系数为4，故周期测量精度对g影响最大(应测多周期平均)",
+    "report": [
+      "g",
+      "s_g",
+      "R2",
+      "relative_error",
+      "u_rel"
+    ]
+  },
+  "outlier": {
+    "method_primary": "grubbs_residual",
+    "grubbs_alpha_warn": 0.05,
+    "grubbs_alpha_reject": 0.01,
+    "robust_modified_z": 3.5,
+    "must_exceed_instrument_error": true,
+    "policy": "歧离值优先核对计时/摆长读数，找不到原因应保留",
+    "grubbs_table": "见 grubbs_critical_one_sided（单侧t分布精确值）"
+  },
+  "noise": {
+    "metric": "residual_std / T2_range",
+    "warn": 0.05,
+    "reject": 0.08,
+    "tie_to_instrument_error_multiplier": [
+      2,
+      5
+    ]
+  },
+  "drift": {
+    "runs_test_alpha": 0.05,
+    "residual_half_mean_diff_to_range": 0.03,
+    "max_sign_run": 4,
+    "note": "摆长递增测量时若支架松动/摆角逐次变化，残差呈序趋势"
+  },
+  "missing": {
+    "flag_empty": true,
+    "min_valid_points": 6,
+    "silent_interpolation_forbidden": true
+  },
+  "common_student_errors": [
+    "漏加摆球半径(摆长少算)",
+    "只测一个周期导致周期误差大",
+    "摆角超过5度",
+    "T与T^2或L单位(cm/m)混用",
+    "计时起止点(最低点/最高点)不一致"
+  ],
+  "grubbs_critical_one_sided": {
+    "comment": "单侧Grubbs精确临界值 G_(1-α)(n)，由t分布按 G=(n-1)/√n·√(t²/(n-2+t²))，t=t_{1-α/(2n),n-2} 计算（经典Grubbs单离群点表，等同NIST/工程通用表，scipy.stats.t.ppf）。落地前可用scipy复核；n=8: 2.127/2.274，n=10: 2.290/2.482。替代旧版GB/T 4883表列近似值(n=8旧2.03/2.22)",
+    "n": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      15,
+      20
+    ],
+    "alpha_0.05_warn": [
+      1.154,
+      1.481,
+      1.715,
+      1.887,
+      2.02,
+      2.127,
+      2.215,
+      2.29,
+      2.355,
+      2.412,
+      2.548,
+      2.708
+    ],
+    "alpha_0.01_reject": [
+      1.155,
+      1.496,
+      1.764,
+      1.973,
+      2.139,
+      2.274,
+      2.387,
+      2.482,
+      2.564,
+      2.636,
+      2.806,
+      3.001
+    ],
+    "decision": "G>G0.01判统计离群值(reject/剔除)；G0.05<G≤G0.01判歧离值(warn/只警告)；G≤G0.05不判离群。所有判离群还须残差超过仪表MPE物理闸门"
+  }
+}

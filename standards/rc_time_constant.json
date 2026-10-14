@@ -1,0 +1,148 @@
+{
+  "experiment_id": "rc_time_constant",
+  "version": "ms-recommended-v0.1",
+  "note": "建议初值，须用真实标注数据重新标定；合成数据结果不可作为阈值依据",
+  "physics": "charging U_C=U0*(1-exp(-t/tau)); discharging U_C=U0*exp(-t/tau); tau=R*C (s)",
+  "model_linearized": "y = c + k*t,  k=-1/tau",
+  "linearization": {
+    "discharge": {
+      "y": "ln(U_C)",
+      "x": "t_s",
+      "intercept_expected": "ln(U0)",
+      "tau": "-1/slope"
+    },
+    "charge": {
+      "y": "ln(U0 - U_C)",
+      "x": "t_s",
+      "intercept_expected": "ln(U0)",
+      "tau": "-1/slope"
+    },
+    "alternative": "可直接对原始(t,U_C)做指数非线性最小二乘，避免对数变换后误差结构失真"
+  },
+  "units_required": {
+    "t": "s",
+    "U": "V",
+    "R": "ohm",
+    "C": "F",
+    "unit_traps": [
+      "k-ohm*uF/nF 数量级漏换算"
+    ]
+  },
+  "min_points": 6,
+  "meter": {
+    "time_accuracy_relative": 0.005,
+    "voltage_accuracy_class": 1.0,
+    "distribution": "uniform",
+    "b_type_divisor": 1.732
+  },
+  "fit": {
+    "method": "OLS_on_linearized_y",
+    "slope_sign": "negative",
+    "slope_is_result": true,
+    "residual_dof": "n-2",
+    "r2_good": 0.99,
+    "r2_warn": 0.95
+  },
+  "acceptance": {
+    "tau_relative_error_pct": 5.0,
+    "intercept_matches_ln_U0_pct": 5.0,
+    "half_time_check": "禁止把半峰值时间t50=tau*ln2≈0.693tau 当作 tau",
+    "fraction_check": {
+      "discharge_residual_fraction": 0.368,
+      "charge_reached_fraction": 0.632,
+      "tolerance_pct": 8.0
+    }
+  },
+  "uncertainty": {
+    "propagation": "u_tau/tau = s_slope/abs(slope)",
+    "report": [
+      "tau",
+      "s_slope",
+      "R2",
+      "relative_error",
+      "u_rel"
+    ]
+  },
+  "outlier": {
+    "method_primary": "grubbs_residual_on_linearized_y",
+    "grubbs_alpha_warn": 0.05,
+    "grubbs_alpha_reject": 0.01,
+    "robust_modified_z": 3.5,
+    "must_exceed_instrument_error": true,
+    "policy": "歧离值优先找物理原因(采样时刻/读数)，找不到原因应保留",
+    "grubbs_table": "见 grubbs_critical_one_sided（单侧t分布精确值）"
+  },
+  "noise": {
+    "metric": "residual_std / y_range(ln)",
+    "warn": 0.05,
+    "reject": 0.08,
+    "tie_to_instrument_error_multiplier": [
+      2,
+      5
+    ]
+  },
+  "drift": {
+    "runs_test_alpha": 0.05,
+    "residual_half_mean_diff_to_range": 0.03,
+    "max_sign_run": 4,
+    "note": "充电未稳态/电容漏电表现为半对数直线弯曲或趋势性残差"
+  },
+  "missing": {
+    "flag_empty": true,
+    "min_valid_points": 6,
+    "silent_interpolation_forbidden": true
+  },
+  "common_student_errors": [
+    "tau与半峰值时间混淆",
+    "R或C数量级错误(kΩ/μF/nF)",
+    "用总电压而非电容电压判63.2%点",
+    "采样间隔过大导致点过少",
+    "未等充电稳态即开始计时"
+  ],
+  "grubbs_critical_one_sided": {
+    "comment": "单侧Grubbs精确临界值 G_(1-α)(n)，由t分布按 G=(n-1)/√n·√(t²/(n-2+t²))，t=t_{1-α/(2n),n-2} 计算（经典Grubbs单离群点表，等同NIST/工程通用表，scipy.stats.t.ppf）。落地前可用scipy复核；n=8: 2.127/2.274，n=10: 2.290/2.482。替代旧版GB/T 4883表列近似值(n=8旧2.03/2.22)",
+    "n": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      15,
+      20
+    ],
+    "alpha_0.05_warn": [
+      1.154,
+      1.481,
+      1.715,
+      1.887,
+      2.02,
+      2.127,
+      2.215,
+      2.29,
+      2.355,
+      2.412,
+      2.548,
+      2.708
+    ],
+    "alpha_0.01_reject": [
+      1.155,
+      1.496,
+      1.764,
+      1.973,
+      2.139,
+      2.274,
+      2.387,
+      2.482,
+      2.564,
+      2.636,
+      2.806,
+      3.001
+    ],
+    "decision": "G>G0.01判统计离群值(reject/剔除)；G0.05<G≤G0.01判歧离值(warn/只警告)；G≤G0.05不判离群。所有判离群还须残差超过仪表MPE物理闸门"
+  }
+}

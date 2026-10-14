@@ -1,0 +1,20 @@
+{
+  "input_archive_sha256": "014dac8146107ab8cc83760dfbcaab9f8feca8e3dc5208988ae0efee487982e8",
+  "modified_original_files": [
+    "EXPERIMENT_CATALOG.md",
+    "KNOWLEDGE_SOURCES.md",
+    "app/data/experiment_catalog.json",
+    "app/data/knowledge_base.json",
+    "app/experiment_catalog.py",
+    "tests/test_experiment_catalog.py",
+    "tests/test_knowledge_sources.py"
+  ],
+  "unchanged_original_file_count": 87,
+  "original_topics_preserved": 24,
+  "original_cases_preserved": 132,
+  "original_knowledge_preserved": 81,
+  "experiment_count": 48,
+  "case_count": 264,
+  "question_count": 792,
+  "knowledge_count": 153
+}

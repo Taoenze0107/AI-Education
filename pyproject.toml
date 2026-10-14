@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adaptive-lab-tutor"
+version = "1.2.0"
+description = "LLM-assisted laboratory diagnosis and adaptive teaching service"
+readme = "README.md"
+requires-python = ">=3.11"
+dynamic = ["dependencies"]
+
+[project.optional-dependencies]
+dev = ["httpx>=0.28,<1", "pytest>=8.4,<9"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools.packages.find]
+include = ["app", "app.*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+app = ["static/*.html", "static/*.css", "static/*.js", "static/images/*", "static/vendor/katex/*", "static/vendor/katex/fonts/*", "data/*.json"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

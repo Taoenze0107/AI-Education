@@ -1,0 +1,692 @@
+{
+  "date": "2026-10-12",
+  "original_topics": {
+    "ohms_law": "c3078992732896ca77cffe87a5b98c1bea73b56c3d611d4aa08eaf97944cfe18",
+    "rc_time_constant": "f525c1ff152f95eb40df9ad9d30a73ac66528e08965568d21ea1f7ce0644a216",
+    "simple_pendulum": "4c99041b3f8ee7be5e35dd7c74956f524cc07b8345c8e2e091b54f3d45f26d98",
+    "hookes_law": "3493cb8a03d66d85ce8b271fb1e88b187b6cf63043998f2c02cf2138b65f7b77",
+    "spring_oscillation": "03bdb041e6e020a84fff663890e0b979211f6e2b4bd2bbb185bc82d88e1326ce",
+    "free_fall": "da9d2e8bcb275c3180c6ba1ac7144e42ef8a963507095583d2691bf85c75dac3",
+    "inclined_friction": "aafec9fd10855842699ede62e0bfc89bda9d63c3dc4e1cf3f9106e7dc342cc08",
+    "thin_lens": "3275259d5ae0ce3ed00731496817922aa69d3765920ee211ddcef7e739a5bf5b",
+    "snell_refraction": "c856c23a876b03f278ab198e175f005fdc1fb4518f71a1decc86d94cbecfc38e",
+    "double_slit": "8715a7dd6efe4709421ba40ab03784d4521e72cfc7ba44c005315c83c9b79fe4",
+    "calorimetry": "3a8943d956ca7b4f180a10d25e1cac140b4f2069392e000dd30477419765dc82",
+    "sound_resonance": "deecfe4b984e62914f67de20606cadef325f5b4e70e6f1bb0d1d386eceaffc65",
+    "uniform_acceleration": "299fc0fd3ba7d1e0a5cd22abfe6b09f5e47e27e66fbb5e966db142b1d7fc326a",
+    "newtons_second_law": "4be0d047efe61a15e3cb1aad513d95c6361c57471055d4699bf436c4e1b0ece7",
+    "work_energy": "3e8bc9f8cea484e4025e16c14d06ab083bb61fbc225620900d8b51dffa614e79",
+    "archimedes": "aaa8eb73b5a56a09dc582e41fae5240fe45b4ddb9e00af53a4aaf48cae4fe5b1",
+    "resistivity": "f4e0572ce2fa2a886c4077b157ec5e53bba32ef4f6f0437d21a892d951a9fda9",
+    "joule_heating": "85690a7bdd7b9d2fbcf5bd34c2a6300dd4068f80a0c09f91970433a983c8bed8",
+    "capacitor_discharge": "b8f8123333d4a8c7be66100268bb081a09305a3ec1cccdd3ec14da46d8ad765c",
+    "transformer_ratio": "4e9fa436c306d13c10291baa085eb678c16ffa2145cd2e2bdf44f1d37ed52d69",
+    "grating_diffraction": "bf3f694733dd07211232619de9fb01af2aed54788473fd2272c630b4b70442c9",
+    "total_internal_reflection": "a98c918a12abe21f670d11f4d70fe13ae913697346e7accd4d33dc820312b8e7",
+    "thermal_expansion": "fc138834e353d8b89648c242cf16c24e1d352cec8955a77146d00c87b0ad7efa",
+    "string_waves": "2089e551b9e23cb3bd810f1e1ff407090f07eb73b200dc1c7fd6daf4b433edce",
+    "photoelectric_effect": "f17d2304483d7ba7522ad575e9abcb32512c4cd4dce8667df66d1cad84c6f052",
+    "malus_law": "28002df3ec2405a1f8c84891633aefcf587da0dec484952a6100e47d9dec0003",
+    "single_slit": "7357e3ee6490fcfbd213bd0aceee1928527d0ab6023409e2b7dea73d7873f41d",
+    "michelson": "b4ae3870b613cbb9fb1216e26e86064ae3c7ed90f3b39cf841543294c93ece65",
+    "newton_rings": "6d167986ab973f8e192b6b78dff663a1e814399055f0e20f06ca34ba54ba0922",
+    "optical_rotation": "541fc14a4b5bdb6c7771587cf42fda0dcaf38dc20e1c0460694630e408f343ad",
+    "centripetal_force": "e320a36335ed14f514ccca99096808eb5456c9aa81957163f05cac23e19f5d2a",
+    "rotational_inertia": "e2ea6ec94b197611a48e74eac2a9f23eb0c6eb70b673a9ffa40e4918cdac46ba",
+    "kinetic_friction": "dd4064f8f4cc5f157bccb801d751a1b2c71de23c9da44fdffc85f787ee21d128",
+    "hydrostatic_pressure": "9a623a00d9297ecdee292ae4b4a37ced7e63d568d8be287cef8c781ae090cddc",
+    "stokes_viscosity": "85173a34b02338348fdad3ba55c779108eba52cdeeecabb7bcf0fcc886be706d",
+    "young_modulus": "963a805e8ddc93725ac3b10168cf4e0a8070399e4b13eea4bf83d1f4e71e4e4e",
+    "charge_capacitance": "63eb845bab2be62f318888706868451582bab8d833c810709fff4b8db1c41f05",
+    "parallel_plate": "2fc5e6283c9cf0599cfc6e3876acfa0190b100ff053d777be6a5b6c30c8649e2",
+    "solenoid_field": "f0696dfeb2c01e8b13ed69314fd334d706d1edc00b0e1c162dce6ffabb7a6e6d",
+    "ampere_force": "05c08de828bafeb26096a06e8b180cdc0cd06d295bef618770e567392aa23da3",
+    "faraday_induction": "bbf235fa542e440903db2140fa1f956aec68a4c077cff5bf3b0df8fbb65e0c90",
+    "boyle_law": "86ea336ef37ee2e8d76f0773eafb426509e01b1b15a42e30838a48d015c13645",
+    "constant_volume_gas": "e72dc74042ca948a2f6c30c3240da9a28cdb83af5df4be3e62ccab522f498408",
+    "newton_cooling": "9192b2d5e1e5ab19bbda8c8c72a6b29249e211562fb5105454e0761d2c4ad3e0",
+    "thermal_conduction": "f12b87f4377914a4395b27c742f761409246c82b2bdc73570e4f658ab196b76e",
+    "torsion_pendulum": "342b5923b45060af8c188bf087c73cc2889fc5a177c59c68b4441aef9a335f56",
+    "sound_timeflight": "7c525ef0478d3b94d65f1ce86f14c29d6fcd4ed3a8e4954209a21bf6a53b9210",
+    "damped_oscillation": "5207417f2002b1a24036dfe60ba047483c474d639514a759a66be4c714e6be44"
+  },
+  "original_knowledge": {
+    "ohms-law-core": "17b2de42896247787432a7300cf7160952bb72e8dc95377a02acea23c9814192",
+    "rc-transient-core": "1cde0ad2b092dfcce1b629031e26ebbb2692cd4d51f7cd597f80b252d857f6ec",
+    "pendulum-core": "6a9769068fc741071652ff827a193e34b94d9c9fde625ee3d414d4b8504e5a94",
+    "generic-data-quality": "9350af4096642042c84cad4b9556be8899929e78b305a93db777c279f70bed22",
+    "ohms-wiring": "c6b58c4a1f28df986a2a45c164a68d429dbebba8a670de07c72782560fc3a819",
+    "ohms-slope": "9f499baec34b04fa15ca0d014e1ec09219d55a5c45207d180eb2a2207473a775",
+    "ohms-temperature": "65df854233a0fa2c1e084648cf3751fc1d1fead03d65a52c3c44fd5597f33e02",
+    "rc-threshold": "73fee3bdc6aef1a58979757b2c07274d3b6b03ba86aeab74695601dbc42f9ff8",
+    "rc-observation": "5e6842ce219e9b6efd89cb35784b626de63c27bdb226a064b983636b9edde85d",
+    "pendulum-timing": "2a9960b35adfc13824fa3efd9bcd2605d882cfcd32d48a33d4f06c7807287ebb",
+    "pendulum-length-angle": "9cf0d9d10715594de60ef347dfde60b2751fee4690c8d9fa699ce05a3a940724",
+    "generic-unit-prefixes": "b68534cb73e8e0ae6b0061e94abe0e53b7d0ea6847bd15043a142ec524d1afe3",
+    "generic-type-a": "a5ea171215ad880f969245bd5e8898508fc43838b3e226246ac8e147a379f46c",
+    "generic-type-b": "c60454d7ad779c9ae055f095c449766860ad60fb361d9a7b6a38b5db1e1320ee",
+    "generic-propagation": "0d1963db25f8dfbac27c2084db01cb144800b571db18364d2409476184bb09fd",
+    "generic-significant-figures": "15e96c2fa9a16991b63732e2aa8e12e9c40d45837bb61495ab3a79d5686a2588",
+    "generic-residuals": "b4b15bb7bcba46c24d90f97d900cf95fe55504d9db18754d73bc8b12fa6e4ab3",
+    "generic-report": "dd1915eab31b902bc95547f779ed1914c3959b5a4e018013184a51beec325ca8",
+    "hookes_law-model": "0ab952b0dcd9f8257a2c98c110ff20e04c86c808c179f7b9415e59165190c70a",
+    "hookes_law-data": "b68c5819acb364a0a58f779dc344dd43d786c03817b578aca7b2f3325fb9e340",
+    "hookes_law-errors": "d0db4e892ad253ad184cd8c7fb8f5993f6aa1dc56df7d63f64e232076f346833",
+    "spring_oscillation-model": "357ffce9e31744f20bfe5af649b72aec605f0a7a61d1a47263c543d98ee15599",
+    "spring_oscillation-data": "7cf7e90b1b45e10eff61660aa7d57c26a10790427618c88596cd0512b30e9de6",
+    "spring_oscillation-errors": "28bc111e364b771ac5c2b0ef63478a88fa0731ee0547970506b583a41b408649",
+    "free_fall-model": "cf0f31f387a061af0cd2a1882fa413c30e7e50d4e33189b064a44dbfc0a3930b",
+    "free_fall-data": "cacc462b43fcb002fa8158c82e81292fad33accf190eedfc6d2524ac3cc04b46",
+    "free_fall-errors": "039f133c8f74124cca0faa7a48667d3229fc8776972c6101b0fe3d991148886d",
+    "inclined_friction-model": "87ce387653ecba0d8698ff038842f3fe0409e2f14398766c9c66715b98478100",
+    "inclined_friction-data": "2a5427219730bfe9d06834e5cc4dd59dc9ef7f3947a2528b7bcc45e3f279be3e",
+    "inclined_friction-errors": "cdb207a802aef80bdd931af879f3e256dc315d1eeacffc9da35c126df8257508",
+    "thin_lens-model": "014e3276e0eb1f135089cddc367beaa58b8334f1f97aa8a8c43bdfab8bac361d",
+    "thin_lens-data": "7f9f1dce680c5a086c805ac07c7a06a57fb65b313325d4bde4787eab92f3368c",
+    "thin_lens-errors": "edcc5bf77cf0ba7fed2622506d68baa0a30fc466c3e8af558d72293c3bb9a951",
+    "snell_refraction-model": "085a8186cf3cf2d2163bf28ec50e1fa11f7865a71ce384405058bb15c689e70c",
+    "snell_refraction-data": "8faa5b87614718c502e37aaf20f51dac154f0be64d2352962849837131780904",
+    "snell_refraction-errors": "cd43585cb8401978143bb21f8d7bca535dcffae64886724704e11a729021ecde",
+    "double_slit-model": "2751baf88042bce1248a6d22ee195036e3f6f06e30c401c7eaf17e3821b17a5b",
+    "double_slit-data": "9f0f8c674f9180afefa7b8507966654d0b4e076ac51f46575ebcbb9893596b18",
+    "double_slit-errors": "126a7e168d31404e7e3734ef4895ddcc5ccf1a96f80fec77db94c3db89984aa1",
+    "calorimetry-model": "9422c5d3a93a605ba035d3696ec642f2d99d21f258ceeea502112a923942930d",
+    "calorimetry-data": "927075bec55bbb3c04394ff85adf1df643ebf1e4d3b367dc16c12bdbe29f45d0",
+    "calorimetry-errors": "560407cde05a5553ba6bc7ea474bfae6603b31db9f741916ba9776eb92508c29",
+    "sound_resonance-model": "6dd5091e48782401b5fbea50b0e7421c0b51ffaef3541edd7b3d5a2da6ff49d9",
+    "sound_resonance-data": "e99a04842d808f43743121a0df34af11954af4a60f31abc91dc00beb0d0b74b8",
+    "sound_resonance-errors": "affbe25821100a7db4ff0c7955dada584e4c6d5b7c0e876aee0c10507b11f47e",
+    "uniform_acceleration-model": "1d429b7fd6ec9adc744cf37a7c4edb67e31e8fc8aa3c4fb9dde35d55afe0c02a",
+    "uniform_acceleration-data": "6575d25cef5bb673daca6e33ef00aeaf0ff5af4be7c5d7530b9c78acdb58fc59",
+    "uniform_acceleration-errors": "69e1cc1526b281841595dd46da22ebf95644bc4e08e4ec8df8a6acfa8b58fd0d",
+    "newtons_second_law-model": "8485cf219cddca5a908b6a84796cd30c581ac911186d57f80f5bcbb01bfa7539",
+    "newtons_second_law-data": "67ad87981318c84f909a319d9cbd31d1ab723e60637aadcaf60a69c2d1267c33",
+    "newtons_second_law-errors": "30f1b0d887d0a7861a172a32e8b099e916444a5bf065681971addb5e4cb51114",
+    "work_energy-model": "fb96d9b5b11b7cc485266a8a2c6154d7777daad0c97884ef81a3aac3fe169e59",
+    "work_energy-data": "2dc35e76be677dc641d7c6bd674ad740f370a0ce70b4b4118598a661c12e9e00",
+    "work_energy-errors": "3f0c322c04834fde462765f2baa5be2eb19bd0f2723cb663596f0d3873b03118",
+    "archimedes-model": "ea9745c97b5366ad87cacdfacf677c57449c8f7b4bc4f72503d7eed70076e564",
+    "archimedes-data": "b45f42d32bceb301c09fdfdc7d6f1cd7a737f230680eef72859922abb30a9bed",
+    "archimedes-errors": "415654bf96c7247eb1e4bcc07168fd30896da41686dfb8423ce9a9199cb788d1",
+    "resistivity-model": "c5c3ed8d03d1baddc3533599513a1918a95542cdab5d57fd0f6ea90e3ac19629",
+    "resistivity-data": "6ae6ca3ecebc9fc5a10b13f59295f641b875c6c6b82942809669d6550b92dcbd",
+    "resistivity-errors": "7e293108273da84a09c3213d0e961bba15aae1bfc1f716658cff0b0ab987c44c",
+    "joule_heating-model": "41bd0add05c99e5ccb4001bace520f4a931e360a857953db914eddc19fef1e65",
+    "joule_heating-data": "acd37bc83901e9178f2def9fc220eb72485412cbe2814609e1622cee455c0904",
+    "joule_heating-errors": "b6b00697d1735eac2b23b182253208edfa2e0999899320fa7d81478fcc633f58",
+    "capacitor_discharge-model": "111d31b43149fb3a3dc4614c61582a8c8c77a47abc2ddda5531931118da3504f",
+    "capacitor_discharge-data": "9f47f5a351cfdb743c8ab18d838c7cfb791a07e882d4a218da2d9ed02f8a6ad4",
+    "capacitor_discharge-errors": "df2901236c9bdc4109043d21ab313c4c498b1ca1247df267c7b18332e193e4c9",
+    "transformer_ratio-model": "382a8d44f12985c0748f98aa6407f813e20b54122f5efefa9891d5e369a81932",
+    "transformer_ratio-data": "89995c0f37af68250eb8f7a7cca4dac86799663a4783480043bbaad156be6497",
+    "transformer_ratio-errors": "582f1d76aa4f692e88c4845e55f82efc87a212ced17a6fae77e41c3c952cce1b",
+    "grating_diffraction-model": "b012710842ff720fd5c93454136b2cdd9b2bbaa36eb1fd762d93dda65a28f2df",
+    "grating_diffraction-data": "d6a103cd4dfc54a48ce2321d673d3c02063383d1984cb192d4e0d5452292844e",
+    "grating_diffraction-errors": "6c0583c5748cbfdde3fce53ba2ca0ec9f1de771b7328b6de70b80cf1c5522d67",
+    "total_internal_reflection-model": "87d90d51f486a5cae3acf990d8cdf8635dfb119dfddf25abb9fe5e0b20544e89",
+    "total_internal_reflection-data": "96aa46d2b5ebc9f25314f3e830306a82174a87ef135c85bce1223463f6ad1ab0",
+    "total_internal_reflection-errors": "97c1f6ce4f2a0ffd3a909f84b6088899f5bbe4860ab4897c058ea170baca21d2",
+    "thermal_expansion-model": "0cc4c4f46e8dd098813bdc3c3e38a4bcfd6537d8d47b6dcb03210fb9ccdd56b3",
+    "thermal_expansion-data": "dbe32ab1b97f8382cf77b58349af7d31c4d3dfbe4a22ef7e206e9818f8e9022e",
+    "thermal_expansion-errors": "f1bc260c450aff1b80919e36f81c96bdb989858a0c4461bf3276e33846d1da85",
+    "string_waves-model": "aaa0f2f3a26d2baf668dfc57eb8bd0a59e7002d1773364b3887ddb14b70d642f",
+    "string_waves-data": "cb008e6c0a2684e36798a305131a275412ef12c708ecf9593808608b67b0dc5a",
+    "string_waves-errors": "669bdb20cf22e0342c132dc89392aecc1fb0877ed49ba40c29f444e836616bc3",
+    "photoelectric_effect-principle": "b503ac72445bc4e0e50e69cf201c34ca966c2f649663be6bceead31a68e2d4db",
+    "photoelectric_effect-measurement": "5de4c018f9502f991511696353ac3bcf78238610bbfa1aeea1733affd7031224",
+    "photoelectric_effect-errors": "c0e4d40100e7aeb73f744159f7945c037e7820427aafa0019f8d17d4bbbe4b1c",
+    "malus_law-principle": "2e722c3804d447380e0c2383e54bc402d536f538e2570607632bd69d6e7e9b7f",
+    "malus_law-measurement": "e6f97af93bae23295bbfdf28e741447b2bc8b8015ebd69249b21d39559b2be0e",
+    "malus_law-errors": "c19906e782cfb6743deb224956d547eb3fe62f2c368dc1108203857f69d1aea8",
+    "single_slit-principle": "5ebae23133cc91679ac5eb906fbb4bea8f80f683a685c5e5793953d246d12089",
+    "single_slit-measurement": "fb20d2f5ec7caa2d203ccb5dbc71d4ddd7e959cd3814817ce5fcbcad24ff5310",
+    "single_slit-errors": "173352c7c0c324efa7153fa9a66c933210872047bb861f8f41aac5259ea38249",
+    "michelson-principle": "feadacefaf671177d7c6b8ed389db9a6a2864db5c957da943ea7d544cbeb8cee",
+    "michelson-measurement": "59042414e77a7ca88a9188d35db9342f81e9dc1498602b2038be78005d078b97",
+    "michelson-errors": "4a53777cf37fb7828e44ff5149d597a0d1cd57f0c192f05b849bbb3297231eb2",
+    "newton_rings-principle": "d3316ecc75f534cbc918947236808f8d0725ad986c645b5a06be5a8f4db35e49",
+    "newton_rings-measurement": "e593aacbaa757d19c73d751fac1676b8e2bc79248dd37bcc3c92cf86c1190744",
+    "newton_rings-errors": "405698ce3861b55177e7ae21ed51913f03de910d487a5c842dffe026b65b1731",
+    "optical_rotation-principle": "28471411ada653f07aa79c47f2cebd1566f7ae7f6c96a83956d9fa641bbcd5e2",
+    "optical_rotation-measurement": "02fb11f0c0b3986321a7cbd8c0cd13e9bd7a8e08bc0cb2c190289a38df5402c4",
+    "optical_rotation-errors": "6daa69e36fd77394edf40652bb67393c75e69ead53bbe7595648034fe9dc2fac",
+    "centripetal_force-principle": "f78af3d2ed8f473bc5b57da1db29c5de8d84fbf938008c62a70357a8289cb96a",
+    "centripetal_force-measurement": "a49126dd8815f779c7fe099c1a42bd7720fad10b05c9bca59e2dc7045a716c4e",
+    "centripetal_force-errors": "362ab75421ac7f847830e5cd490a712694e14ca8ff3a39e1f71bcfe097421ee7",
+    "rotational_inertia-principle": "68f01e63adf4f3f5746e56fb7d03fc23f51e92fd4f18dd36611ed256eed94758",
+    "rotational_inertia-measurement": "3db1d2a7c02b992be315e6c804363a269d311b320e0a28867e849d526fc1fe23",
+    "rotational_inertia-errors": "f5ef409818c0dc048b8f8e35431588a5e70b4f11ac81b4117860ad6ac5df8b38",
+    "kinetic_friction-principle": "dcbef52119efc20caac3090a1a7d525eb824f54e550b17adf3b82b0b56414b0e",
+    "kinetic_friction-measurement": "4c8880a13cb20fff2a0463f04f639144b09536432d105e1454990651a698e58f",
+    "kinetic_friction-errors": "0c39d36bc89d67cb2095de8b04498db478f75375fb6fc1c5fcfba5a732af40e5",
+    "hydrostatic_pressure-principle": "b921097b35a886aeb9d2be3b3ceee2d44996c1ae689119ccd73b28689b5e1e98",
+    "hydrostatic_pressure-measurement": "29f00eb9b3195c6d9fa00327a0ff0509532feb89b4e396aafd6dd7dec502ce8c",
+    "hydrostatic_pressure-errors": "b6818f0cb6901f0a6d970ec15e939c2bf741bfad3f28c52dc5706d6b37f778dc",
+    "stokes_viscosity-principle": "68c05a51d5e52e6cf00f9f1f111cc15518c474f9e35789832f6e2ad9a8e080f7",
+    "stokes_viscosity-measurement": "78a72bb95cb744c1e143d16cb6a46a1bfccd612687def5828910c670a98fdd6b",
+    "stokes_viscosity-errors": "e93159665ef5a697151b6c0fd5a2d6cb1d308c7c89e5d02bfecb3c7d673525d0",
+    "young_modulus-principle": "52231bf3105927de0af9a5a6f8f76726fdc347b5fa493d823c4590b836bcb166",
+    "young_modulus-measurement": "b81aad3b8b2c20292a33a9d409c7e55c121f15d824524de58f164db33ae5a74e",
+    "young_modulus-errors": "5592e8d7854b0f276e4902df1cf424c64c66c430eb7315681b599d81246e7aa0",
+    "charge_capacitance-principle": "ee7ce882fa3e02ffced1c1fc762ac40b7124b5dda1ea0c896deacc59911779f1",
+    "charge_capacitance-measurement": "5f037b9e01bb3bfd1cfdb58019290feb234561d2542cdbd362ed42fcca53a57e",
+    "charge_capacitance-errors": "cc9c76592865f8f8058739f72cc890208038bc7f8923e7942208680b4dd8c4c6",
+    "parallel_plate-principle": "49564558c56721def71733a1fcddca1273cfe82bbb22bc7d7c787eed57b2f3bc",
+    "parallel_plate-measurement": "c50ee5995a8bb2fc6c6658e2fb4b1fada014ba6c00fd6186c9774e724f6f38e6",
+    "parallel_plate-errors": "f6f3c84869fdf1db319b0ac06cfff05c83d3c8f5ed78acad86e0e478a231a971",
+    "solenoid_field-principle": "e2da2f8ac9dceb9a14ba9d6246c14ae058f56aa8942ca7db1f80a4029b22a1be",
+    "solenoid_field-measurement": "a8cbd33106dfd44154133ed4051a7952da9bb8c6231b9d00c748f923888dc558",
+    "solenoid_field-errors": "e574e9c702b03317e07e93933332cda9b77d8e3fdb30ef9039084e20e6109514",
+    "ampere_force-principle": "37ed432dea5a88adabbfce24d040cb7a2e104b1072be69c2d1d3c9a349fb20ef",
+    "ampere_force-measurement": "4e0b88be1f13f9939ba3283fcced0bffbbc5d093d47eff611629a966f5cadb7c",
+    "ampere_force-errors": "05d8ffd1d477189af3f0c2224bb15afeeb4e8f08e475e00f3ec6c90b5049e117",
+    "faraday_induction-principle": "32e1ba46749e27be0112f6d312fde3af14f2ad85efa1a5382a6ba8ae9cdb0199",
+    "faraday_induction-measurement": "b040e7a4a0de38e81fe179d667e6f93bdb52b85e84b8acb41df5017e34e51f82",
+    "faraday_induction-errors": "55099fd5eebffd9d887d05ba90cd5235053bb530c691f3893f24667f070071ad",
+    "boyle_law-principle": "395cd307a17786e80cb0c78487fe7bced6f06153abb3d05cc94e113808e3a5ed",
+    "boyle_law-measurement": "3122fe473303eda6f21ece93833d6f181126390a2ec30a9d926bc813e5e955ad",
+    "boyle_law-errors": "6c387cf597c57d99f62367035147457664e83e758531bbed9e4e0c0fb70eba0b",
+    "constant_volume_gas-principle": "6b1b0e7feaa7e1ad5e2605790a3ad0cbac0321196a911108089bdb15c880872f",
+    "constant_volume_gas-measurement": "57627cda9a82fd2e76e1c325679fc8a9f2bd058bc75dfa2c53a41c4fea5d1b53",
+    "constant_volume_gas-errors": "c82cddb48cc2e4e00c3ac9b0e2bd94369daf3fc4091cc81d4f67665beabd480d",
+    "newton_cooling-principle": "67393578991999c0cf1e27c546cf5d58546a3187a00fd904c71a9521c7d2dfaf",
+    "newton_cooling-measurement": "0e6472c3a70bb876458af9cb047dea85aeb2414d5f5a6826026a6cdb8d52315c",
+    "newton_cooling-errors": "ffeb6e532519e90d7f4f9f069f624806afdbbb2baac7c8925c9e2082a064d470",
+    "thermal_conduction-principle": "fed4188fdb587362a1e4e2d6233145616f49775525f1d707143aea929db302c1",
+    "thermal_conduction-measurement": "de1590349791f795e3fd25b7262c7fe996160fc533c551c692b5cd1515037c73",
+    "thermal_conduction-errors": "9e937a92f2c3a216bc30355e07577b35813e2687d4d6715ba4ee96afa4c46588",
+    "torsion_pendulum-principle": "6b36c9b468d06c1cacb0f2339a639b068a57d8beec19a0291688633e77484ae7",
+    "torsion_pendulum-measurement": "1ac8a59da7af8b76fd2843418e95eb1692306427e280443bd938899aa7259a44",
+    "torsion_pendulum-errors": "aebcf836e30c2ed1cd3487204c3ba5357c58102cdb215a4658a26ff29828f4c5",
+    "sound_timeflight-principle": "fc2647b1d01313bcd43edc2b1998efa1dbb14bd8214e7e2655010ec0f5c039f4",
+    "sound_timeflight-measurement": "a888cd8d6da8c6608cca4e775b63991a8c5a9dfbdcf7f0fc3821cce19361b321",
+    "sound_timeflight-errors": "d70b634acbe8c440f26a145e7f2cf889dbefc7ce413e6690c546db0a38b26292",
+    "damped_oscillation-principle": "c1e3fd06c8446bbe70c7aced42ca9c613576f54a73b57a9ed7feb0324b9e6d60",
+    "damped_oscillation-measurement": "1f6128a50ae12c78525c3dc99c378304d79fc6ae344ec903754efa319943360b",
+    "damped_oscillation-errors": "8b649dafb11570e83061ad029aa52ba041fa1fb3f64d070cae50e6e04f5497fd"
+  },
+  "new_ids": [
+    "abbe_refractometer",
+    "acoustic_levitation",
+    "air_heat_ratio",
+    "astronomical_imaging",
+    "chaos",
+    "collision",
+    "color_design",
+    "curie_temperature",
+    "dancing_coin",
+    "dc_source",
+    "density_buoyancy",
+    "diffraction_intensity",
+    "diode",
+    "doppler",
+    "double_grating",
+    "electron_em",
+    "electrostatic_field",
+    "forced_resonance",
+    "franck_hertz",
+    "fresnel_biprism",
+    "fuel_cell",
+    "grating_characteristics",
+    "hall_effect",
+    "heat_engine",
+    "helmholtz",
+    "holography",
+    "hydrogen_spectrum",
+    "hysteresis",
+    "ice_latent_heat",
+    "infrared_radiation",
+    "length_measurement",
+    "lens_bessel",
+    "lens_group",
+    "light_speed",
+    "magnetic_levitation",
+    "magnetic_pendulum",
+    "magnetoresistance",
+    "magnus_ball",
+    "mass_measurement",
+    "meter_conversion",
+    "meter_resistance",
+    "microwave_bragg",
+    "microwave_properties",
+    "millikan",
+    "multimeter",
+    "nuclear_counts",
+    "nuclear_decay",
+    "nuclear_magnetic_resonance",
+    "optical_cloaking",
+    "optical_flatness",
+    "oscilloscope",
+    "photoresistor",
+    "potentiometer",
+    "prism_angle",
+    "prism_refraction",
+    "railgun",
+    "rectifier",
+    "rlc_series",
+    "shear_modulus",
+    "solar_cell",
+    "solid_density",
+    "stereo_display",
+    "strain_gauge",
+    "surface_tension",
+    "temperature_pid",
+    "temperature_sensor",
+    "temperature_viscosity",
+    "thermal_imaging",
+    "thermionic_work_function",
+    "thermistor",
+    "trifilar",
+    "ultrasonic_echo",
+    "unbalanced_bridge",
+    "vapor_latent_heat",
+    "virtual_daq",
+    "wheatstone",
+    "white_light_interference",
+    "wire_diffraction",
+    "wireless_power",
+    "zeeman"
+  ],
+  "reference_results": {
+    "length_measurement": {
+      "basic": 25.02,
+      "standard": 25.02357142857143,
+      "challenge": 25.04
+    },
+    "mass_measurement": {
+      "basic": 50.0,
+      "standard": 50.00715714285714,
+      "challenge": 50.1
+    },
+    "solid_density": {
+      "basic": 7799.999999999999,
+      "standard": 7801.114285714284,
+      "challenge": 7497.1164936562855
+    },
+    "density_buoyancy": {
+      "basic": 7800.0,
+      "standard": 7794.1370545459395,
+      "challenge": 7878.787878787874
+    },
+    "multimeter": {
+      "basic": 1.0,
+      "standard": 1.000395357142857,
+      "challenge": 1.0399999999999998
+    },
+    "oscilloscope": {
+      "basic": 1000.0,
+      "standard": 1000.0,
+      "challenge": 909.090909090909
+    },
+    "virtual_daq": {
+      "basic": 1.4071950894605838,
+      "standard": 1.4074047905001768,
+      "challenge": 1.4634828930390071
+    },
+    "trifilar": {
+      "basic": 0.004,
+      "standard": 0.004001159428571428,
+      "challenge": 0.0042105263157894745
+    },
+    "shear_modulus": {
+      "basic": 39.99999999999998,
+      "standard": 40.015714285714274,
+      "challenge": 36.95381704106055
+    },
+    "forced_resonance": {
+      "basic": 50.0,
+      "standard": 50.0,
+      "challenge": 48.0
+    },
+    "collision": {
+      "basic": 1.0,
+      "standard": 0.9999714285714285,
+      "challenge": 1.04
+    },
+    "magnetic_levitation": {
+      "basic": 7.106152610974642,
+      "standard": 7.10620955788898,
+      "challenge": 5.872853397499701
+    },
+    "air_heat_ratio": {
+      "basic": 1.4,
+      "standard": 1.4000809280138087,
+      "challenge": 1.3779527559055118
+    },
+    "surface_tension": {
+      "basic": 0.07200000000000001,
+      "standard": 0.07202828571428571,
+      "challenge": 0.07578947368421053
+    },
+    "ice_latent_heat": {
+      "basic": 334.0,
+      "standard": 333.94497199735,
+      "challenge": 318.7423076923077
+    },
+    "vapor_latent_heat": {
+      "basic": 2256.0,
+      "standard": 2256.8862857142853,
+      "challenge": 2346.24
+    },
+    "temperature_pid": {
+      "basic": 595.8412494585597,
+      "standard": 597.2882445209385,
+      "challenge": 536.9993233208656
+    },
+    "heat_engine": {
+      "basic": 0.8,
+      "standard": 0.7982000000000002,
+      "challenge": 0.8320000000000001
+    },
+    "temperature_viscosity": {
+      "basic": 2500.0000000000023,
+      "standard": 2504.66591792429,
+      "challenge": 2500.0000000000014
+    },
+    "wheatstone": {
+      "basic": 470.0,
+      "standard": 470.0671428571428,
+      "challenge": 488.80000000000007
+    },
+    "potentiometer": {
+      "basic": 1.5,
+      "standard": 1.5002142857142857,
+      "challenge": 1.56
+    },
+    "meter_conversion": {
+      "basic": 1.0,
+      "standard": 1.000392857142857,
+      "challenge": 1.0399999999999998
+    },
+    "meter_resistance": {
+      "basic": 1000.0,
+      "standard": 1000.3928571428571,
+      "challenge": 1040.0
+    },
+    "diode": {
+      "basic": 1.7999999999999996,
+      "standard": 1.7989526273388992,
+      "challenge": 6.562082720732046
+    },
+    "thermistor": {
+      "basic": 3500.0000000000014,
+      "standard": 3497.4067378496215,
+      "challenge": 3511.2422691337515
+    },
+    "unbalanced_bridge": {
+      "basic": 1.25,
+      "standard": 1.2504910714285715,
+      "challenge": 1.3
+    },
+    "hall_effect": {
+      "basic": 0.010000000000000002,
+      "standard": 0.010003928571428573,
+      "challenge": 0.009500000000000001
+    },
+    "helmholtz": {
+      "basic": 129.99999999999997,
+      "standard": 130.62674131884833,
+      "challenge": 135.20000000000002
+    },
+    "rlc_series": {
+      "basic": 1591.5494309189535,
+      "standard": 1591.5494309189535,
+      "challenge": 1591.5494309189535
+    },
+    "hysteresis": {
+      "basic": 186.0,
+      "standard": 185.97099999999998,
+      "challenge": 193.44
+    },
+    "curie_temperature": {
+      "basic": 120.0,
+      "standard": 120.01113709767235,
+      "challenge": 125.0
+    },
+    "electrostatic_field": {
+      "basic": 22.360679774997898,
+      "standard": 22.329010520148934,
+      "challenge": 15.909574832491368
+    },
+    "photoresistor": {
+      "basic": 0.7000000000000001,
+      "standard": 0.6992755903303526,
+      "challenge": 0.6573865447673753
+    },
+    "solar_cell": {
+      "basic": 6.800000000000001,
+      "standard": 6.820399999999999,
+      "challenge": 7.072
+    },
+    "magnetoresistance": {
+      "basic": 0.5000000000000001,
+      "standard": 0.5020714285714286,
+      "challenge": 0.46227810650887585
+    },
+    "strain_gauge": {
+      "basic": 2.0000000000000004,
+      "standard": 2.0007857142857146,
+      "challenge": 2.0800000000000005
+    },
+    "temperature_sensor": {
+      "basic": 10.0,
+      "standard": 10.01642857142857,
+      "challenge": 10.4
+    },
+    "rectifier": {
+      "basic": 0.04221585268381752,
+      "standard": 0.0423147776880747,
+      "challenge": 0.04962058275751591
+    },
+    "magnetic_pendulum": {
+      "basic": 0.01,
+      "standard": 0.010069606935921148,
+      "challenge": 0.010400000000000001
+    },
+    "wireless_power": {
+      "basic": 53.21522620302945,
+      "standard": 53.055580524420364,
+      "challenge": 55.34383525115063
+    },
+    "fuel_cell": {
+      "basic": 0.348,
+      "standard": 0.34904399999999997,
+      "challenge": 0.36191999999999996
+    },
+    "railgun": {
+      "basic": 4.444444444444445,
+      "standard": 4.4414834554741285,
+      "challenge": 4.273504273504273
+    },
+    "prism_angle": {
+      "basic": 60.0,
+      "standard": 60.00857142857143,
+      "challenge": 62.400000000000006
+    },
+    "prism_refraction": {
+      "basic": 1.5,
+      "standard": 1.5000609906907567,
+      "challenge": 1.511487005964194
+    },
+    "abbe_refractometer": {
+      "basic": 1.333,
+      "standard": 1.333133597046401,
+      "challenge": 1.3421560940671524
+    },
+    "lens_group": {
+      "basic": 7.5,
+      "standard": 7.500269799124708,
+      "challenge": 7.575757575757575
+    },
+    "lens_bessel": {
+      "basic": 10.0,
+      "standard": 9.995690714285717,
+      "challenge": 9.49
+    },
+    "fresnel_biprism": {
+      "basic": 632.8,
+      "standard": 633.0735999999998,
+      "challenge": 601.16
+    },
+    "grating_characteristics": {
+      "basic": 300.00000000000006,
+      "standard": 300.6381238281066,
+      "challenge": 299.5502454332353
+    },
+    "wire_diffraction": {
+      "basic": 80.0,
+      "standard": 79.9686126667744,
+      "challenge": 83.20000000000002
+    },
+    "optical_flatness": {
+      "basic": 73.6625,
+      "standard": 73.5888375,
+      "challenge": 76.609
+    },
+    "diffraction_intensity": {
+      "basic": 0.2000010010870945,
+      "standard": 0.2000010010870945,
+      "challenge": 0.19230873343805802
+    },
+    "holography": {
+      "basic": 632.8,
+      "standard": 633.2158980174236,
+      "challenge": 658.1120000000002
+    },
+    "infrared_radiation": {
+      "basic": 0.7999999999999998,
+      "standard": 0.8003422063985332,
+      "challenge": 0.8320000000000001
+    },
+    "thermal_imaging": {
+      "basic": 10.0,
+      "standard": 10.03892857142857,
+      "challenge": 10.4
+    },
+    "astronomical_imaging": {
+      "basic": 2.0,
+      "standard": 2.025785714285713,
+      "challenge": 1.9230769230769227
+    },
+    "color_design": {
+      "basic": 0.48978007144484276,
+      "standard": 0.48867095135765626,
+      "challenge": 0.4672195303303694
+    },
+    "optical_cloaking": {
+      "basic": 35.357142857142854,
+      "standard": 35.34589285714285,
+      "challenge": 36.77142857142857
+    },
+    "stereo_display": {
+      "basic": 60.0,
+      "standard": 59.823603630523294,
+      "challenge": 62.4
+    },
+    "white_light_interference": {
+      "basic": 500.0,
+      "standard": 500.07142857142856,
+      "challenge": 520.0
+    },
+    "doppler": {
+      "basic": 343.0,
+      "standard": 342.86530291671136,
+      "challenge": 356.72
+    },
+    "acoustic_levitation": {
+      "basic": 343.0,
+      "standard": 343.15474999999986,
+      "challenge": 356.72
+    },
+    "ultrasonic_echo": {
+      "basic": 1479.9999999999998,
+      "standard": 1479.3640847812703,
+      "challenge": 1539.1999999999998
+    },
+    "double_grating": {
+      "basic": 50.0,
+      "standard": 49.97412054471791,
+      "challenge": 48.076923076923066
+    },
+    "chaos": {
+      "basic": 0.7454380814263972,
+      "standard": 0.7455447562682852,
+      "challenge": 0.7752556046834531
+    },
+    "millikan": {
+      "basic": 1.602176634e-19,
+      "standard": 1.601551263679864e-19,
+      "challenge": 1.540554455769231e-19
+    },
+    "electron_em": {
+      "basic": 175882001076.0,
+      "standard": 175833934961.95117,
+      "challenge": 162612796852.8106
+    },
+    "franck_hertz": {
+      "basic": 4.9,
+      "standard": 4.9022250000000005,
+      "challenge": 5.775
+    },
+    "hydrogen_spectrum": {
+      "basic": 10967758.340000004,
+      "standard": 10920678.54930415,
+      "challenge": 10545921.480769234
+    },
+    "thermionic_work_function": {
+      "basic": 2.2000000000000006,
+      "standard": 2.2012748027484768,
+      "challenge": 2.2440000000000007
+    },
+    "nuclear_magnetic_resonance": {
+      "basic": 42.577478920000004,
+      "standard": 42.59420578671857,
+      "challenge": 44.351540541666665
+    },
+    "zeeman": {
+      "basic": 9.274010078299999e-24,
+      "standard": 9.277653439402191e-24,
+      "challenge": 1.8548020156599998e-23
+    },
+    "nuclear_counts": {
+      "basic": 10.0,
+      "standard": 10.0,
+      "challenge": 10.090909090909092
+    },
+    "nuclear_decay": {
+      "basic": 120.00000000000003,
+      "standard": 120.17787807329142,
+      "challenge": 122.08722350551976
+    },
+    "microwave_properties": {
+      "basic": 299792457.99999994,
+      "standard": 299920233.60849994,
+      "challenge": 311784156.32
+    },
+    "microwave_bragg": {
+      "basic": 2.99792458,
+      "standard": 3.0071601071168574,
+      "challenge": 2.9752596937868896
+    },
+    "magnus_ball": {
+      "basic": 0.02,
+      "standard": 0.020005934065934063,
+      "challenge": 0.01849112426035503
+    },
+    "dancing_coin": {
+      "basic": 78.06549958657452,
+      "standard": 79.07957027826522,
+      "challenge": 423.62238172882115
+    },
+    "light_speed": {
+      "basic": 299792458.0,
+      "standard": 299450384.36063135,
+      "challenge": 311784156.32000005
+    },
+    "dc_source": {
+      "basic": 10.000000000000002,
+      "standard": 9.878928571428569,
+      "challenge": 10.400000000000015
+    }
+  }
+}

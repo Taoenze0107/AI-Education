@@ -1,0 +1,16 @@
+{
+  "anomaly": {
+    "status": "uncertain",
+    "predicted_issue": null,
+    "confidence": 0.42,
+    "observed_features": ["末端数据轻微偏离"],
+    "summary": "单一路证据无法确定错误类型",
+    "model_version": "demo-anomaly-v1"
+  },
+  "consistency": {"checks": []},
+  "mathematics": null,
+  "raw_measurements": {"voltage_V": [1, 2, 3]},
+  "student_explanation": "我觉得最后一个点可能不对。",
+  "metadata": {"source": "example"}
+}
+

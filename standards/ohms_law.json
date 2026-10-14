@@ -1,0 +1,129 @@
+{
+  "experiment_id": "ohms_law",
+  "version": "ms-recommended-v0.1",
+  "note": "建议初值，须用 MS3 真实标注案例重新标定；合成数据100%准确率不可作为阈值依据",
+  "model": "U = a + b*I, R = b(ohm)",
+  "x_unit_required": "A",
+  "unit_note": "current_mA 必须先 *1e-3 换算为 A",
+  "min_points": 5,
+  "meter": {
+    "accuracy_class": 1.0,
+    "fullscale_voltage_V": 6.0,
+    "distribution": "uniform",
+    "max_relative_error_fraction": 0.01,
+    "max_permissible_error_V": "(accuracy_class/100)*fullscale",
+    "b_type_divisor": 1.732
+  },
+  "fit": {
+    "method": "OLS",
+    "slope_is_result": true,
+    "residual_dof": "n-2",
+    "r2_good": 0.99,
+    "r2_warn": 0.95,
+    "resistance_relative_error_pct": 5.0,
+    "intercept_to_fullscale_pct": 2.0,
+    "report": [
+      "R",
+      "intercept",
+      "s_residual",
+      "s_slope",
+      "R2",
+      "relative_error",
+      "u_rel"
+    ]
+  },
+  "outlier": {
+    "method_primary": "grubbs_residual",
+    "grubbs_alpha_warn": 0.05,
+    "grubbs_alpha_reject": 0.01,
+    "robust_modified_z": 3.5,
+    "residual_normalization": "by_fullscale_U_FS",
+    "relative_residual_warn": 0.1,
+    "relative_residual_reject": 0.15,
+    "legacy_outlier_relative_residual_default": 0.35,
+    "must_exceed_meter_error": true,
+    "policy": "歧离值优先找物理原因，找不到原因应保留，不鼓励直接删点",
+    "grubbs_table": "见顶层 grubbs_critical_one_sided（单侧t分布精确值，替代旧GB/T 4883近似值）"
+  },
+  "noise": {
+    "metric": "residual_std / fullscale",
+    "warn": 0.05,
+    "reject": 0.08,
+    "tie_to_meter_error_multiplier": [
+      2,
+      5
+    ],
+    "legacy_noise_normalized_residual_std_default": 0.12
+  },
+  "drift": {
+    "runs_test_alpha": 0.05,
+    "half_residual_mean_diff_to_fullscale": 0.03,
+    "trend_slope_n_to_fullscale": 0.03,
+    "max_sign_run": 4,
+    "constant_offset_seen_in": "intercept_a_not_residual"
+  },
+  "unit_error": {
+    "metric": "abs(log10(R_student/R_ref))",
+    "decade_x10": 0.85,
+    "decade_x100": 1.85,
+    "decade_x1000": 2.85,
+    "legacy_unit_error_ratio_decades_default": 1.05,
+    "check_even_if_r2_high": true
+  },
+  "missing": {
+    "flag_empty": true,
+    "min_valid_points": 5,
+    "silent_interpolation_forbidden": true
+  },
+  "reference": {
+    "reference_resistance_ohm": 50.0,
+    "tolerance_percent": 5.0,
+    "note": "伏安法演示用标准电阻 50Ω；实际实验以 metadata.expected_resistance_ohm 为准，缺省时回退到此值"
+  },
+  "grubbs_critical_one_sided": {
+    "comment": "单侧Grubbs精确临界值 G_(1-α)(n)，由t分布按 G=(n-1)/√n·√(t²/(n-2+t²))，t=t_{1-α/(2n),n-2} 计算（经典Grubbs单离群点表，等同NIST/工程通用表，scipy.stats.t.ppf）。落地前可用scipy复核；n=8: 2.127/2.274，n=10: 2.290/2.482。替代旧版GB/T 4883表列近似值(n=8旧2.03/2.22)",
+    "n": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      15,
+      20
+    ],
+    "alpha_0.05_warn": [
+      1.154,
+      1.481,
+      1.715,
+      1.887,
+      2.02,
+      2.127,
+      2.215,
+      2.29,
+      2.355,
+      2.412,
+      2.548,
+      2.708
+    ],
+    "alpha_0.01_reject": [
+      1.155,
+      1.496,
+      1.764,
+      1.973,
+      2.139,
+      2.274,
+      2.387,
+      2.482,
+      2.564,
+      2.636,
+      2.806,
+      3.001
+    ],
+    "decision": "G>G0.01判统计离群值(reject/剔除)；G0.05<G≤G0.01判歧离值(warn/只警告)；G≤G0.05不判离群。所有判离群还须残差超过仪表MPE物理闸门"
+  }
+}

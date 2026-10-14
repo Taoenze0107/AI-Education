@@ -1,0 +1,8 @@
+﻿fall_speed_mm_s,balance_voltage_V,charge_number,air_viscosity,density_difference,gravity_m_s2,plate_gap_mm,pressure_Pa,slip_constant_Pa_m,data_origin
+0.08,619.6025857000849,1.0,1.83e-05,981.0,9.8,5.0,101300.0,0.00822,synthetic-example
+0.09,372.5173835206281,2.0,1.83e-05,981.0,9.8,5.0,101300.0,0.00822,synthetic-example
+0.1,292.76949700373143,3.0,1.83e-05,981.0,9.8,5.0,101300.0,0.00822,synthetic-example
+0.11,254.75602366531055,4.0,1.83e-05,981.0,9.8,5.0,101300.0,0.00822,synthetic-example
+0.12,233.3674957493486,5.0,1.83e-05,981.0,9.8,5.0,101300.0,0.00822,synthetic-example
+0.13,220.24138434737722,6.0,1.83e-05,981.0,9.8,5.0,101300.0,0.00822,synthetic-example
+0.14,211.79877697589487,7.0,1.83e-05,981.0,9.8,5.0,101300.0,0.00822,synthetic-example

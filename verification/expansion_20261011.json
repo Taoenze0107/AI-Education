@@ -1,0 +1,1037 @@
+{
+  "original_topics": {
+    "ohms_law": "c3078992732896ca77cffe87a5b98c1bea73b56c3d611d4aa08eaf97944cfe18",
+    "rc_time_constant": "f525c1ff152f95eb40df9ad9d30a73ac66528e08965568d21ea1f7ce0644a216",
+    "simple_pendulum": "4c99041b3f8ee7be5e35dd7c74956f524cc07b8345c8e2e091b54f3d45f26d98",
+    "hookes_law": "3493cb8a03d66d85ce8b271fb1e88b187b6cf63043998f2c02cf2138b65f7b77",
+    "spring_oscillation": "03bdb041e6e020a84fff663890e0b979211f6e2b4bd2bbb185bc82d88e1326ce",
+    "free_fall": "da9d2e8bcb275c3180c6ba1ac7144e42ef8a963507095583d2691bf85c75dac3",
+    "inclined_friction": "aafec9fd10855842699ede62e0bfc89bda9d63c3dc4e1cf3f9106e7dc342cc08",
+    "thin_lens": "3275259d5ae0ce3ed00731496817922aa69d3765920ee211ddcef7e739a5bf5b",
+    "snell_refraction": "c856c23a876b03f278ab198e175f005fdc1fb4518f71a1decc86d94cbecfc38e",
+    "double_slit": "8715a7dd6efe4709421ba40ab03784d4521e72cfc7ba44c005315c83c9b79fe4",
+    "calorimetry": "3a8943d956ca7b4f180a10d25e1cac140b4f2069392e000dd30477419765dc82",
+    "sound_resonance": "deecfe4b984e62914f67de20606cadef325f5b4e70e6f1bb0d1d386eceaffc65",
+    "uniform_acceleration": "299fc0fd3ba7d1e0a5cd22abfe6b09f5e47e27e66fbb5e966db142b1d7fc326a",
+    "newtons_second_law": "4be0d047efe61a15e3cb1aad513d95c6361c57471055d4699bf436c4e1b0ece7",
+    "work_energy": "3e8bc9f8cea484e4025e16c14d06ab083bb61fbc225620900d8b51dffa614e79",
+    "archimedes": "aaa8eb73b5a56a09dc582e41fae5240fe45b4ddb9e00af53a4aaf48cae4fe5b1",
+    "resistivity": "f4e0572ce2fa2a886c4077b157ec5e53bba32ef4f6f0437d21a892d951a9fda9",
+    "joule_heating": "85690a7bdd7b9d2fbcf5bd34c2a6300dd4068f80a0c09f91970433a983c8bed8",
+    "capacitor_discharge": "b8f8123333d4a8c7be66100268bb081a09305a3ec1cccdd3ec14da46d8ad765c",
+    "transformer_ratio": "4e9fa436c306d13c10291baa085eb678c16ffa2145cd2e2bdf44f1d37ed52d69",
+    "grating_diffraction": "bf3f694733dd07211232619de9fb01af2aed54788473fd2272c630b4b70442c9",
+    "total_internal_reflection": "a98c918a12abe21f670d11f4d70fe13ae913697346e7accd4d33dc820312b8e7",
+    "thermal_expansion": "fc138834e353d8b89648c242cf16c24e1d352cec8955a77146d00c87b0ad7efa",
+    "string_waves": "2089e551b9e23cb3bd810f1e1ff407090f07eb73b200dc1c7fd6daf4b433edce"
+  },
+  "original_knowledge": {
+    "ohms-law-core": "17b2de42896247787432a7300cf7160952bb72e8dc95377a02acea23c9814192",
+    "rc-transient-core": "1cde0ad2b092dfcce1b629031e26ebbb2692cd4d51f7cd597f80b252d857f6ec",
+    "pendulum-core": "6a9769068fc741071652ff827a193e34b94d9c9fde625ee3d414d4b8504e5a94",
+    "generic-data-quality": "9350af4096642042c84cad4b9556be8899929e78b305a93db777c279f70bed22",
+    "ohms-wiring": "c6b58c4a1f28df986a2a45c164a68d429dbebba8a670de07c72782560fc3a819",
+    "ohms-slope": "9f499baec34b04fa15ca0d014e1ec09219d55a5c45207d180eb2a2207473a775",
+    "ohms-temperature": "65df854233a0fa2c1e084648cf3751fc1d1fead03d65a52c3c44fd5597f33e02",
+    "rc-threshold": "73fee3bdc6aef1a58979757b2c07274d3b6b03ba86aeab74695601dbc42f9ff8",
+    "rc-observation": "5e6842ce219e9b6efd89cb35784b626de63c27bdb226a064b983636b9edde85d",
+    "pendulum-timing": "2a9960b35adfc13824fa3efd9bcd2605d882cfcd32d48a33d4f06c7807287ebb",
+    "pendulum-length-angle": "9cf0d9d10715594de60ef347dfde60b2751fee4690c8d9fa699ce05a3a940724",
+    "generic-unit-prefixes": "b68534cb73e8e0ae6b0061e94abe0e53b7d0ea6847bd15043a142ec524d1afe3",
+    "generic-type-a": "a5ea171215ad880f969245bd5e8898508fc43838b3e226246ac8e147a379f46c",
+    "generic-type-b": "c60454d7ad779c9ae055f095c449766860ad60fb361d9a7b6a38b5db1e1320ee",
+    "generic-propagation": "0d1963db25f8dfbac27c2084db01cb144800b571db18364d2409476184bb09fd",
+    "generic-significant-figures": "15e96c2fa9a16991b63732e2aa8e12e9c40d45837bb61495ab3a79d5686a2588",
+    "generic-residuals": "b4b15bb7bcba46c24d90f97d900cf95fe55504d9db18754d73bc8b12fa6e4ab3",
+    "generic-report": "dd1915eab31b902bc95547f779ed1914c3959b5a4e018013184a51beec325ca8",
+    "hookes_law-model": "0ab952b0dcd9f8257a2c98c110ff20e04c86c808c179f7b9415e59165190c70a",
+    "hookes_law-data": "b68c5819acb364a0a58f779dc344dd43d786c03817b578aca7b2f3325fb9e340",
+    "hookes_law-errors": "d0db4e892ad253ad184cd8c7fb8f5993f6aa1dc56df7d63f64e232076f346833",
+    "spring_oscillation-model": "357ffce9e31744f20bfe5af649b72aec605f0a7a61d1a47263c543d98ee15599",
+    "spring_oscillation-data": "7cf7e90b1b45e10eff61660aa7d57c26a10790427618c88596cd0512b30e9de6",
+    "spring_oscillation-errors": "28bc111e364b771ac5c2b0ef63478a88fa0731ee0547970506b583a41b408649",
+    "free_fall-model": "cf0f31f387a061af0cd2a1882fa413c30e7e50d4e33189b064a44dbfc0a3930b",
+    "free_fall-data": "cacc462b43fcb002fa8158c82e81292fad33accf190eedfc6d2524ac3cc04b46",
+    "free_fall-errors": "039f133c8f74124cca0faa7a48667d3229fc8776972c6101b0fe3d991148886d",
+    "inclined_friction-model": "87ce387653ecba0d8698ff038842f3fe0409e2f14398766c9c66715b98478100",
+    "inclined_friction-data": "2a5427219730bfe9d06834e5cc4dd59dc9ef7f3947a2528b7bcc45e3f279be3e",
+    "inclined_friction-errors": "cdb207a802aef80bdd931af879f3e256dc315d1eeacffc9da35c126df8257508",
+    "thin_lens-model": "014e3276e0eb1f135089cddc367beaa58b8334f1f97aa8a8c43bdfab8bac361d",
+    "thin_lens-data": "7f9f1dce680c5a086c805ac07c7a06a57fb65b313325d4bde4787eab92f3368c",
+    "thin_lens-errors": "edcc5bf77cf0ba7fed2622506d68baa0a30fc466c3e8af558d72293c3bb9a951",
+    "snell_refraction-model": "085a8186cf3cf2d2163bf28ec50e1fa11f7865a71ce384405058bb15c689e70c",
+    "snell_refraction-data": "8faa5b87614718c502e37aaf20f51dac154f0be64d2352962849837131780904",
+    "snell_refraction-errors": "cd43585cb8401978143bb21f8d7bca535dcffae64886724704e11a729021ecde",
+    "double_slit-model": "2751baf88042bce1248a6d22ee195036e3f6f06e30c401c7eaf17e3821b17a5b",
+    "double_slit-data": "9f0f8c674f9180afefa7b8507966654d0b4e076ac51f46575ebcbb9893596b18",
+    "double_slit-errors": "126a7e168d31404e7e3734ef4895ddcc5ccf1a96f80fec77db94c3db89984aa1",
+    "calorimetry-model": "9422c5d3a93a605ba035d3696ec642f2d99d21f258ceeea502112a923942930d",
+    "calorimetry-data": "927075bec55bbb3c04394ff85adf1df643ebf1e4d3b367dc16c12bdbe29f45d0",
+    "calorimetry-errors": "560407cde05a5553ba6bc7ea474bfae6603b31db9f741916ba9776eb92508c29",
+    "sound_resonance-model": "6dd5091e48782401b5fbea50b0e7421c0b51ffaef3541edd7b3d5a2da6ff49d9",
+    "sound_resonance-data": "e99a04842d808f43743121a0df34af11954af4a60f31abc91dc00beb0d0b74b8",
+    "sound_resonance-errors": "affbe25821100a7db4ff0c7955dada584e4c6d5b7c0e876aee0c10507b11f47e",
+    "uniform_acceleration-model": "1d429b7fd6ec9adc744cf37a7c4edb67e31e8fc8aa3c4fb9dde35d55afe0c02a",
+    "uniform_acceleration-data": "6575d25cef5bb673daca6e33ef00aeaf0ff5af4be7c5d7530b9c78acdb58fc59",
+    "uniform_acceleration-errors": "69e1cc1526b281841595dd46da22ebf95644bc4e08e4ec8df8a6acfa8b58fd0d",
+    "newtons_second_law-model": "8485cf219cddca5a908b6a84796cd30c581ac911186d57f80f5bcbb01bfa7539",
+    "newtons_second_law-data": "67ad87981318c84f909a319d9cbd31d1ab723e60637aadcaf60a69c2d1267c33",
+    "newtons_second_law-errors": "30f1b0d887d0a7861a172a32e8b099e916444a5bf065681971addb5e4cb51114",
+    "work_energy-model": "fb96d9b5b11b7cc485266a8a2c6154d7777daad0c97884ef81a3aac3fe169e59",
+    "work_energy-data": "2dc35e76be677dc641d7c6bd674ad740f370a0ce70b4b4118598a661c12e9e00",
+    "work_energy-errors": "3f0c322c04834fde462765f2baa5be2eb19bd0f2723cb663596f0d3873b03118",
+    "archimedes-model": "ea9745c97b5366ad87cacdfacf677c57449c8f7b4bc4f72503d7eed70076e564",
+    "archimedes-data": "b45f42d32bceb301c09fdfdc7d6f1cd7a737f230680eef72859922abb30a9bed",
+    "archimedes-errors": "415654bf96c7247eb1e4bcc07168fd30896da41686dfb8423ce9a9199cb788d1",
+    "resistivity-model": "c5c3ed8d03d1baddc3533599513a1918a95542cdab5d57fd0f6ea90e3ac19629",
+    "resistivity-data": "6ae6ca3ecebc9fc5a10b13f59295f641b875c6c6b82942809669d6550b92dcbd",
+    "resistivity-errors": "7e293108273da84a09c3213d0e961bba15aae1bfc1f716658cff0b0ab987c44c",
+    "joule_heating-model": "41bd0add05c99e5ccb4001bace520f4a931e360a857953db914eddc19fef1e65",
+    "joule_heating-data": "acd37bc83901e9178f2def9fc220eb72485412cbe2814609e1622cee455c0904",
+    "joule_heating-errors": "b6b00697d1735eac2b23b182253208edfa2e0999899320fa7d81478fcc633f58",
+    "capacitor_discharge-model": "111d31b43149fb3a3dc4614c61582a8c8c77a47abc2ddda5531931118da3504f",
+    "capacitor_discharge-data": "9f47f5a351cfdb743c8ab18d838c7cfb791a07e882d4a218da2d9ed02f8a6ad4",
+    "capacitor_discharge-errors": "df2901236c9bdc4109043d21ab313c4c498b1ca1247df267c7b18332e193e4c9",
+    "transformer_ratio-model": "382a8d44f12985c0748f98aa6407f813e20b54122f5efefa9891d5e369a81932",
+    "transformer_ratio-data": "89995c0f37af68250eb8f7a7cca4dac86799663a4783480043bbaad156be6497",
+    "transformer_ratio-errors": "582f1d76aa4f692e88c4845e55f82efc87a212ced17a6fae77e41c3c952cce1b",
+    "grating_diffraction-model": "b012710842ff720fd5c93454136b2cdd9b2bbaa36eb1fd762d93dda65a28f2df",
+    "grating_diffraction-data": "d6a103cd4dfc54a48ce2321d673d3c02063383d1984cb192d4e0d5452292844e",
+    "grating_diffraction-errors": "6c0583c5748cbfdde3fce53ba2ca0ec9f1de771b7328b6de70b80cf1c5522d67",
+    "total_internal_reflection-model": "87d90d51f486a5cae3acf990d8cdf8635dfb119dfddf25abb9fe5e0b20544e89",
+    "total_internal_reflection-data": "96aa46d2b5ebc9f25314f3e830306a82174a87ef135c85bce1223463f6ad1ab0",
+    "total_internal_reflection-errors": "97c1f6ce4f2a0ffd3a909f84b6088899f5bbe4860ab4897c058ea170baca21d2",
+    "thermal_expansion-model": "0cc4c4f46e8dd098813bdc3c3e38a4bcfd6537d8d47b6dcb03210fb9ccdd56b3",
+    "thermal_expansion-data": "dbe32ab1b97f8382cf77b58349af7d31c4d3dfbe4a22ef7e206e9818f8e9022e",
+    "thermal_expansion-errors": "f1bc260c450aff1b80919e36f81c96bdb989858a0c4461bf3276e33846d1da85",
+    "string_waves-model": "aaa0f2f3a26d2baf668dfc57eb8bd0a59e7002d1773364b3887ddb14b70d642f",
+    "string_waves-data": "cb008e6c0a2684e36798a305131a275412ef12c708ecf9593808608b67b0dc5a",
+    "string_waves-errors": "669bdb20cf22e0342c132dc89392aecc1fb0877ed49ba40c29f444e836616bc3"
+  },
+  "new_cases": [
+    {
+      "case_id": "photoelectric_effect-extension-1",
+      "experiment_id": "photoelectric_effect",
+      "result": 6.626070148519815e-34,
+      "unit": "J·s",
+      "baseline": 6.626070148519815e-34
+    },
+    {
+      "case_id": "photoelectric_effect-extension-2",
+      "experiment_id": "photoelectric_effect",
+      "result": 6.639873084752235e-34,
+      "unit": "J·s",
+      "baseline": 6.626070148519815e-34
+    },
+    {
+      "case_id": "photoelectric_effect-extension-3",
+      "experiment_id": "photoelectric_effect",
+      "result": 7.080215339949822e-34,
+      "unit": "J·s",
+      "baseline": 6.626070148519815e-34
+    },
+    {
+      "case_id": "photoelectric_effect-extension-4",
+      "experiment_id": "photoelectric_effect",
+      "result": 6.626070148519815e-34,
+      "unit": "J·s",
+      "baseline": 6.626070148519815e-34
+    },
+    {
+      "case_id": "photoelectric_effect-extension-5",
+      "experiment_id": "photoelectric_effect",
+      "result": 6.626070148519815e-34,
+      "unit": "J·s",
+      "baseline": 6.626070148519815e-34
+    },
+    {
+      "case_id": "photoelectric_effect-extension-6",
+      "experiment_id": "photoelectric_effect",
+      "result": 6.8248522529751964e-34,
+      "unit": "J·s",
+      "baseline": 6.626070148519815e-34
+    },
+    {
+      "case_id": "malus_law-extension-1",
+      "experiment_id": "malus_law",
+      "result": 799.9999999999995,
+      "unit": "lx",
+      "baseline": 800
+    },
+    {
+      "case_id": "malus_law-extension-2",
+      "experiment_id": "malus_law",
+      "result": 800.4054356334163,
+      "unit": "lx",
+      "baseline": 800
+    },
+    {
+      "case_id": "malus_law-extension-3",
+      "experiment_id": "malus_law",
+      "result": 793.7206464891273,
+      "unit": "lx",
+      "baseline": 800
+    },
+    {
+      "case_id": "malus_law-extension-4",
+      "experiment_id": "malus_law",
+      "result": 800.0000000000005,
+      "unit": "lx",
+      "baseline": 800
+    },
+    {
+      "case_id": "malus_law-extension-5",
+      "experiment_id": "malus_law",
+      "result": 799.9999999999995,
+      "unit": "lx",
+      "baseline": 800
+    },
+    {
+      "case_id": "malus_law-extension-6",
+      "experiment_id": "malus_law",
+      "result": 823.9999999999998,
+      "unit": "lx",
+      "baseline": 800
+    },
+    {
+      "case_id": "single_slit-extension-1",
+      "experiment_id": "single_slit",
+      "result": 0.19999999999999998,
+      "unit": "mm",
+      "baseline": 0.19999999999999998
+    },
+    {
+      "case_id": "single_slit-extension-2",
+      "experiment_id": "single_slit",
+      "result": 0.19964349376114082,
+      "unit": "mm",
+      "baseline": 0.19999999999999998
+    },
+    {
+      "case_id": "single_slit-extension-3",
+      "experiment_id": "single_slit",
+      "result": 0.18867924528301888,
+      "unit": "mm",
+      "baseline": 0.19999999999999998
+    },
+    {
+      "case_id": "single_slit-extension-4",
+      "experiment_id": "single_slit",
+      "result": 0.19999999999999998,
+      "unit": "mm",
+      "baseline": 0.19999999999999998
+    },
+    {
+      "case_id": "single_slit-extension-5",
+      "experiment_id": "single_slit",
+      "result": 0.19999999999999998,
+      "unit": "mm",
+      "baseline": 0.19999999999999998
+    },
+    {
+      "case_id": "single_slit-extension-6",
+      "experiment_id": "single_slit",
+      "result": 0.1941747572815534,
+      "unit": "mm",
+      "baseline": 0.19999999999999998
+    },
+    {
+      "case_id": "michelson-extension-1",
+      "experiment_id": "michelson",
+      "result": 632.8000000000001,
+      "unit": "nm",
+      "baseline": 632.8000000000001
+    },
+    {
+      "case_id": "michelson-extension-2",
+      "experiment_id": "michelson",
+      "result": 633.93,
+      "unit": "nm",
+      "baseline": 632.8000000000001
+    },
+    {
+      "case_id": "michelson-extension-3",
+      "experiment_id": "michelson",
+      "result": 670.768,
+      "unit": "nm",
+      "baseline": 632.8000000000001
+    },
+    {
+      "case_id": "michelson-extension-4",
+      "experiment_id": "michelson",
+      "result": 632.8000000000001,
+      "unit": "nm",
+      "baseline": 632.8000000000001
+    },
+    {
+      "case_id": "michelson-extension-5",
+      "experiment_id": "michelson",
+      "result": 632.8000000000001,
+      "unit": "nm",
+      "baseline": 632.8000000000001
+    },
+    {
+      "case_id": "michelson-extension-6",
+      "experiment_id": "michelson",
+      "result": 651.7839999999999,
+      "unit": "nm",
+      "baseline": 632.8000000000001
+    },
+    {
+      "case_id": "newton_rings-extension-1",
+      "experiment_id": "newton_rings",
+      "result": 0.9999999999998529,
+      "unit": "m",
+      "baseline": 1.0
+    },
+    {
+      "case_id": "newton_rings-extension-2",
+      "experiment_id": "newton_rings",
+      "result": 1.0035753571429238,
+      "unit": "m",
+      "baseline": 1.0
+    },
+    {
+      "case_id": "newton_rings-extension-3",
+      "experiment_id": "newton_rings",
+      "result": 1.124800000000049,
+      "unit": "m",
+      "baseline": 1.0
+    },
+    {
+      "case_id": "newton_rings-extension-4",
+      "experiment_id": "newton_rings",
+      "result": 0.9999999999999732,
+      "unit": "m",
+      "baseline": 1.0
+    },
+    {
+      "case_id": "newton_rings-extension-5",
+      "experiment_id": "newton_rings",
+      "result": 0.9999999999998053,
+      "unit": "m",
+      "baseline": 1.0
+    },
+    {
+      "case_id": "newton_rings-extension-6",
+      "experiment_id": "newton_rings",
+      "result": 1.0608999999999174,
+      "unit": "m",
+      "baseline": 1.0
+    },
+    {
+      "case_id": "optical_rotation-extension-1",
+      "experiment_id": "optical_rotation",
+      "result": 66.5,
+      "unit": "°·mL/(g·dm)",
+      "baseline": 66.5
+    },
+    {
+      "case_id": "optical_rotation-extension-2",
+      "experiment_id": "optical_rotation",
+      "result": 66.61874999999999,
+      "unit": "°·mL/(g·dm)",
+      "baseline": 66.5
+    },
+    {
+      "case_id": "optical_rotation-extension-3",
+      "experiment_id": "optical_rotation",
+      "result": 70.49,
+      "unit": "°·mL/(g·dm)",
+      "baseline": 66.5
+    },
+    {
+      "case_id": "optical_rotation-extension-4",
+      "experiment_id": "optical_rotation",
+      "result": 66.49999999999997,
+      "unit": "°·mL/(g·dm)",
+      "baseline": 66.5
+    },
+    {
+      "case_id": "optical_rotation-extension-5",
+      "experiment_id": "optical_rotation",
+      "result": 66.49999999999999,
+      "unit": "°·mL/(g·dm)",
+      "baseline": 66.5
+    },
+    {
+      "case_id": "optical_rotation-extension-6",
+      "experiment_id": "optical_rotation",
+      "result": 68.49499999999999,
+      "unit": "°·mL/(g·dm)",
+      "baseline": 66.5
+    },
+    {
+      "case_id": "centripetal_force-extension-1",
+      "experiment_id": "centripetal_force",
+      "result": 0.2,
+      "unit": "kg",
+      "baseline": 0.2
+    },
+    {
+      "case_id": "centripetal_force-extension-2",
+      "experiment_id": "centripetal_force",
+      "result": 0.20039528432732318,
+      "unit": "kg",
+      "baseline": 0.2
+    },
+    {
+      "case_id": "centripetal_force-extension-3",
+      "experiment_id": "centripetal_force",
+      "result": 0.21242718446601944,
+      "unit": "kg",
+      "baseline": 0.2
+    },
+    {
+      "case_id": "centripetal_force-extension-4",
+      "experiment_id": "centripetal_force",
+      "result": 0.19999999999999993,
+      "unit": "kg",
+      "baseline": 0.2
+    },
+    {
+      "case_id": "centripetal_force-extension-5",
+      "experiment_id": "centripetal_force",
+      "result": 0.2,
+      "unit": "kg",
+      "baseline": 0.2
+    },
+    {
+      "case_id": "centripetal_force-extension-6",
+      "experiment_id": "centripetal_force",
+      "result": 0.20600000000000002,
+      "unit": "kg",
+      "baseline": 0.2
+    },
+    {
+      "case_id": "rotational_inertia-extension-1",
+      "experiment_id": "rotational_inertia",
+      "result": 0.012,
+      "unit": "kg·m²",
+      "baseline": 0.012
+    },
+    {
+      "case_id": "rotational_inertia-extension-2",
+      "experiment_id": "rotational_inertia",
+      "result": 0.012021428571428572,
+      "unit": "kg·m²",
+      "baseline": 0.012
+    },
+    {
+      "case_id": "rotational_inertia-extension-3",
+      "experiment_id": "rotational_inertia",
+      "result": 0.012719999999999999,
+      "unit": "kg·m²",
+      "baseline": 0.012
+    },
+    {
+      "case_id": "rotational_inertia-extension-4",
+      "experiment_id": "rotational_inertia",
+      "result": 0.011999999999999999,
+      "unit": "kg·m²",
+      "baseline": 0.012
+    },
+    {
+      "case_id": "rotational_inertia-extension-5",
+      "experiment_id": "rotational_inertia",
+      "result": 0.012,
+      "unit": "kg·m²",
+      "baseline": 0.012
+    },
+    {
+      "case_id": "rotational_inertia-extension-6",
+      "experiment_id": "rotational_inertia",
+      "result": 0.01236,
+      "unit": "kg·m²",
+      "baseline": 0.012
+    },
+    {
+      "case_id": "kinetic_friction-extension-1",
+      "experiment_id": "kinetic_friction",
+      "result": 0.25,
+      "unit": "1",
+      "baseline": 0.25
+    },
+    {
+      "case_id": "kinetic_friction-extension-2",
+      "experiment_id": "kinetic_friction",
+      "result": 0.25044642857142857,
+      "unit": "1",
+      "baseline": 0.25
+    },
+    {
+      "case_id": "kinetic_friction-extension-3",
+      "experiment_id": "kinetic_friction",
+      "result": 0.265,
+      "unit": "1",
+      "baseline": 0.25
+    },
+    {
+      "case_id": "kinetic_friction-extension-4",
+      "experiment_id": "kinetic_friction",
+      "result": 0.24999999999999994,
+      "unit": "1",
+      "baseline": 0.25
+    },
+    {
+      "case_id": "kinetic_friction-extension-5",
+      "experiment_id": "kinetic_friction",
+      "result": 0.25,
+      "unit": "1",
+      "baseline": 0.25
+    },
+    {
+      "case_id": "kinetic_friction-extension-6",
+      "experiment_id": "kinetic_friction",
+      "result": 0.2575,
+      "unit": "1",
+      "baseline": 0.25
+    },
+    {
+      "case_id": "hydrostatic_pressure-extension-1",
+      "experiment_id": "hydrostatic_pressure",
+      "result": 999.9999999999999,
+      "unit": "kg/m³",
+      "baseline": 999.9999999999999
+    },
+    {
+      "case_id": "hydrostatic_pressure-extension-2",
+      "experiment_id": "hydrostatic_pressure",
+      "result": 1001.7857142857142,
+      "unit": "kg/m³",
+      "baseline": 999.9999999999999
+    },
+    {
+      "case_id": "hydrostatic_pressure-extension-3",
+      "experiment_id": "hydrostatic_pressure",
+      "result": 1060.0,
+      "unit": "kg/m³",
+      "baseline": 999.9999999999999
+    },
+    {
+      "case_id": "hydrostatic_pressure-extension-4",
+      "experiment_id": "hydrostatic_pressure",
+      "result": 999.9999999999998,
+      "unit": "kg/m³",
+      "baseline": 999.9999999999999
+    },
+    {
+      "case_id": "hydrostatic_pressure-extension-5",
+      "experiment_id": "hydrostatic_pressure",
+      "result": 999.9999999999999,
+      "unit": "kg/m³",
+      "baseline": 999.9999999999999
+    },
+    {
+      "case_id": "hydrostatic_pressure-extension-6",
+      "experiment_id": "hydrostatic_pressure",
+      "result": 1029.9999999999998,
+      "unit": "kg/m³",
+      "baseline": 999.9999999999999
+    },
+    {
+      "case_id": "stokes_viscosity-extension-1",
+      "experiment_id": "stokes_viscosity",
+      "result": 1.2000000000000004,
+      "unit": "Pa·s",
+      "baseline": 1.2
+    },
+    {
+      "case_id": "stokes_viscosity-extension-2",
+      "experiment_id": "stokes_viscosity",
+      "result": 1.1974923993964106,
+      "unit": "Pa·s",
+      "baseline": 1.2
+    },
+    {
+      "case_id": "stokes_viscosity-extension-3",
+      "experiment_id": "stokes_viscosity",
+      "result": 1.1207154116398632,
+      "unit": "Pa·s",
+      "baseline": 1.2
+    },
+    {
+      "case_id": "stokes_viscosity-extension-4",
+      "experiment_id": "stokes_viscosity",
+      "result": 1.2000000000000004,
+      "unit": "Pa·s",
+      "baseline": 1.2
+    },
+    {
+      "case_id": "stokes_viscosity-extension-5",
+      "experiment_id": "stokes_viscosity",
+      "result": 1.2000000000000006,
+      "unit": "Pa·s",
+      "baseline": 1.2
+    },
+    {
+      "case_id": "stokes_viscosity-extension-6",
+      "experiment_id": "stokes_viscosity",
+      "result": 1.165048543689321,
+      "unit": "Pa·s",
+      "baseline": 1.2
+    },
+    {
+      "case_id": "young_modulus-extension-1",
+      "experiment_id": "young_modulus",
+      "result": 200.0,
+      "unit": "GPa",
+      "baseline": 200.0
+    },
+    {
+      "case_id": "young_modulus-extension-2",
+      "experiment_id": "young_modulus",
+      "result": 199.64349376114086,
+      "unit": "GPa",
+      "baseline": 200.0
+    },
+    {
+      "case_id": "young_modulus-extension-3",
+      "experiment_id": "young_modulus",
+      "result": 188.6792452830189,
+      "unit": "GPa",
+      "baseline": 200.0
+    },
+    {
+      "case_id": "young_modulus-extension-4",
+      "experiment_id": "young_modulus",
+      "result": 200.00000000000003,
+      "unit": "GPa",
+      "baseline": 200.0
+    },
+    {
+      "case_id": "young_modulus-extension-5",
+      "experiment_id": "young_modulus",
+      "result": 200.0,
+      "unit": "GPa",
+      "baseline": 200.0
+    },
+    {
+      "case_id": "young_modulus-extension-6",
+      "experiment_id": "young_modulus",
+      "result": 194.1747572815534,
+      "unit": "GPa",
+      "baseline": 200.0
+    },
+    {
+      "case_id": "charge_capacitance-extension-1",
+      "experiment_id": "charge_capacitance",
+      "result": 2.1999999999999997,
+      "unit": "μF",
+      "baseline": 2.2
+    },
+    {
+      "case_id": "charge_capacitance-extension-2",
+      "experiment_id": "charge_capacitance",
+      "result": 2.2039285714285715,
+      "unit": "μF",
+      "baseline": 2.2
+    },
+    {
+      "case_id": "charge_capacitance-extension-3",
+      "experiment_id": "charge_capacitance",
+      "result": 2.3320000000000003,
+      "unit": "μF",
+      "baseline": 2.2
+    },
+    {
+      "case_id": "charge_capacitance-extension-4",
+      "experiment_id": "charge_capacitance",
+      "result": 2.1999999999999997,
+      "unit": "μF",
+      "baseline": 2.2
+    },
+    {
+      "case_id": "charge_capacitance-extension-5",
+      "experiment_id": "charge_capacitance",
+      "result": 2.2,
+      "unit": "μF",
+      "baseline": 2.2
+    },
+    {
+      "case_id": "parallel_plate-extension-1",
+      "experiment_id": "parallel_plate",
+      "result": 1.0000000000000002,
+      "unit": "1",
+      "baseline": 1.0
+    },
+    {
+      "case_id": "parallel_plate-extension-2",
+      "experiment_id": "parallel_plate",
+      "result": 1.0012313778911535,
+      "unit": "1",
+      "baseline": 1.0
+    },
+    {
+      "case_id": "parallel_plate-extension-3",
+      "experiment_id": "parallel_plate",
+      "result": 0.9844497826704852,
+      "unit": "1",
+      "baseline": 1.0
+    },
+    {
+      "case_id": "parallel_plate-extension-4",
+      "experiment_id": "parallel_plate",
+      "result": 1.0000000000000004,
+      "unit": "1",
+      "baseline": 1.0
+    },
+    {
+      "case_id": "parallel_plate-extension-5",
+      "experiment_id": "parallel_plate",
+      "result": 1.0000000000000013,
+      "unit": "1",
+      "baseline": 1.0
+    },
+    {
+      "case_id": "solenoid_field-extension-1",
+      "experiment_id": "solenoid_field",
+      "result": 999.9999999998386,
+      "unit": "1/m",
+      "baseline": 1000.0
+    },
+    {
+      "case_id": "solenoid_field-extension-2",
+      "experiment_id": "solenoid_field",
+      "result": 1001.7857142860702,
+      "unit": "1/m",
+      "baseline": 1000.0
+    },
+    {
+      "case_id": "solenoid_field-extension-3",
+      "experiment_id": "solenoid_field",
+      "result": 1060.0000000003404,
+      "unit": "1/m",
+      "baseline": 1000.0
+    },
+    {
+      "case_id": "solenoid_field-extension-4",
+      "experiment_id": "solenoid_field",
+      "result": 999.999999999568,
+      "unit": "1/m",
+      "baseline": 1000.0
+    },
+    {
+      "case_id": "solenoid_field-extension-5",
+      "experiment_id": "solenoid_field",
+      "result": 999.9999999992701,
+      "unit": "1/m",
+      "baseline": 1000.0
+    },
+    {
+      "case_id": "ampere_force-extension-1",
+      "experiment_id": "ampere_force",
+      "result": 0.2,
+      "unit": "T",
+      "baseline": 0.2
+    },
+    {
+      "case_id": "ampere_force-extension-2",
+      "experiment_id": "ampere_force",
+      "result": 0.20035714285714284,
+      "unit": "T",
+      "baseline": 0.2
+    },
+    {
+      "case_id": "ampere_force-extension-3",
+      "experiment_id": "ampere_force",
+      "result": 0.212,
+      "unit": "T",
+      "baseline": 0.2
+    },
+    {
+      "case_id": "ampere_force-extension-4",
+      "experiment_id": "ampere_force",
+      "result": 0.2,
+      "unit": "T",
+      "baseline": 0.2
+    },
+    {
+      "case_id": "ampere_force-extension-5",
+      "experiment_id": "ampere_force",
+      "result": 0.20000000000000004,
+      "unit": "T",
+      "baseline": 0.2
+    },
+    {
+      "case_id": "faraday_induction-extension-1",
+      "experiment_id": "faraday_induction",
+      "result": 200.0,
+      "unit": "1",
+      "baseline": 200.0
+    },
+    {
+      "case_id": "faraday_induction-extension-2",
+      "experiment_id": "faraday_induction",
+      "result": 200.3571428571428,
+      "unit": "1",
+      "baseline": 200.0
+    },
+    {
+      "case_id": "faraday_induction-extension-3",
+      "experiment_id": "faraday_induction",
+      "result": 211.99999999999997,
+      "unit": "1",
+      "baseline": 200.0
+    },
+    {
+      "case_id": "faraday_induction-extension-4",
+      "experiment_id": "faraday_induction",
+      "result": 199.99999999999997,
+      "unit": "1",
+      "baseline": 200.0
+    },
+    {
+      "case_id": "faraday_induction-extension-5",
+      "experiment_id": "faraday_induction",
+      "result": 200.0,
+      "unit": "1",
+      "baseline": 200.0
+    },
+    {
+      "case_id": "boyle_law-extension-1",
+      "experiment_id": "boyle_law",
+      "result": 5000.000000000028,
+      "unit": "kPa·mL",
+      "baseline": 5000
+    },
+    {
+      "case_id": "boyle_law-extension-2",
+      "experiment_id": "boyle_law",
+      "result": 5002.794061246022,
+      "unit": "kPa·mL",
+      "baseline": 5000
+    },
+    {
+      "case_id": "boyle_law-extension-3",
+      "experiment_id": "boyle_law",
+      "result": 4788.949781786726,
+      "unit": "kPa·mL",
+      "baseline": 5000
+    },
+    {
+      "case_id": "boyle_law-extension-4",
+      "experiment_id": "boyle_law",
+      "result": 5000.000000000005,
+      "unit": "kPa·mL",
+      "baseline": 5000
+    },
+    {
+      "case_id": "boyle_law-extension-5",
+      "experiment_id": "boyle_law",
+      "result": 5000.0000000000355,
+      "unit": "kPa·mL",
+      "baseline": 5000
+    },
+    {
+      "case_id": "constant_volume_gas-extension-1",
+      "experiment_id": "constant_volume_gas",
+      "result": 0.3400000000000001,
+      "unit": "kPa/K",
+      "baseline": 0.34
+    },
+    {
+      "case_id": "constant_volume_gas-extension-2",
+      "experiment_id": "constant_volume_gas",
+      "result": 0.3419095857142857,
+      "unit": "kPa/K",
+      "baseline": 0.34
+    },
+    {
+      "case_id": "constant_volume_gas-extension-3",
+      "experiment_id": "constant_volume_gas",
+      "result": 0.43854657142857134,
+      "unit": "kPa/K",
+      "baseline": 0.34
+    },
+    {
+      "case_id": "constant_volume_gas-extension-4",
+      "experiment_id": "constant_volume_gas",
+      "result": 0.33999999999999997,
+      "unit": "kPa/K",
+      "baseline": 0.34
+    },
+    {
+      "case_id": "constant_volume_gas-extension-5",
+      "experiment_id": "constant_volume_gas",
+      "result": 0.3400000000000002,
+      "unit": "kPa/K",
+      "baseline": 0.34
+    },
+    {
+      "case_id": "newton_cooling-extension-1",
+      "experiment_id": "newton_cooling",
+      "result": 100.00000000000027,
+      "unit": "s",
+      "baseline": 100.0
+    },
+    {
+      "case_id": "newton_cooling-extension-2",
+      "experiment_id": "newton_cooling",
+      "result": 100.20264696687161,
+      "unit": "s",
+      "baseline": 100.0
+    },
+    {
+      "case_id": "newton_cooling-extension-3",
+      "experiment_id": "newton_cooling",
+      "result": 109.10343915997869,
+      "unit": "s",
+      "baseline": 100.0
+    },
+    {
+      "case_id": "newton_cooling-extension-4",
+      "experiment_id": "newton_cooling",
+      "result": 99.99999999999932,
+      "unit": "s",
+      "baseline": 100.0
+    },
+    {
+      "case_id": "newton_cooling-extension-5",
+      "experiment_id": "newton_cooling",
+      "result": 99.9999999999994,
+      "unit": "s",
+      "baseline": 100.0
+    },
+    {
+      "case_id": "thermal_conduction-extension-1",
+      "experiment_id": "thermal_conduction",
+      "result": 0.2,
+      "unit": "W/(m·K)",
+      "baseline": 0.2
+    },
+    {
+      "case_id": "thermal_conduction-extension-2",
+      "experiment_id": "thermal_conduction",
+      "result": 0.20035714285714284,
+      "unit": "W/(m·K)",
+      "baseline": 0.2
+    },
+    {
+      "case_id": "thermal_conduction-extension-3",
+      "experiment_id": "thermal_conduction",
+      "result": 0.212,
+      "unit": "W/(m·K)",
+      "baseline": 0.2
+    },
+    {
+      "case_id": "thermal_conduction-extension-4",
+      "experiment_id": "thermal_conduction",
+      "result": 0.2,
+      "unit": "W/(m·K)",
+      "baseline": 0.2
+    },
+    {
+      "case_id": "thermal_conduction-extension-5",
+      "experiment_id": "thermal_conduction",
+      "result": 0.2,
+      "unit": "W/(m·K)",
+      "baseline": 0.2
+    },
+    {
+      "case_id": "torsion_pendulum-extension-1",
+      "experiment_id": "torsion_pendulum",
+      "result": 0.039999999999986206,
+      "unit": "N·m/rad",
+      "baseline": 0.04
+    },
+    {
+      "case_id": "torsion_pendulum-extension-2",
+      "experiment_id": "torsion_pendulum",
+      "result": 0.03985290606451956,
+      "unit": "N·m/rad",
+      "baseline": 0.04
+    },
+    {
+      "case_id": "torsion_pendulum-extension-3",
+      "experiment_id": "torsion_pendulum",
+      "result": 0.035334888459778585,
+      "unit": "N·m/rad",
+      "baseline": 0.04
+    },
+    {
+      "case_id": "torsion_pendulum-extension-4",
+      "experiment_id": "torsion_pendulum",
+      "result": 0.04000000000000007,
+      "unit": "N·m/rad",
+      "baseline": 0.04
+    },
+    {
+      "case_id": "torsion_pendulum-extension-5",
+      "experiment_id": "torsion_pendulum",
+      "result": 0.039999999999979226,
+      "unit": "N·m/rad",
+      "baseline": 0.04
+    },
+    {
+      "case_id": "sound_timeflight-extension-1",
+      "experiment_id": "sound_timeflight",
+      "result": 342.9999999999769,
+      "unit": "m/s",
+      "baseline": 343.0
+    },
+    {
+      "case_id": "sound_timeflight-extension-2",
+      "experiment_id": "sound_timeflight",
+      "result": 342.33140231914035,
+      "unit": "m/s",
+      "baseline": 343.0
+    },
+    {
+      "case_id": "sound_timeflight-extension-3",
+      "experiment_id": "sound_timeflight",
+      "result": 320.5483365797163,
+      "unit": "m/s",
+      "baseline": 343.0
+    },
+    {
+      "case_id": "sound_timeflight-extension-4",
+      "experiment_id": "sound_timeflight",
+      "result": 342.9999999999428,
+      "unit": "m/s",
+      "baseline": 343.0
+    },
+    {
+      "case_id": "sound_timeflight-extension-5",
+      "experiment_id": "sound_timeflight",
+      "result": 343.0000000000272,
+      "unit": "m/s",
+      "baseline": 343.0
+    },
+    {
+      "case_id": "damped_oscillation-extension-1",
+      "experiment_id": "damped_oscillation",
+      "result": 0.08000000000000308,
+      "unit": "1/s",
+      "baseline": 0.08
+    },
+    {
+      "case_id": "damped_oscillation-extension-2",
+      "experiment_id": "damped_oscillation",
+      "result": 0.0799284282966347,
+      "unit": "1/s",
+      "baseline": 0.08
+    },
+    {
+      "case_id": "damped_oscillation-extension-3",
+      "experiment_id": "damped_oscillation",
+      "result": 0.07587708708199727,
+      "unit": "1/s",
+      "baseline": 0.08
+    },
+    {
+      "case_id": "damped_oscillation-extension-4",
+      "experiment_id": "damped_oscillation",
+      "result": 0.07999999999999657,
+      "unit": "1/s",
+      "baseline": 0.08
+    },
+    {
+      "case_id": "damped_oscillation-extension-5",
+      "experiment_id": "damped_oscillation",
+      "result": 0.08000000000000257,
+      "unit": "1/s",
+      "baseline": 0.08
+    }
+  ]
+}

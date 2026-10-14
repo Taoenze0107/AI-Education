@@ -1,0 +1,46 @@
+{
+  "anomaly": {
+    "status": "anomalous",
+    "predicted_issue": "calculation_error",
+    "confidence": 0.93,
+    "observed_features": ["结果数量级偏小", "公式结构基本正确"],
+    "summary": "模型怀疑单位换算或小数点错误",
+    "model_version": "demo-anomaly-v1"
+  },
+  "consistency": {
+    "checks": [
+      {
+        "name": "电压量程",
+        "passed": true,
+        "observed": 5.0,
+        "expected": "0–6 V",
+        "deviation_percent": 0,
+        "note": "读数在量程内"
+      },
+      {
+        "name": "电流重复性",
+        "passed": true,
+        "observed": 20,
+        "expected": "19–21 mA",
+        "deviation_percent": 0,
+        "note": "三次读数稳定"
+      }
+    ]
+  },
+  "mathematics": {
+    "formula": "R = U / I",
+    "variables": {"U": 5.0, "I": 0.02},
+    "student_result": 25,
+    "reference_result": null,
+    "tolerance_percent": 5,
+    "unit": "Ω",
+    "student_steps": ["R=U/I", "R=5/0.2", "R=25 Ω"]
+  },
+  "raw_measurements": {
+    "voltage_V": [1, 2, 3, 4, 5],
+    "current_mA": [4, 8, 12, 16, 20]
+  },
+  "student_explanation": "电阻等于电压除以电流，我直接代入了 5 和 0.2。",
+  "metadata": {"source": "example"}
+}
+
