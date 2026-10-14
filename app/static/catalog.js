@@ -1,6 +1,7 @@
 "use strict";
 // Topic resources are public teaching material; private trial history stays separate.
 const CATALOG_AREAS = {measurement:'测量与仪器',mechanics:'力学',electricity:'电学',optics:'光学',thermal:'热学',waves:'振动与波',modern:'近代与综合'};
+const CATALOG_AREA_TITLES = {measurement:'MEASUREMENT & INSTRUMENTS',mechanics:'MECHANICS',electricity:'ELECTRICITY',optics:'OPTICS',thermal:'THERMAL PHYSICS',waves:'OSCILLATIONS & WAVES',modern:'MODERN PHYSICS'};
 const CATALOG_LEVELS = {basic:"基础",standard:"标准",challenge:"探究"};
 const LEGACY_EXPERIMENTS = new Set(["ohms_law","rc_time_constant","simple_pendulum"]);
 let catalogTopics = [], catalogArea = "", catalogBuilt = false;
@@ -25,6 +26,17 @@ function catalogButton(label,callback,kind="secondary") {
 }
 function catalogAnchor(label,path,kind="",route=true) {
   const a=node("a",label,kind);a.href=path;if(route)a.dataset.route="";return a;
+}
+function catalogIllustration(area) {
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 300 160');svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');
+  const shapes={
+    mechanics:[['path',{d:'M87 47 V133 H216 V47 M91 73 H212 M195 88 H213 M195 104 H213 M195 120 H213'}],['path',{d:'M149 18 V53 M137 22 H161 M137 31 H161'}],['rect',{x:129,y:53,width:40,height:50}],['path',{d:'M122 119 V92 M116 99 L122 92 L128 99 M177 89 V117 M171 110 L177 117 L183 110'}]],
+    optics:[['path',{d:'M131 34 V128 M139 34 V128 M147 34 V128 M155 34 V128'}],['path',{d:'M43 81 H131 M155 81 L232 35 M155 81 H247 M155 81 L232 127'}],['path',{d:'M49 67 H110 M49 95 H110 M230 24 V139','stroke-dasharray':'4 6'}],['circle',{cx:230,cy:37,r:4}],['circle',{cx:230,cy:81,r:6}],['circle',{cx:230,cy:126,r:4}]],
+    thermal:[['rect',{x:58,y:43,width:171,height:14}],['rect',{x:58,y:94,width:190,height:14}],['path',{d:'M57 33 V123 M229 29 V116 M248 86 V123','stroke-dasharray':'4 6'}],['path',{d:'M60 26 H226 M65 21 L60 26 L65 31 M221 21 L226 26 L221 31 M232 125 H245 M236 120 L232 125 L236 130 M241 120 L245 125 L241 130'}],['path',{d:'M92 73 Q99 65 106 73 Q113 81 120 73 M137 73 Q144 65 151 73 Q158 81 165 73 M182 73 Q189 65 196 73 Q203 81 210 73'}]]
+  };
+  for(const [tag,attrs] of shapes[area]||shapes.mechanics){const e=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [key,value] of Object.entries(attrs))e.setAttribute(key,value);svg.append(e);}
+  return svg;
 }
 function catalogSources(topic) {
   const p=node("p","实验与原理参考：","catalog-sources");
@@ -57,17 +69,20 @@ function catalogFilterRows(){
   const directory=$("catalogDirectory");directory.replaceChildren();
   for(const area of Object.keys(CATALOG_AREAS)){
     const group=topics.filter(t=>t.area===area);if(!group.length)continue;
-    const section=node("section",null,"catalog-subject"),head=node("div",null,"catalog-subject-heading");
-    head.append(node("h2",CATALOG_AREAS[area]),node("span",`${group.length} 个主题`));section.append(head);
+    const section=node("section",null,"catalog-subject"),head=node("div",null,"catalog-subject-heading"),title=node("div");
+    title.append(node("p",CATALOG_AREA_TITLES[area],"catalog-subject-eyebrow"),node("h2",CATALOG_AREAS[area]));
+    head.append(title,node("span",`${group.length} 个主题`));section.append(head);
     for(const topic of group){
       const row=node("article",null,"catalog-topic-row"),name=node("div",null,"catalog-topic-name");
-      name.append(catalogAnchor(topic.title,`/experiments/${topic.experiment_id}`),node("p",topic.summary));
+      const heading=node("h3");heading.append(catalogAnchor(topic.title,`/experiments/${topic.experiment_id}`));
+      name.append(heading,node("p",topic.summary));
+      const number=node("span",String(catalogTopics.indexOf(topic)+1).padStart(3,"0"),"catalog-topic-number");number.setAttribute("aria-hidden","true");
       const resources=node("div",null,"catalog-level-links");
       for(const [key,label] of Object.entries(CATALOG_LEVELS)){
         const cases=topic.cases.filter(c=>c.level===key);if(!cases.length||(level&&level!==key))continue;
         resources.append(catalogAnchor(`${label} · ${cases.length} 组 ↗`,`/experiments/${topic.experiment_id}?level=${key}`,`level-${key}`));
       }
-      row.append(name,resources);section.append(row);
+      row.append(number,name,resources);section.append(row);
     }
     directory.append(section);
   }
@@ -79,15 +94,16 @@ function renderTopic(topic){
   $("topicEyebrow").textContent=`${CATALOG_AREAS[topic.area]} / 实验专题`;
   const holder=$("topicContent");holder.replaceChildren();
   const intro=node("div",null,"topic-overview"),left=node("section",null,"topic-plan"),right=node("aside",null,"topic-tools");
-  left.append(node("p","学习目标","eyebrow"),node("h2",topic.goal),node("p",topic.relation,"topic-relation"),node("h3","实验路径"));
-  const steps=node("ol",null,"topic-steps");topic.steps.forEach(s=>steps.append(node("li",s)));left.append(steps);
+  left.append(node("p","01 / LEARNING OBJECTIVE · 学习目标","eyebrow"),node("h2",topic.goal),node("p",topic.relation,"topic-relation"),node("h3","实验路径"));
+  const steps=node("ol",null,"topic-steps");topic.steps.forEach(s=>{const step=node("li");step.append(node("span",s));steps.append(step);});left.append(steps);
   left.append(catalogButton("记录我的实验 →",()=>catalogReplaceDraft(()=>catalogStartTopic(topic))));
-  right.append(node("h3","准备这些器材"),list(topic.equipment),node("h3","先确认实验条件"),list(topic.conditions),catalogSources(topic));
+  right.append(node("p","02 / BEFORE THE EXPERIMENT · 实验准备","eyebrow"),node("h3","准备这些器材"),list(topic.equipment),node("h3","先确认实验条件"),list(topic.conditions),catalogSources(topic));
   intro.append(left,right);holder.append(intro);
-  const path=node("div",null,"resource-path");
-  path.append(node("strong","从哪里开始？"),node("span","基础：单位与公式"),node("span","标准：多组数据与图线"),node("span","探究：偏差与复查"));holder.append(path);
+  const path=node("section",null,"resource-path"),pathSteps=node("ol",null,"resource-path-steps");
+  for(const [number,label,description] of [["01","基础","单位与公式"],["02","标准","多组数据与图线"],["03","探究","偏差与复查"]]){const step=node("li");step.append(node("small",number),node("strong",label),node("span",description));pathSteps.append(step);}
+  path.append(node("h2","循序练习"),pathSteps);holder.append(path);
   const requestedLevel=new URLSearchParams(location.search).get("level"),selectedLevel=Object.hasOwn(CATALOG_LEVELS,requestedLevel)?requestedLevel:"";
-  const sets=node("section",null,"topic-practices");sets.append(node("h2",selectedLevel?`${CATALOG_LEVELS[selectedLevel]}练习与数据`:"配套练习与数据"),node("p","每组 3 道原创问题，先给提示，再按需展开解答。所有示例均为教学模拟数据。","hint"));
+  const sets=node("section",null,"topic-practices");sets.append(node("p","03 / PRACTICE & DATA","eyebrow"),node("h2",selectedLevel?`${CATALOG_LEVELS[selectedLevel]}练习与数据`:"配套练习与数据"),node("p","每组 3 道原创问题，先给提示，再按需展开解答。所有示例均为教学模拟数据。","hint"));
   const levels=node("nav",null,"resource-actions");levels.setAttribute("aria-label","选择练习层次");
   for(const [key,label] of [["","全部"],...Object.entries(CATALOG_LEVELS)]){
     const count=topic.cases.filter(c=>!key||c.level===key).length;
@@ -96,7 +112,7 @@ function renderTopic(topic){
   }
   sets.append(levels);
   const cases=topic.cases.filter(c=>!selectedLevel||c.level===selectedLevel).sort((a,b)=>Object.keys(CATALOG_LEVELS).indexOf(a.level)-Object.keys(CATALOG_LEVELS).indexOf(b.level));
-  cases.forEach(c=>{const row=node("article",null,"practice-resource-row");row.append(node("span",CATALOG_LEVELS[c.level],`resource-level level-${c.level}`),node("div",null,"resource-description"));const desc=row.lastChild;desc.append(node("h3",c.title),node("p",c.description),catalogCaseLinks(topic,c));sets.append(row);});holder.append(sets);
+  cases.forEach((c,i)=>{const row=node("article",null,"practice-resource-row"),marker=node("div",null,"practice-resource-marker");marker.append(node("span",String(i+1).padStart(2,"0"),"practice-resource-number"),node("span",CATALOG_LEVELS[c.level],`resource-level level-${c.level}`));row.append(marker,node("div",null,"resource-description"));const desc=row.lastChild;desc.append(node("h3",c.title),node("p",c.description),catalogCaseLinks(topic,c));sets.append(row);});holder.append(sets);
   const refs=node("section",null,"topic-reading");refs.append(node("h2","继续阅读"),node("p","把实验关系、测量规范与常见偏差一起核对。"));
   refs.append(catalogAnchor(`查看${topic.title}的知识条目 →`,"/library","text-link"));refs.lastChild.addEventListener("click",event=>{event.preventDefault();$("knowledgeExperiment").value=topic.experiment_id;$("knowledgeQuery").value="";goPage("/library");action("正在查找知识…",browseKnowledge);});holder.append(refs);
 }
@@ -149,7 +165,7 @@ function renderPractice(topic,caseData){
     const data=await getCatalogCase(caseData.case_id);
     catalogReplaceDraft(()=>catalogLoadCase(topic,caseData,data.analysis));
   })));holder.append(toolbar);
-  const data=node("section",null,"practice-data");data.append(node("p","示例数据 · 仅用于练习，非真实测量","example-label"));
+  const data=node("section",null,"practice-data");data.append(node("p","01 / DATA SHEET","eyebrow"),node("h2","读取这组实验数据"),node("p","示例数据 · 仅用于练习，非真实测量","example-label"));
   if(topic.parameters.length)data.append(node("p",topic.parameters.map(p=>`${p.label} ${fmtLearning(caseData.parameters[p.key])} ${p.unit}`).join(" · "),"practice-parameters"));
   data.append(catalogTable(topic,caseData));holder.append(data);
   const plot=node("details",null,"practice-plot");plot.append(node("summary","查看数据图与处理方法"));const plotBody=node("div","正在准备图表…");plot.append(plotBody);holder.append(plot);
@@ -157,7 +173,8 @@ function renderPractice(topic,caseData){
   const saved=readPracticeAnswers(caseData.case_id),exercises=node("section",null,"practice-exercises");exercises.id="practiceExercises";
   const progress=node("p","先写自己的想法，再看提示。","practice-progress");progress.id="practiceProgress";exercises.append(progress);
   caseData.questions.forEach((q,i)=>{
-    const block=node("article",null,"practice-question");block.append(node("p",`问题 ${String(i+1).padStart(2,"0")}`,"eyebrow"),node("h2",q.prompt));
+    const block=node("article",null,"practice-question"),questionHead=node("div",null,"practice-question-heading"),questionNumber=node("span",String(i+1).padStart(2,"0"),"practice-question-number");questionNumber.setAttribute("aria-hidden","true");
+    const questionTitle=node("div");questionTitle.append(node("p",`QUESTION ${String(i+1).padStart(2,"0")} / 问题 ${i+1}`,"eyebrow"),node("h2",q.prompt));questionHead.append(questionNumber,questionTitle);block.append(questionHead);
     const label=node("label","我的思路与计算"),input=node("textarea");input.id=`practiceAnswer-${i}`;label.htmlFor=input.id;input.rows=3;input.value=saved[i]||"";input.placeholder="写出判断、代入过程或待核实的条件。";
     input.addEventListener("input",()=>savePracticeAnswers(caseData.case_id));block.append(label,input);
     const hint=detail("需要一点提示",node("p",q.hint));const solution=detail("查看完整解答",list(q.solution));solution.className="practice-solution";block.append(hint,solution);exercises.append(block);
@@ -276,7 +293,7 @@ async function buildCatalog(){
     }
     buildCatalogInputs();catalogBuilt=true;
     refreshCatalogInputs({hydrate:true});restoreCatalogStartup();renderPage();if(flowReady)saveDraft();
-    const home=$("homeFeaturedTopics");catalogTopics.filter(t=>["archimedes","grating_diffraction","thermal_expansion"].includes(t.experiment_id)).forEach(topic=>{const a=catalogAnchor("",`/experiments/${topic.experiment_id}`);a.append(node("small",CATALOG_AREAS[topic.area]),node("strong",topic.title),node("span","原理 · 分级练习 · 示例数据 ↗"));home.append(a);});
+    const home=$("homeFeaturedTopics");catalogTopics.filter(t=>["archimedes","grating_diffraction","thermal_expansion"].includes(t.experiment_id)).forEach((topic,i)=>{const a=catalogAnchor("",`/experiments/${topic.experiment_id}`,"featured-topic-link"),visual=node("div",null,"featured-topic-visual");visual.append(catalogIllustration(topic.area),node("span",String(i+1).padStart(2,"0"),"featured-topic-number"));a.append(visual,node("small",`${CATALOG_AREA_TITLES[topic.area]} / ${CATALOG_AREAS[topic.area]}`),node("strong",topic.title),node("p",topic.summary,"featured-topic-summary"),node("span","原理 · 分级练习 · 示例数据 →","featured-topic-caption"));home.append(a);});
   }catch(error){$("catalogCount").textContent="实验资料暂时无法加载。";$("catalogDirectory").replaceChildren(catalogButton("重新载入实验资料",()=>location.reload()));}
 }
 $("catalogSearchForm").addEventListener("submit",event=>{event.preventDefault();catalogFilterRows();});
