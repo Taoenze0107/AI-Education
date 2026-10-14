@@ -33,6 +33,11 @@ input:focus, select:focus, textarea:focus { outline-color: var(--green); }
 .masthead nav a { color: var(--ink); font-size: 13px; font-weight: 500; min-height: 40px; padding: 10px 0; border: 0; border-bottom: 2px solid transparent; text-decoration: none; }
 .masthead nav a:hover, .masthead nav a[aria-current] { color: var(--crimson); border-bottom-color: var(--crimson); }
 .university-nav-toggle { display: none; }
+.university-nav-toggle:hover, .university-nav-toggle:focus-visible {
+  background: #eaf0f4;
+  color: var(--ink);
+  border-color: var(--ink);
+}
 .eyebrow { color: var(--crimson); font-size: 10px; font-weight: 600; letter-spacing: .16em; }
 .notice { margin: 18px 0; padding: 10px 0; color: var(--muted); border-bottom: 1px solid var(--line); background: none; border-radius: 0; font-size: 12px; }
 /* Keep the live region available to assistive technology on the landing page. */
