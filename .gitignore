@@ -1,0 +1,28 @@
+# Private runtime configuration and records
+.env
+.env.*
+!.env.example
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.sqlite-*
+/data/
+backups/
+*.log
+*.pem
+*.key
+# Local runtime and editor files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+node_modules/
+.DS_Store
+.idea/
+.vscode/
+# Generated build outputs
+dist/
+build/
+*.egg-info/
