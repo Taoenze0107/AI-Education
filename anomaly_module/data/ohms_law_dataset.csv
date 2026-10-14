@@ -1,0 +1,11 @@
+run_id,point_index,voltage_V,current_mA,label,fault_channel,fault_location,fault_strength
+normal_001,1,1,4,normal,none,none,0
+normal_001,2,2,8,normal,none,none,0
+normal_001,3,3,12,normal,none,none,0
+normal_001,4,4,16,normal,none,none,0
+normal_001,5,5,20,normal,none,none,0
+outlier_001,1,1,4,outlier,current_mA,3,1
+outlier_001,2,2,8,outlier,current_mA,3,1
+outlier_001,3,3,35,outlier,current_mA,3,1
+outlier_001,4,4,16,outlier,current_mA,3,1
+outlier_001,5,5,20,outlier,current_mA,3,1

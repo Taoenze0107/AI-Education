@@ -1,0 +1,168 @@
+/* Keep native form semantics while reserving a consistent area for the arrow. */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  display: block;
+  min-height: 46px;
+  max-width: 100%;
+  line-height: 1.5;
+  padding: 10px 42px 10px 12px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='m3 6 5 5 5-5' fill='none' stroke='%23315545' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+  background-position: right 13px center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Allow long content to shrink within the existing columns. */
+.topic-overview {
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+}
+.step-guide,
+.guide-study-notes,
+.catalog-charts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.catalog-layout > *,
+.topic-overview > *,
+.step-guide > *,
+.guide-study-notes > *,
+.catalog-charts > *,
+.grid-2 > *,
+.textbook-index > * {
+  min-width: 0;
+}
+.topic-relation,
+.reading-table-wrap,
+.learning-plot {
+  max-width: 100%;
+  min-width: 0;
+}
+.textbook-index > .textbook-current-selection {
+  grid-column: 2;
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+/* Each figure owns its scrolling, so its readable SVG cannot widen the page. */
+.learning-plot {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+.learning-plot svg {
+  min-width: 480px;
+}
+
+/* Keep fractions and radicals intact; long expressions scroll inside one line. */
+.math-fragment {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 100%;
+  min-width: 0;
+  vertical-align: middle;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.math-line {
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 5px 2px 7px;
+  overscroll-behavior-x: contain;
+}
+.math-line .katex {
+  font-size: 1.1em;
+  white-space: nowrap;
+}
+.math-inline {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+.math-inline .math-line {
+  padding-block: 3px;
+}
+.math-note {
+  font-family: inherit;
+  font-size: .85em;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.topic-relation > .math-fragment {
+  display: flex;
+  width: 100%;
+}
+.formula-preview {
+  margin: 12px 0 4px;
+  padding: 12px 16px;
+  background: #eff2e9;
+  border-left: 2px solid #a5b394;
+  min-width: 0;
+  max-width: 100%;
+}
+.formula-preview > small {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.formula-preview > .math-fragment {
+  display: flex;
+}
+
+@media (max-width: 850px) {
+  .catalog-charts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 680px) {
+  .learning-plot::after {
+    content: "左右滑动查看完整图表";
+    display: block;
+    position: sticky;
+    left: 0;
+    width: fit-content;
+    max-width: 100%;
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.6;
+  }
+}
+@media (max-width: 520px) {
+  .topic-overview,
+  .step-guide,
+  .guide-study-notes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .textbook-index > .textbook-current-selection {
+    grid-column: 1;
+  }
+}
+@media (forced-colors: active) {
+  select {
+    appearance: auto;
+    -webkit-appearance: auto;
+    background-image: none;
+    padding-right: 12px;
+    forced-color-adjust: auto;
+  }
+}
+@media print {
+  .learning-plot {
+    overflow: visible;
+  }
+  .learning-plot svg {
+    min-width: 0;
+  }
+  .learning-plot::after {
+    content: none;
+  }
+}

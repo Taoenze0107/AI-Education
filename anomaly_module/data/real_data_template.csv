@@ -1,0 +1,1 @@
+run_id,point_index,voltage_V,current_mA,label,fault_channel,fault_location,fault_strength,expected_resistance_ohm

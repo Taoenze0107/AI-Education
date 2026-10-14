@@ -1,0 +1,119 @@
+{
+  "dataset": "C:\\Users\\89403\\Documents\\adaptive_lab_tutor_project\\adaptive_lab_tutor_revised\\anomaly_module\\data\\ohms_law_training.csv",
+  "samples": 480,
+  "train_samples": 360,
+  "test_samples": 120,
+  "accuracy": 1.0,
+  "false_positive_rate": 0.0,
+  "false_negative_rate": 0.0,
+  "noise_recall": 1.0,
+  "labels": [
+    "drift",
+    "missing",
+    "noise",
+    "normal",
+    "outlier",
+    "unit_error"
+  ],
+  "confusion_matrix": [
+    [
+      27,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      16,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      17,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      15,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      17,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      28
+    ]
+  ],
+  "classification_report": {
+    "drift": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 27.0
+    },
+    "missing": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 16.0
+    },
+    "noise": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 17.0
+    },
+    "normal": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 15.0
+    },
+    "outlier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 17.0
+    },
+    "unit_error": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 28.0
+    },
+    "accuracy": 1.0,
+    "macro avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 120.0
+    },
+    "weighted avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 120.0
+    }
+  }
+}

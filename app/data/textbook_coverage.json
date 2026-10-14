@@ -1,0 +1,1303 @@
+{
+  "updated": "2026-10-12",
+  "scope": "五本公开目录的169个条目。综合名称按注明范围的专题组合对应，不宣称囊括全国全部教材。",
+  "note": "目录用于核对课程范围；中文讲解、问题和模拟数据为项目原创。",
+  "books": [
+    {
+      "book_id": "tup-chen-2",
+      "title": "大学物理实验（第2版）",
+      "authors": "陈春彩等",
+      "publisher": "清华大学出版社",
+      "url": "https://www.tup.com.cn/booksCenter/bookcatalog?id=11691001",
+      "items": [
+        {
+          "label": "固体密度",
+          "experiment_ids": [
+            "solid_density",
+            "density_buoyancy"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "转动惯量",
+          "experiment_ids": [
+            "rotational_inertia",
+            "torsion_pendulum",
+            "trifilar"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "弹性模量",
+          "experiment_ids": [
+            "young_modulus",
+            "shear_modulus"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "单臂桥",
+          "experiment_ids": [
+            "wheatstone"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "电动势补偿",
+          "experiment_ids": [
+            "potentiometer"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "电表扩程校正",
+          "experiment_ids": [
+            "meter_conversion"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "磁悬浮",
+          "experiment_ids": [
+            "magnetic_levitation"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "示波器",
+          "experiment_ids": [
+            "oscilloscope",
+            "virtual_daq"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "霍尔",
+          "experiment_ids": [
+            "hall_effect"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "牛顿环",
+          "experiment_ids": [
+            "newton_rings"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "棱镜折射",
+          "experiment_ids": [
+            "prism_angle",
+            "prism_refraction"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "光栅波长",
+          "experiment_ids": [
+            "grating_diffraction"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "迈克耳孙",
+          "experiment_ids": [
+            "michelson"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "气体声速",
+          "experiment_ids": [
+            "sound_resonance",
+            "sound_timeflight"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "液体黏度",
+          "experiment_ids": [
+            "stokes_viscosity",
+            "temperature_viscosity"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "不良导体传热",
+          "experiment_ids": [
+            "thermal_conduction"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "场模拟",
+          "experiment_ids": [
+            "electrostatic_field"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "双棱镜",
+          "experiment_ids": [
+            "fresnel_biprism"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "单缝远场",
+          "experiment_ids": [
+            "single_slit",
+            "diffraction_intensity"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "偏振",
+          "experiment_ids": [
+            "malus_law"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "硅电池",
+          "experiment_ids": [
+            "solar_cell"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "三线摆",
+          "experiment_ids": [
+            "trifilar"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "表头内阻",
+          "experiment_ids": [
+            "meter_resistance"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "扩程设计",
+          "experiment_ids": [
+            "meter_conversion"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "光栅分辨",
+          "experiment_ids": [
+            "grating_characteristics"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "细丝与平面",
+          "experiment_ids": [
+            "wire_diffraction",
+            "optical_flatness"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "光敏阻值",
+          "experiment_ids": [
+            "photoresistor"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        }
+      ]
+    },
+    {
+      "book_id": "tup-ma-2",
+      "title": "大学物理实验教程（第2版）",
+      "authors": "马颖等",
+      "publisher": "清华大学出版社",
+      "url": "https://www.tup.com.cn/booksCenter/bookcatalog?id=05210104",
+      "items": [
+        {
+          "label": "基础仪器",
+          "experiment_ids": [
+            "length_measurement",
+            "mass_measurement",
+            "multimeter"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "物体密度",
+          "experiment_ids": [
+            "solid_density",
+            "density_buoyancy"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "示波训练",
+          "experiment_ids": [
+            "oscilloscope"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "弹性模量",
+          "experiment_ids": [
+            "young_modulus",
+            "shear_modulus"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "光电效应",
+          "experiment_ids": [
+            "photoelectric_effect"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "油滴",
+          "experiment_ids": [
+            "millikan"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "伏安电阻",
+          "experiment_ids": [
+            "ohms_law"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "电荷与荷质比",
+          "experiment_ids": [
+            "millikan",
+            "electron_em"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "等厚干涉",
+          "experiment_ids": [
+            "newton_rings",
+            "optical_flatness"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "电势模拟",
+          "experiment_ids": [
+            "electrostatic_field"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "表头扩程",
+          "experiment_ids": [
+            "meter_conversion"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "激光干涉",
+          "experiment_ids": [
+            "michelson"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "三线悬摆",
+          "experiment_ids": [
+            "trifilar"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "弦波",
+          "experiment_ids": [
+            "string_waves"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "线膨胀",
+          "experiment_ids": [
+            "thermal_expansion"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "液面张力",
+          "experiment_ids": [
+            "surface_tension"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "传感器",
+          "experiment_ids": [
+            "temperature_sensor",
+            "strain_gauge",
+            "magnetoresistance"
+          ],
+          "note": "提供三种标定专题；具体器件与系统按课程选择。"
+        },
+        {
+          "label": "透镜组合",
+          "experiment_ids": [
+            "thin_lens",
+            "lens_bessel",
+            "lens_group"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "衍射扫描",
+          "experiment_ids": [
+            "diffraction_intensity"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "偏振分析",
+          "experiment_ids": [
+            "malus_law"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "光速",
+          "experiment_ids": [
+            "light_speed"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "光栅与色散",
+          "experiment_ids": [
+            "grating_diffraction",
+            "grating_characteristics"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "旋光",
+          "experiment_ids": [
+            "optical_rotation"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "平衡桥",
+          "experiment_ids": [
+            "wheatstone"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "非线性伏安",
+          "experiment_ids": [
+            "diode"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "电位差计",
+          "experiment_ids": [
+            "potentiometer"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "RLC响应",
+          "experiment_ids": [
+            "rlc_series"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "粒子运动",
+          "experiment_ids": [
+            "electron_em"
+          ],
+          "note": "处理均匀磁场圆轨道；其他粒子装置需另定分析模型。"
+        },
+        {
+          "label": "热发射",
+          "experiment_ids": [
+            "thermionic_work_function"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "微波",
+          "experiment_ids": [
+            "microwave_properties",
+            "microwave_bragg"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "铁磁温度转变",
+          "experiment_ids": [
+            "curie_temperature",
+            "hysteresis"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "冰相变",
+          "experiment_ids": [
+            "ice_latent_heat"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "导热及比热",
+          "experiment_ids": [
+            "thermal_conduction",
+            "calorimetry"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "天文成像",
+          "experiment_ids": [
+            "astronomical_imaging"
+          ],
+          "note": "提供暗场校准与成像观察，不代替天体测光软件。"
+        },
+        {
+          "label": "重力加速度",
+          "experiment_ids": [
+            "simple_pendulum",
+            "free_fall"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "分光参数",
+          "experiment_ids": [
+            "prism_angle",
+            "prism_refraction",
+            "grating_characteristics"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "霍尔磁场",
+          "experiment_ids": [
+            "hall_effect",
+            "helmholtz"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "介质超声",
+          "experiment_ids": [
+            "ultrasonic_echo",
+            "sound_timeflight"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "变温黏度",
+          "experiment_ids": [
+            "temperature_viscosity"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "材料导热",
+          "experiment_ids": [
+            "thermal_conduction"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        }
+      ]
+    },
+    {
+      "book_id": "tup-chenq",
+      "title": "大学物理实验",
+      "authors": "陈巧玲等",
+      "publisher": "清华大学出版社",
+      "url": "https://www.tup.com.cn/booksCenter/bookcatalog?id=04359403",
+      "items": [
+        {
+          "label": "固体密度",
+          "experiment_ids": [
+            "solid_density",
+            "density_buoyancy",
+            "mass_measurement"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "导轨动力学",
+          "experiment_ids": [
+            "uniform_acceleration",
+            "newtons_second_law",
+            "collision"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "弹性材料",
+          "experiment_ids": [
+            "young_modulus",
+            "shear_modulus"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "转动惯量",
+          "experiment_ids": [
+            "rotational_inertia",
+            "torsion_pendulum",
+            "trifilar"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "膨胀与温控",
+          "experiment_ids": [
+            "thermal_expansion",
+            "temperature_pid"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "黏度温变",
+          "experiment_ids": [
+            "temperature_viscosity"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "空气比热比",
+          "experiment_ids": [
+            "air_heat_ratio"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "场分布",
+          "experiment_ids": [
+            "electrostatic_field"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "电桥应用",
+          "experiment_ids": [
+            "wheatstone",
+            "unbalanced_bridge"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "万用表",
+          "experiment_ids": [
+            "multimeter"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "中阻桥测",
+          "experiment_ids": [
+            "wheatstone"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "表头改装",
+          "experiment_ids": [
+            "meter_conversion"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "二极管",
+          "experiment_ids": [
+            "diode"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "电池补偿",
+          "experiment_ids": [
+            "potentiometer"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "霍尔效应",
+          "experiment_ids": [
+            "hall_effect"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "示波测量",
+          "experiment_ids": [
+            "oscilloscope"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "声速",
+          "experiment_ids": [
+            "sound_timeflight",
+            "sound_resonance"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "薄透镜",
+          "experiment_ids": [
+            "thin_lens",
+            "lens_bessel"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "牛顿环",
+          "experiment_ids": [
+            "newton_rings"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "分光仪顶角",
+          "experiment_ids": [
+            "prism_angle"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "光栅",
+          "experiment_ids": [
+            "grating_diffraction"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "激光干涉",
+          "experiment_ids": [
+            "michelson"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "油滴电荷",
+          "experiment_ids": [
+            "millikan"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "超声光栅",
+          "experiment_ids": [
+            "grating_diffraction",
+            "ultrasonic_echo"
+          ],
+          "note": "衍射与声速专题组合；声致光栅常数需按课程装置另行校准。"
+        },
+        {
+          "label": "原子激发",
+          "experiment_ids": [
+            "franck_hertz"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "非线性动力学",
+          "experiment_ids": [
+            "chaos"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "光电量子",
+          "experiment_ids": [
+            "photoelectric_effect"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "动力综合一",
+          "experiment_ids": [
+            "uniform_acceleration",
+            "newtons_second_law"
+          ],
+          "note": "目录只给综合名称，提供运动合力训练，不推定内部装置。"
+        },
+        {
+          "label": "动力综合二",
+          "experiment_ids": [
+            "collision",
+            "work_energy"
+          ],
+          "note": "目录只给综合名称，提供碰撞能量训练，不推定内部装置。"
+        },
+        {
+          "label": "动力综合三",
+          "experiment_ids": [
+            "rotational_inertia",
+            "centripetal_force"
+          ],
+          "note": "目录只给综合名称，提供旋转训练，不推定内部装置。"
+        },
+        {
+          "label": "动力综合四",
+          "experiment_ids": [
+            "spring_oscillation",
+            "forced_resonance"
+          ],
+          "note": "目录只给综合名称，提供振动训练，不推定内部装置。"
+        },
+        {
+          "label": "波尔共振",
+          "experiment_ids": [
+            "forced_resonance"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "多普勒",
+          "experiment_ids": [
+            "doppler"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "微波分光",
+          "experiment_ids": [
+            "microwave_properties",
+            "microwave_bragg"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "光学综合",
+          "experiment_ids": [
+            "lens_group",
+            "prism_refraction",
+            "grating_characteristics",
+            "optical_flatness"
+          ],
+          "note": "目录只给系列名称，提供可选择的专题路径。"
+        },
+        {
+          "label": "空气热机",
+          "experiment_ids": [
+            "heat_engine"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "燃料电池",
+          "experiment_ids": [
+            "fuel_cell"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "磁滞回线",
+          "experiment_ids": [
+            "hysteresis"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        }
+      ]
+    },
+    {
+      "book_id": "hep-foundation",
+      "title": "大学物理实验（第一册）",
+      "authors": "张增明等",
+      "publisher": "高等教育出版社",
+      "url": "https://xuanshu.hep.com.cn/front/h5Mobile/bookDetails?bookId=65e7504c74ce561611bd9d94",
+      "items": [
+        {
+          "label": "质量",
+          "experiment_ids": [
+            "mass_measurement"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "导轨与碰撞",
+          "experiment_ids": [
+            "uniform_acceleration",
+            "collision"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "金属丝拉伸",
+          "experiment_ids": [
+            "young_modulus"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "切变模量",
+          "experiment_ids": [
+            "shear_modulus"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "液体黏度",
+          "experiment_ids": [
+            "stokes_viscosity"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "表面张力",
+          "experiment_ids": [
+            "surface_tension"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "驻波",
+          "experiment_ids": [
+            "string_waves"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "声速",
+          "experiment_ids": [
+            "sound_timeflight",
+            "sound_resonance"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "固体比热",
+          "experiment_ids": [
+            "calorimetry"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "空气比热比",
+          "experiment_ids": [
+            "air_heat_ratio"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "汽化热",
+          "experiment_ids": [
+            "vapor_latent_heat"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "直流源",
+          "experiment_ids": [
+            "dc_source"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "热敏特性",
+          "experiment_ids": [
+            "thermistor"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "半导体温度计",
+          "experiment_ids": [
+            "thermistor",
+            "temperature_sensor"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "数字示波",
+          "experiment_ids": [
+            "oscilloscope",
+            "virtual_daq"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "整流滤波",
+          "experiment_ids": [
+            "rectifier"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "磁针振动",
+          "experiment_ids": [
+            "magnetic_pendulum"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "硅光电池",
+          "experiment_ids": [
+            "solar_cell"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "色彩混合",
+          "experiment_ids": [
+            "color_design"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "分光仪",
+          "experiment_ids": [
+            "prism_angle",
+            "prism_refraction"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "透镜参数",
+          "experiment_ids": [
+            "thin_lens",
+            "lens_bessel",
+            "lens_group"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "微小几何量",
+          "experiment_ids": [
+            "michelson",
+            "wire_diffraction",
+            "optical_flatness"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "光速",
+          "experiment_ids": [
+            "light_speed"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "光电效应",
+          "experiment_ids": [
+            "photoelectric_effect"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "电子电荷",
+          "experiment_ids": [
+            "millikan"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "氢光谱",
+          "experiment_ids": [
+            "hydrogen_spectrum"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "旋转球",
+          "experiment_ids": [
+            "magnus_ball"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "热气体与硬币",
+          "experiment_ids": [
+            "dancing_coin"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "声悬浮",
+          "experiment_ids": [
+            "acoustic_levitation"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "无线供电",
+          "experiment_ids": [
+            "wireless_power"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "有限视场隐身",
+          "experiment_ids": [
+            "optical_cloaking"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "立体显示",
+          "experiment_ids": [
+            "stereo_display"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        }
+      ]
+    },
+    {
+      "book_id": "hep-integrated",
+      "title": "大学物理实验（下册）",
+      "authors": "陈聪",
+      "publisher": "高等教育出版社",
+      "url": "https://xuanshu.hep.com.cn/front/h5Mobile/bookDetails?bookId=5b940113f18f967ee7f37713",
+      "items": [
+        {
+          "label": "音叉共振",
+          "experiment_ids": [
+            "forced_resonance"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "应变称重",
+          "experiment_ids": [
+            "strain_gauge",
+            "unbalanced_bridge"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "温度探测",
+          "experiment_ids": [
+            "temperature_sensor",
+            "thermistor"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "红外特性",
+          "experiment_ids": [
+            "infrared_radiation"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "超声速度",
+          "experiment_ids": [
+            "ultrasonic_echo"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "狭缝衍射",
+          "experiment_ids": [
+            "single_slit",
+            "diffraction_intensity"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "等厚干涉",
+          "experiment_ids": [
+            "newton_rings"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "光栅波长",
+          "experiment_ids": [
+            "grating_diffraction"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "干涉仪",
+          "experiment_ids": [
+            "michelson"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "全息再现",
+          "experiment_ids": [
+            "holography"
+          ],
+          "note": "记录几何与观察任务；曝光、处理和再现须在实际仪器中完成。"
+        },
+        {
+          "label": "虚拟测量",
+          "experiment_ids": [
+            "virtual_daq"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "非线性电路",
+          "experiment_ids": [
+            "diode",
+            "chaos"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "示波磁化",
+          "experiment_ids": [
+            "hysteresis"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "线圈分布",
+          "experiment_ids": [
+            "helmholtz"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "磁阻",
+          "experiment_ids": [
+            "magnetoresistance"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "油滴",
+          "experiment_ids": [
+            "millikan"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "原子激发",
+          "experiment_ids": [
+            "franck_hertz"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "光电量子",
+          "experiment_ids": [
+            "photoelectric_effect"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "磁致分裂",
+          "experiment_ids": [
+            "zeeman"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "核自旋共振",
+          "experiment_ids": [
+            "nuclear_magnetic_resonance"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "电磁发射原理",
+          "experiment_ids": [
+            "railgun"
+          ],
+          "note": "仅分析既有低能教学记录，不提供制作或能量升级设计。"
+        },
+        {
+          "label": "太阳电池",
+          "experiment_ids": [
+            "solar_cell"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "超声成像",
+          "experiment_ids": [
+            "ultrasonic_echo"
+          ],
+          "note": "回波标定和扫描记录训练，不代替完整层析重建。"
+        },
+        {
+          "label": "热像扫描",
+          "experiment_ids": [
+            "thermal_imaging",
+            "infrared_radiation"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "光栅微振动",
+          "experiment_ids": [
+            "double_grating"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "磁阻传感",
+          "experiment_ids": [
+            "magnetoresistance"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "微波与晶格",
+          "experiment_ids": [
+            "microwave_properties",
+            "microwave_bragg"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "超声悬浮",
+          "experiment_ids": [
+            "acoustic_levitation"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "几何光学",
+          "experiment_ids": [
+            "lens_group",
+            "lens_bessel"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "白光应用",
+          "experiment_ids": [
+            "white_light_interference"
+          ],
+          "note": "对应数据分析与分步练习；实际仪器操作按课程说明。"
+        },
+        {
+          "label": "传感器综合",
+          "experiment_ids": [
+            "temperature_sensor",
+            "strain_gauge",
+            "magnetoresistance"
+          ],
+          "note": "按器件选专题，完整系统设计需另留电路和校准。"
+        },
+        {
+          "label": "核计数衰减",
+          "experiment_ids": [
+            "nuclear_counts",
+            "nuclear_decay"
+          ],
+          "note": "计数与单指数衰减训练，不推定目录未说明的其他核仪器项目。"
+        }
+      ]
+    }
+  ]
+}
