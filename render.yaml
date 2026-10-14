@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: ai-education
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: ENABLE_LLM
+        value: "false"
+      - key: REQUIRE_PERSISTENT_DATABASE
+        value: "true"
+      - key: TURSO_DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
