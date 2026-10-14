@@ -47,7 +47,12 @@ STATIC_INDEX = STATIC_DIRECTORY / "index.html"
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or Settings.from_env()
-    database = Database(settings.database_path)
+    database = Database(
+        settings.database_path,
+        remote_url=settings.turso_database_url,
+        auth_token=settings.turso_auth_token,
+        require_persistent=settings.require_persistent_database,
+    )
     database.initialize()
     repository = Repository(database)
     knowledge_base = KnowledgeBase(settings.knowledge_base_path)

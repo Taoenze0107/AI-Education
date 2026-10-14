@@ -30,6 +30,9 @@ class Settings:
     openai_base_url: str | None = None
     enable_llm: bool = True
     llm_timeout_seconds: float = 45.0
+    turso_database_url: str | None = None
+    turso_auth_token: str | None = None
+    require_persistent_database: bool = False
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -48,4 +51,7 @@ class Settings:
             openai_base_url=base_url,
             enable_llm=_as_bool(os.getenv("ENABLE_LLM"), True),
             llm_timeout_seconds=float(os.getenv("LLM_TIMEOUT_SECONDS", "45")),
+            turso_database_url=os.getenv("TURSO_DATABASE_URL", "").strip() or None,
+            turso_auth_token=os.getenv("TURSO_AUTH_TOKEN", "").strip() or None,
+            require_persistent_database=_as_bool(os.getenv("REQUIRE_PERSISTENT_DATABASE"), False),
         )
