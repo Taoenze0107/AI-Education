@@ -39,6 +39,7 @@ from app.service import DiagnosticService
 from app.classroom import install_classroom
 from app.catalog_routes import create_catalog_router
 from app.teaching import TeachingPolicy
+from app.tutor import TutorService, create_tutor_router
 
 
 STATIC_DIRECTORY = Path(__file__).resolve().parent / "static"
@@ -83,6 +84,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.mount("/static", StaticFiles(directory=STATIC_DIRECTORY), name="static")
 
     classroom = install_classroom(app, database, repository, STATIC_DIRECTORY)
+    tutor = TutorService(settings, database, classroom, knowledge_base)
+    app.state.tutor = tutor
+    app.include_router(create_tutor_router(tutor))
     app.include_router(create_catalog_router(STATIC_INDEX))
 
     @app.exception_handler(RequestValidationError)

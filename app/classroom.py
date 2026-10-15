@@ -320,6 +320,7 @@ def install_classroom(app: FastAPI, db: Database, repository: Repository, static
         with db.connect() as con:
             if owner.startswith('guest-'):
                 con.execute('UPDATE lab_session_owners SET owner_id=? WHERE owner_id=?',(uid,owner))
+                con.execute('UPDATE lab_tutor_turns SET owner_id=? WHERE owner_id=?',(uid,owner))
                 con.execute('DELETE FROM lab_access WHERE owner_id=?',(owner,))
             if old: con.execute('DELETE FROM lab_access WHERE token_hash=?',(hashlib.sha256(old.encode()).hexdigest(),))
         token,actor=lab.create_access(uid)

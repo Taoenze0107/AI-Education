@@ -9,6 +9,16 @@ services:
     envVars:
       - key: ENABLE_LLM
         value: "false"
+      - key: ENABLE_TUTOR
+        value: "false"
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: "gpt-5-mini"
+      - key: TUTOR_DAILY_LIMIT
+        value: "30"
+      - key: TUTOR_GLOBAL_DAILY_LIMIT
+        value: "300"
       - key: REQUIRE_PERSISTENT_DATABASE
         value: "true"
       - key: TURSO_DATABASE_URL

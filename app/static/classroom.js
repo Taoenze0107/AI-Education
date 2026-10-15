@@ -16,6 +16,7 @@
   const response=await fetch('/api/v1/classroom'+url,{method,headers:{Accept:'application/json',...(data!==undefined?{'Content-Type':'application/json'}:{})},...(data!==undefined?{body:JSON.stringify(data)}:{})});
   const body=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(typeof body.detail==='string'?body.detail:Array.isArray(body.detail)?'请检查必填内容、长度和时间格式。':'操作暂时失败，请重试。');
+  if(['/login','/register','/logout'].includes(url))window.dispatchEvent(new Event('lab-account-changed'));
   return body;
  }
  function clearPrivateDrafts(){

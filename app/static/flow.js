@@ -17,6 +17,7 @@ let lastCharts=null;
 function captureDraft(){
  const fields={};
  for(const el of document.querySelectorAll("input[id],select[id],textarea[id]")){
+  if(el.closest("#labTutor,.tutor-feedback"))continue;
   if(el.type==="file"||el.id.startsWith("row-")||DYNAMIC_ROWS.some(id=>$(id).contains(el)))continue;
   fields[el.id]={value:el.value,checked:el.checked};
  }

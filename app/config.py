@@ -33,6 +33,10 @@ class Settings:
     turso_database_url: str | None = None
     turso_auth_token: str | None = None
     require_persistent_database: bool = False
+    tutor_daily_limit: int = 30
+    enable_tutor: bool = False
+    tutor_global_daily_limit: int = 300
+    tutor_timeout_seconds: float = 25.0
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -54,4 +58,8 @@ class Settings:
             turso_database_url=os.getenv("TURSO_DATABASE_URL", "").strip() or None,
             turso_auth_token=os.getenv("TURSO_AUTH_TOKEN", "").strip() or None,
             require_persistent_database=_as_bool(os.getenv("REQUIRE_PERSISTENT_DATABASE"), False),
+            tutor_daily_limit=max(1, int(os.getenv("TUTOR_DAILY_LIMIT", "30"))),
+            enable_tutor=_as_bool(os.getenv("ENABLE_TUTOR"), False),
+            tutor_global_daily_limit=max(1, int(os.getenv("TUTOR_GLOBAL_DAILY_LIMIT", "300"))),
+            tutor_timeout_seconds=max(1.0, float(os.getenv("TUTOR_TIMEOUT_SECONDS", "25"))),
         )
