@@ -157,6 +157,52 @@ def test_insufficient_evidence_not_counted_as_error(setup):
     assert summary['insufficient_count']==1
     assert sum(x['affected_students'] for x in summary['errors'])==0
     assert summary['accepted_count']==0
+    member=next(m for m in summary['members'] if m['student_number']=='001')
+    assert member['issue_types']==[] and member['needs_more_evidence'] is True
+    assert member['diagnosis_change'] is None
+    pending=next(m for m in summary['members'] if m['student_number']=='002')
+    assert pending['issue_types']==[] and pending['needs_more_evidence'] is False
+
+
+def test_issue_filter_fields_and_version_diagnosis_change(setup):
+    """The encountered issue filter retains past errors; the change uses only each version's final round."""
+    c=setup;sid=work(c);attempt(c,sid);first=submit(c,sid)
+    peer_sid=work(c,'peer');attempt(c,peer_sid,'peer',file='insufficient_evidence.json');submit(c,peer_sid,'peer')
+    payload=json.loads((ROOT/'examples/sufficient_calculation_error.json').read_text())
+    payload['anomaly'].update(status='normal',predicted_issue=None,observed_features=[],summary='复测未见异常')
+    payload['mathematics'].update(student_result=250,student_steps=['R=U/I','R=5/0.02','R=250 Ω'])
+    result=c['student'].post('/api/v1/sessions/'+sid+'/attempts',json=payload)
+    assert result.status_code==201,result.text
+    assert result.json()['status']=='completed'
+    second=submit(c,sid)
+    summary=c['teacher'].get(BASE+'/assignments/'+c['a']['assignment_id']).json()['summary']
+    affected=[m for m in summary['members'] if 'calculation_error' in m['issue_types']]
+    assert [m['student_number'] for m in affected]==['001']
+    assert affected[0]['submission']['submission_id']==second['submission_id']
+    assert affected[0]['needs_more_evidence'] is False
+    change=affected[0]['diagnosis_change']
+    assert change==dict(first_version=first['version'],latest_version=second['version'],
+                        first_status='teaching_intervention',latest_status='completed',
+                        first_issue_types=['calculation_error'],latest_issue_types=[])
+    assert summary['insufficient_count']==1
+    assert summary['errors'][1]['affected_students']==1
+
+
+def test_summary_orders_versions_and_skips_unproven_issue_labels(setup):
+    """A presumed type on an insufficient round must never become a filterable error."""
+    c=setup;lab=c['app'].state.classroom
+    uid=c['student'].get(BASE+'/me').json()['user']['user_id']
+    def sub(version,status,issue):
+        return dict(user_id=uid,version=version,review_status=None,late=False,
+                    snapshot={'attempts':[dict(status=status,issue_type=issue,response={})]})
+    with lab.db.connect() as con:
+        summary=lab.summary(con,c['a'],[sub(1,'teaching_intervention','calculation_error'),sub(2,'needs_more_evidence','data_error')])
+    member=next(m for m in summary['members'] if m['user_id']==uid)
+    assert member['submission']['version']==2
+    assert member['issue_types']==[] and member['needs_more_evidence'] is True
+    assert not any(row['affected_students'] for row in summary['errors'])
+    assert member['diagnosis_change']['first_issue_types']==['calculation_error']
+    assert member['diagnosis_change']['latest_issue_types']==[]
 
 
 def test_cross_site_mutation_and_session_cookie_rotation(setup):

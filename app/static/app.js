@@ -251,7 +251,7 @@ function refreshLocks() {
   document
     .querySelectorAll("button,input,select,textarea")
     .forEach((element) => {
-      if (element.closest("#labTutor,.tutor-feedback")) return;
+      if (element.closest("#labTutor,.tutor-feedback,#academyRoot,.learning-review")) return;
       element.disabled = state.busy;
     });
   if (!state.busy) {

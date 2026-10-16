@@ -7,6 +7,7 @@
  const path=(type,id)=>'/classroom/'+type+'/'+encodeURIComponent(id);
  const reviewText=s=>s==='accepted'?'已通过':s==='needs_revision'?'需修改':'待批阅';
  const diagnosticText=s=>({completed:'本轮核查通过',teaching_intervention:'有问题待修正',needs_more_evidence:'需补充证据'}[s]||'尚未诊断');
+ const issueLabels={data_error:'数据采集或录入',calculation_error:'计算与单位换算',concept_misunderstanding:'概念理解',mixed:'多因素问题',insufficient:'补充实验依据'};
  const outcomeText=s=>({corrected:'已修正',partially_corrected:'部分修正',unchanged:'尚未修正',abandoned:'暂时搁置'}[s]||s);
  const field=(label,name,type='text',extra='')=>`<div class="field"><label for="${name}">${label}</label><input id="${name}" name="${name}" type="${type}" ${extra}></div>`;
  const empty=text=>`<p class="classroom-empty">${e(text)}</p>`;
@@ -59,20 +60,70 @@
   const ratio=s.member_count?Math.round(100*s.submitted_count/s.member_count):0;
   return `<div class="classroom-metrics"><div><strong>${s.submitted_count}<small> / ${s.member_count}</small></strong><span>学生已提交</span></div><div><strong>${s.pending_count}</strong><span>尚未提交</span></div><div><strong>${s.unreviewed_count}</strong><span>最新版本待批阅</span></div><div><strong>${s.accepted_count}</strong><span>老师已通过</span></div></div><div class="classroom-progress"><progress value="${s.submitted_count}" max="${Math.max(s.member_count,1)}" aria-label="学生提交进度">${ratio}%</progress><span class="classroom-muted">提交进度 ${ratio}% · ${s.needs_revision_count} 人需修改 · ${s.late_count} 人迟交</span></div>`;
  }
- function roster(s,filter='all'){
-  const rows=s.members.filter(m=>filter==='all'||filter==='pending'&&!m.submission||filter==='unreviewed'&&m.submission&&!m.submission.review_status||filter==='needs_revision'&&m.submission?.review_status==='needs_revision');
-  return rows.length?`<div class="classroom-table-wrap" tabindex="0" aria-label="提交名册，可横向滚动"><table class="classroom-table"><thead><tr><th scope="col">学生</th><th scope="col">提交情况</th><th scope="col">学习过程</th><th scope="col">批阅</th></tr></thead><tbody>${rows.map(m=>{const sub=m.submission;return `<tr><td>${e(m.name)}<small>${e(m.student_number)}</small></td><td>${sub?`第 ${sub.version} 版${sub.late?' · 迟交':''}<small>${d(sub.submitted_at)}</small>`:'尚未提交'}</td><td>${sub?`${sub.attempt_count} 轮诊断 · ${sub.modification_count} 次修改`:'—'}</td><td>${sub?`<a href="${path('submissions',sub.submission_id)}">${reviewText(sub.review_status)} →</a>`:'—'}</td></tr>`;}).join('')}</tbody></table></div>`:empty('这个筛选下暂无学生。');
+ function memberHasIssue(member,issue){
+  return issue==='all'||(issue==='insufficient'?member.needs_more_evidence:(member.issue_types||[]).includes(issue));
+ }
+ function diagnosisChangeHTML(change){
+  if(!change)return '';
+  const describe=(types,state)=>state==='needs_more_evidence'?'证据待补充':types.length?types.map(type=>issueLabels[type]||type).join('、'):'未标出这四类问题';
+  return `<small class="classroom-diagnosis-change">诊断变化：首版末轮「${e(describe(change.first_issue_types,change.first_status))}」→ 最新版末轮「${e(describe(change.latest_issue_types,change.latest_status))}」。<br>输入与诊断可能同时变化，待老师核查。</small>`;
+ }
+ function roster(s,filter='all',issue='all'){
+  const rows=s.members.filter(m=>memberHasIssue(m,issue)&&(filter==='all'||filter==='pending'&&!m.submission||filter==='unreviewed'&&m.submission&&!m.submission.review_status||filter==='needs_revision'&&m.submission?.review_status==='needs_revision'));
+  return rows.length?`<div class="classroom-table-wrap" tabindex="0" aria-label="提交名册，可横向滚动"><table class="classroom-table"><thead><tr><th scope="col">学生</th><th scope="col">提交情况</th><th scope="col">学习过程与诊断</th><th scope="col">批阅</th></tr></thead><tbody>${rows.map(m=>{const sub=m.submission;return `<tr><td>${e(m.name)}<small>${e(m.student_number)}</small></td><td>${sub?`第 ${sub.version} 版${sub.late?' · 迟交':''}<small>${d(sub.submitted_at)}</small>`:'尚未提交'}</td><td>${sub?`${sub.attempt_count} 轮诊断 · ${sub.modification_count} 次修改<small>${m.needs_more_evidence?'末轮需补充证据；':''}${(m.issue_types||[]).length?'过程出现：'+m.issue_types.map(type=>e(issueLabels[type]||type)).join('、'):'过程未标出四类问题'}</small>${diagnosisChangeHTML(m.diagnosis_change)}`:'—'}</td><td>${sub?`<a href="${path('submissions',sub.submission_id)}">${reviewText(sub.review_status)} →</a>`:'—'}</td></tr>`;}).join('')}</tbody></table></div>`:empty('这个筛选下暂无学生。');
  }
  function errorsHTML(s){
-  return `<section class="classroom-panel"><h2>这次实验，哪里需要讲解</h2>${s.submitted_count?s.errors.map(row=>`<div class="classroom-bar"><div><span>${e(row.label)}</span><span>${row.affected_students} 人</span></div><div class="classroom-bar-track" role="img" aria-label="${e(row.label)}，${row.affected_students} 位已提交学生遇到"><i style="width:${100*row.affected_students/s.submitted_count}%"></i></div></div>`).join(''):empty('收到提交后，再统计班级共性问题。')}<p class="hint">按每位学生最新提交的完整过程统计，同一类问题每人只计一次。不同类别可重叠；诊断用于备课参考，需结合老师批阅。</p><p>${s.insufficient_count} 人的最新诊断仍需补充证据。</p><p class="hint">证据不足单独统计，不直接计为错误。</p></section>`;
+  return `<section class="classroom-panel"><h2>这次实验，哪里需要讲解</h2>${s.submitted_count?s.errors.map(row=>`<div class="classroom-issue"><button type="button" class="classroom-issue-filter" data-issue-filter="${e(row.issue_type)}" aria-pressed="false" ${row.affected_students?'':'disabled'}><span>${e(row.label)}</span><strong>${row.affected_students} 人</strong><span class="classroom-bar-track" aria-hidden="true"><i style="width:${100*row.affected_students/s.submitted_count}%"></i></span><small>查看相关学生的最新提交 →</small></button>${row.affected_students?`<button type="button" class="secondary classroom-prepare" data-prepare-issue="${e(row.issue_type)}">准备补充练习</button>`:''}</div>`).join(''):empty('收到提交后，再统计班级共性问题。')}<p class="hint">按每位学生最新提交的完整过程统计，同一类问题每人只计一次，包含后来已修正的诊断。不同类别可重叠；需结合老师批阅。</p><button type="button" class="secondary classroom-issue-filter" data-issue-filter="insufficient" aria-pressed="false" ${s.insufficient_count?'':'disabled'}>末轮需补充证据 · ${s.insufficient_count} 人</button>${s.insufficient_count?'<button type="button" class="secondary classroom-prepare" data-prepare-issue="insufficient">准备补证任务</button>':''}<p class="hint">证据不足单独统计，不直接计为错误。</p></section><section class="classroom-panel classroom-supplement" id="supplementPanel" hidden></section>`;
+ }
+ const supplementPrompts={
+  data_error:['重新核对量程、读数和录入，记录一组复测结果，并解释与原数据的差异。','逐项注明仪器、单位和读数方法；保留原记录，不把疑似异常点直接删除。'],
+  calculation_error:['统一变量单位后独立复算，逐行写出公式、代入和结果，并对照原计算定位差异。','核查每个量的单位、数量级和有效数字；用另一组数据或方法复核结果。'],
+  concept_misunderstanding:['说明所用物理模型的适用条件，先预测一个变化，再用实验记录检验预测。','写清预测依据、观察结果和不一致处；说明哪些结论仍需要证据。'],
+  mixed:['分别列出测量、条件与计算中的待核查问题，先排查一项，再记录复测和复算过程。','每次只改变一个明确因素，保留前后证据，说明判断仍有哪些限制。'],
+  insufficient:['补充本实验缺少的原始数据、单位、实验条件和计算过程，说明每项新增证据解决什么疑问。','区分实测值、参考值与估计值；未核实的条件标为待确认，不直接勾选通过。']
+ };
+ function supplementInstructions(a,issue,values){
+  return `实验：${a.experiment_title}\n本次关注：${issueLabels[issue]}\n\n练习目标\n${values.goal.trim()}\n\n自检要求\n${values.self_check.trim()}\n\n${values.additional.trim()?'补充要求\n'+values.additional.trim()+'\n\n':''}提交要求\n保留原始记录，写出本次修改与复核依据；完成实验诊断后主动提交给老师。`;
+ }
+ function prepareSupplement(a,issue){
+  const panel=document.getElementById('supplementPanel'),prompts=supplementPrompts[issue];
+  if(!panel||!prompts)return;
+  const affected=a.summary.members.filter(member=>member.submission&&memberHasIssue(member,issue));
+  panel.hidden=false;
+  panel.innerHTML=`<div class="classroom-supplement-title"><h2 tabindex="-1" id="supplementHeading">准备补充练习</h2><button type="button" id="closeSupplement" class="secondary" aria-label="关闭补充练习草稿">关闭</button></div><p class="classroom-draft-label">待老师编辑 · 尚未发布</p><dl class="classroom-recipients"><dt>目标班级</dt><dd>${e(a.class_name)}</dd><dt>接收范围</dt><dd>发布后全班 ${a.summary.member_count} 位学生可见。</dd><dt>建议重点关注</dt><dd>${affected.length} 位：${affected.map(member=>e(member.name)+'（'+e(member.student_number)+'）').join('、')||'暂无学生'}</dd></dl><p class="hint">建议名单仅供备课参考。此处发布的是全班任务，不会仅发送给筛选学生。沿用实验「${e(a.experiment_title)}」。</p><form id="supplementForm">${field('补练标题','supplement_title','text','required maxlength="120"')}<div class="field"><label for="supplement_goal">练习目标（请按班级情况编辑）</label><textarea id="supplement_goal" name="goal" required maxlength="1800">${e(prompts[0])}</textarea></div><div class="field"><label for="supplement_check">学生自检要求</label><textarea id="supplement_check" name="self_check" required maxlength="1800">${e(prompts[1])}</textarea></div><div class="field"><label for="supplement_additional">补充要求（选填）</label><textarea id="supplement_additional" name="additional" maxlength="1200"></textarea></div>${field('截止时间（选填，本机时区）','supplement_due','datetime-local')}<details class="classroom-supplement-preview" open><summary>发布内容预览</summary><p id="supplementPreview" class="classroom-note"></p></details><p class="hint">确认班级、接收范围和要求后，由你手动发布。</p><button type="submit">发布补练到全班</button></form>`;
+  document.getElementById('supplement_title').value=(a.experiment_title+' · '+issueLabels[issue]+'补练').slice(0,120);
+  const formNode=document.getElementById('supplementForm');
+  const refresh=()=>{document.getElementById('supplementPreview').textContent=supplementInstructions(a,issue,Object.fromEntries(new FormData(formNode)));};
+  formNode.addEventListener('input',refresh);refresh();
+  document.getElementById('closeSupplement').onclick=()=>{panel.hidden=true;panel.innerHTML='';};
+  form('supplementForm',async values=>{
+   const instructions=supplementInstructions(a,issue,values);
+   if(!values.goal.trim()||!values.self_check.trim())throw new Error('请填写具体练习目标和学生自检要求。');
+   if(instructions.length>6000)throw new Error('任务要求过长，请精简后再发布。');
+   const result=await api('/classes/'+a.class_id+'/assignments','POST',{title:values.supplement_title,experiment_id:a.experiment_id,instructions,due_at:values.supplement_due?new Date(values.supplement_due).toISOString():null});
+   location.href=path('assignments',result.assignment_id);
+  });
+  document.getElementById('supplementHeading').focus();
+  status.textContent='已准备补练草稿，请编辑后手动发布。';
  }
  function versionsHTML(submissions){
   return submissions.length?submissions.map(s=>`<article class="classroom-row"><h3><a href="${path('submissions',s.submission_id)}">第 ${s.version} 版 · ${e(s.name)} ↗</a></h3><p>${d(s.submitted_at)}${s.late?' · 迟交':''} · ${s.attempt_count} 轮诊断</p>${pill(reviewText(s.review_status),s.review_status==='needs_revision')}${s.feedback?`<p class="classroom-note">老师反馈：${e(s.feedback)}</p>`:''}</article>`).join(''):empty('还没有提交版本。先开始实验，完成诊断后主动提交。');
  }
  async function assignmentPage(id){
   const a=await api('/assignments/'+id),teacher=user.role==='teacher';
-  main.innerHTML=breadcrumb([['班级空间','/classroom'],[a.class_name,path('classes',a.class_id)],[a.title]])+`<div class="classroom-top"><div><p class="eyebrow">ASSIGNMENT / ${e(a.experiment_title)}</p><h1>${e(a.title)}</h1><p class="classroom-muted">${a.due_at?'截止 '+d(a.due_at):'未设置截止时间'} · ${a.closed?'已结束收集':'正在收集'}</p></div>${teacher?`<button id="closeAssignment" type="button" class="secondary">${a.closed?'重新开放收集':'结束收集'}</button>`:''}</div><section class="classroom-panel"><h2>本次任务</h2><p class="classroom-note">${e(a.instructions)}</p><a href="/experiments/${encodeURIComponent(a.experiment_id)}">查看实验资料 ↗</a></section>${teacher?summaryHTML(a.summary):''}<div class="classroom-layout"><section>${teacher?`<div class="classroom-filter"><h2>学生提交</h2><label>筛选 <select id="rosterFilter"><option value="all">全部学生</option><option value="pending">尚未提交</option><option value="unreviewed">待批阅</option><option value="needs_revision">需修改</option></select></label></div><div id="roster">${roster(a.summary)}</div><p><a href="/api/v1/classroom/assignments/${encodeURIComponent(id)}/export.csv">下载提交名册（CSV） ↓</a></p><details style="margin-top:26px"><summary>查看所有提交版本</summary>${versionsHTML(a.submissions)}</details>`:`<h2>我的提交与老师反馈</h2>${versionsHTML(a.submissions)}`}</section><aside>${teacher?errorsHTML(a.summary):`<section class="classroom-panel"><h2>下一步</h2><p>${a.closed?'老师已结束收集，可以查看已交版本与反馈。':'从这份任务开始，按准备、数据、证据、计算、诊断逐步完成。'}</p><button id="startAssignment" type="button" ${a.closed?'disabled':''}>${a.submissions.length?'继续实验并修正':'开始这份实验'} →</button><p class="hint">诊断保存到自己的记录。只有点击“提交给老师”后，老师才会收到。</p><p class="hint">老师反馈针对提交版本。修改完成后再次提交，保留前一版便于对照。</p></section>`}</aside></div>`;
-  document.getElementById('rosterFilter')?.addEventListener('change',ev=>document.getElementById('roster').innerHTML=roster(a.summary,ev.target.value));
+  main.innerHTML=breadcrumb([['班级空间','/classroom'],[a.class_name,path('classes',a.class_id)],[a.title]])+`<div class="classroom-top"><div><p class="eyebrow">ASSIGNMENT / ${e(a.experiment_title)}</p><h1>${e(a.title)}</h1><p class="classroom-muted">${a.due_at?'截止 '+d(a.due_at):'未设置截止时间'} · ${a.closed?'已结束收集':'正在收集'}</p></div>${teacher?`<button id="closeAssignment" type="button" class="secondary">${a.closed?'重新开放收集':'结束收集'}</button>`:''}</div><section class="classroom-panel"><h2>本次任务</h2><p class="classroom-note">${e(a.instructions)}</p><a href="/experiments/${encodeURIComponent(a.experiment_id)}">查看实验资料 ↗</a></section>${teacher?summaryHTML(a.summary):''}<div class="classroom-layout"><section>${teacher?`<div class="classroom-filter"><h2 id="rosterHeading" tabindex="-1">学生提交</h2><div class="classroom-filter-fields"><label>提交状态 <select id="rosterFilter"><option value="all">全部学生</option><option value="pending">尚未提交</option><option value="unreviewed">待批阅</option><option value="needs_revision">需修改</option></select></label><label>过程中的问题 <select id="issueFilter"><option value="all">全部问题</option>${Object.entries(issueLabels).map(([key,label])=>`<option value="${e(key)}">${e(label)}</option>`).join('')}</select></label></div></div><p class="hint" id="rosterSelection" aria-live="polite">显示全班最新提交；点击右侧问题可查看相关学生。</p><div id="roster">${roster(a.summary)}</div><p><a href="/api/v1/classroom/assignments/${encodeURIComponent(id)}/export.csv">下载提交名册（CSV） ↓</a></p><details style="margin-top:26px"><summary>查看所有提交版本</summary>${versionsHTML(a.submissions)}</details>`:`<h2>我的提交与老师反馈</h2>${versionsHTML(a.submissions)}`}</section><aside>${teacher?errorsHTML(a.summary):`<section class="classroom-panel"><h2>下一步</h2><p>${a.closed?'老师已结束收集，可以查看已交版本与反馈。':'从这份任务开始，按准备、数据、证据、计算、诊断逐步完成。'}</p><button id="startAssignment" type="button" ${a.closed?'disabled':''}>${a.submissions.length?'继续实验并修正':'开始这份实验'} →</button><p class="hint">诊断保存到自己的记录。只有点击“提交给老师”后，老师才会收到。</p><p class="hint">老师反馈针对提交版本。修改完成后再次提交，保留前一版便于对照。</p></section>`}</aside></div>`;
+  const updateRoster=()=>{
+   const issue=document.getElementById('issueFilter').value,filter=document.getElementById('rosterFilter').value;
+   document.getElementById('roster').innerHTML=roster(a.summary,filter,issue);
+   document.getElementById('rosterSelection').textContent=issue==='all'?'显示全班最新提交；可叠加提交状态筛选。':(issue==='insufficient'?'末轮仍需补充证据':('最新提交过程中出现过「'+issueLabels[issue]+'」'))+'，共 '+a.summary.members.filter(member=>member.submission&&memberHasIssue(member,issue)).length+' 位。表中同时应用提交状态筛选。';
+   document.querySelectorAll('[data-issue-filter]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.issueFilter===issue)));
+  };
+  document.getElementById('rosterFilter')?.addEventListener('change',updateRoster);
+  document.getElementById('issueFilter')?.addEventListener('change',updateRoster);
+  document.querySelectorAll('[data-issue-filter]').forEach(button=>button.addEventListener('click',()=>{
+   document.getElementById('issueFilter').value=button.dataset.issueFilter;document.getElementById('rosterFilter').value='all';updateRoster();document.getElementById('rosterHeading').focus();
+  }));
+  document.querySelectorAll('[data-prepare-issue]').forEach(button=>button.addEventListener('click',()=>prepareSupplement(a,button.dataset.prepareIssue)));
   document.getElementById('closeAssignment')?.addEventListener('click',()=>action(async()=>{await api('/assignments/'+id,'PATCH',{closed:!a.closed});await assignmentPage(id);status.textContent=a.closed?'已重新开放收集。':'已结束收集，学生仍可查看原提交。';}));
   document.getElementById('startAssignment')?.addEventListener('click',()=>action(async()=>{const work=await api('/assignments/'+id+'/start','POST',{});location.href='/experiment?work='+encodeURIComponent(work.session_id);}));
  }

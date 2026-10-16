@@ -266,19 +266,43 @@ class Classroom:
 
     def summary(self, con, assignment, submissions):
         members = [dict(r) for r in con.execute('SELECT m.user_id,m.student_number,u.name FROM lab_members m JOIN lab_users u ON u.user_id=m.user_id WHERE m.class_id=? ORDER BY m.student_number', (assignment['class_id'],)).fetchall()]
-        latest={}
-        for sub in submissions:
-            latest.setdefault(sub['user_id'], sub)
-        for member in members:
-            member['submission']=({k:v for k,v in latest[member['user_id']].items() if k!='snapshot'} if member['user_id'] in latest else None)
         labels={'data_error':'数据采集或录入','calculation_error':'计算与单位换算','concept_misunderstanding':'概念理解','mixed':'多因素问题'}
+        latest={}; first={}
+        for sub in submissions:
+            uid=sub['user_id']
+            if uid not in latest or sub['version']>latest[uid]['version']: latest[uid]=sub
+            if uid not in first or sub['version']<first[uid]['version']: first[uid]=sub
+
+        def issue_types(attempts):
+            found=set()
+            for attempt in attempts:
+                # Missing evidence is a separate teaching need, not a diagnosed error.
+                if attempt.get('status')=='needs_more_evidence': continue
+                issue=attempt.get('issue_type') or (attempt.get('response',{}).get('diagnosis') or {}).get('issue_type')
+                if issue in labels: found.add(issue)
+            return [key for key in labels if key in found]
+
         issues={key:set() for key in labels}; insufficient=set(); counts=[]
-        for uid,sub in latest.items():
+        for member in members:
+            uid=member['user_id']; sub=latest.get(uid)
+            member['submission']=({k:v for k,v in sub.items() if k!='snapshot'} if sub else None)
+            member['issue_types']=[]
+            member['needs_more_evidence']=False
+            member['diagnosis_change']=None
+            if not sub: continue
             attempts=sub['snapshot']['attempts']; counts.append(len(attempts))
-            if attempts[-1]['status']=='needs_more_evidence': insufficient.add(uid)
-            for a in attempts:
-                issue=a.get('issue_type') or (a.get('response',{}).get('diagnosis') or {}).get('issue_type')
-                if issue in issues: issues[issue].add(uid)
+            member['issue_types']=issue_types(attempts)
+            member['needs_more_evidence']=attempts[-1]['status']=='needs_more_evidence'
+            if member['needs_more_evidence']: insufficient.add(uid)
+            for issue in member['issue_types']: issues[issue].add(uid)
+            initial=first[uid]
+            if initial['version']<sub['version']:
+                initial_attempt=initial['snapshot']['attempts'][-1]
+                latest_attempt=attempts[-1]
+                member['diagnosis_change']=dict(
+                    first_version=initial['version'],latest_version=sub['version'],
+                    first_status=initial_attempt['status'],latest_status=latest_attempt['status'],
+                    first_issue_types=issue_types([initial_attempt]),latest_issue_types=issue_types([latest_attempt]))
         return dict(member_count=len(members),submitted_count=len(latest),pending_count=len(members)-len(latest),
                     accepted_count=sum(s['review_status']=='accepted' for s in latest.values()),
                     needs_revision_count=sum(s['review_status']=='needs_revision' for s in latest.values()),
@@ -321,6 +345,7 @@ def install_classroom(app: FastAPI, db: Database, repository: Repository, static
             if owner.startswith('guest-'):
                 con.execute('UPDATE lab_session_owners SET owner_id=? WHERE owner_id=?',(uid,owner))
                 con.execute('UPDATE lab_tutor_turns SET owner_id=? WHERE owner_id=?',(uid,owner))
+                con.execute('UPDATE lab_learning_answers SET owner_id=? WHERE owner_id=?',(uid,owner))
                 con.execute('DELETE FROM lab_access WHERE owner_id=?',(owner,))
             if old: con.execute('DELETE FROM lab_access WHERE token_hash=?',(hashlib.sha256(old.encode()).hexdigest(),))
         token,actor=lab.create_access(uid)

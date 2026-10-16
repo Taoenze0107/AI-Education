@@ -190,7 +190,7 @@ function savePracticeAnswers(id){const answers=[...$("practiceExercises").queryS
 function updatePracticeProgress(){if(!$("practiceExercises"))return;const n=[...$("practiceExercises").querySelectorAll("textarea")].filter(el=>el.value.trim()).length;$("practiceProgress").textContent=`已记录 ${n} / 3 道题的思路 · 内容保留在当前浏览器，按需展开提示与解答。`;}
 async function getCatalogCase(id){if(!catalogCaseCache.has(id)){const promise=request(`/api/v1/practice/${id}`).catch(e=>{catalogCaseCache.delete(id);throw e;});catalogCaseCache.set(id,promise);}return catalogCaseCache.get(id);}
 function catalogReplaceDraft(callback){
-  const hasData=Object.keys(rawLearningValues()).length>0||$("studentResult").value.trim();
+  const hasData=Object.keys(rawLearningValues()).length>0||["studentResult","studentSteps","studentExplanation","quickVoltage","quickCurrent","pendulumTimes","rcTimes","rcVoltage"].some(id=>$(id)?.value.trim());
   if(!hasData){callback();return;}
   const view=document.querySelector(`[data-view="${currentPage}"]`);view.querySelector(".catalog-replace-prompt")?.remove();
   const prompt=node("div",null,"catalog-replace-prompt");prompt.setAttribute("role","status");prompt.append(node("p","这会替换当前未提交的实验草稿。已提交的历史记录会保留。"));

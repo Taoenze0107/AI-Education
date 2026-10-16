@@ -89,6 +89,35 @@ def test_different_result_unit_is_not_compared_as_same_unit(lab):
     assert not any("差异" in i["title"] for i in body["items"])
 
 
+def test_feedback_locates_blank_row_and_result_without_changing_readings(lab):
+    _, client = lab
+    ctx = context(columns={"voltage_V": [1, None, 3], "current_mA": [4, 8, 12]})
+    body = client.post(BASE + "/feedback", json=ctx).json()
+    gap = next(i for i in body["items"] if "空缺" in i["title"])
+    assert gap["target"] == {"kind": "column", "key": "voltage_V", "index": 1}
+    assert ctx["columns"]["voltage_V"] == [1, None, 3]
+    ctx = context(columns={"voltage_V": [1, 2, 3], "current_mA": [4, 8, 12]}, student_result=25)
+    body = client.post(BASE + "/feedback", json=ctx).json()
+    difference = next(i for i in body["items"] if "差异" in i["title"])
+    assert difference["target"] == {"kind": "field", "key": "studentResult"}
+
+
+def test_selected_simulation_is_grounded_separately_from_measured_readings(lab):
+    app, client = lab
+    fake = attach_model(app)
+    register(client)
+    ctx = context(columns={"voltage_V": [1, 2, 3], "current_mA": [4, 8, 12]},
+        selected_content={"kind": "simulation_point", "label": "仿真电阻500Ω的图点", "data_source": "teaching_simulation", "values": {"resistance_ohm": 500, "voltage_V": 2}})
+    response = client.post(BASE + "/chat", json=question(ctx))
+    assert response.status_code == 200, response.text
+    material = json.loads(fake.calls[0]["input"][-1]["content"])
+    assert material["server_checks"]["calculation"]["result"] == pytest.approx(250)
+    assert material["current_step"]["selected_content"]["values"]["resistance_ohm"] == 500
+    assert material["current_step"]["columns"]["current_mA"] == [4, 8, 12]
+    assert "teaching_simulation" in fake.calls[0]["input"][0]["content"]
+    assert client.post(BASE + "/feedback", content=json.dumps(context(selected_content={"kind":"simulation_point", "label":"x", "data_source":"measured_readings", "values":{"x":float("inf")}})), headers={"Content-Type":"application/json"}).status_code == 422
+
+
 def test_safe_formula_and_nonfinite_or_oversized_input(lab):
     _, client = lab
     body = client.post(BASE + "/feedback", json=context(formula="__import__('os').getcwd()" )).json()

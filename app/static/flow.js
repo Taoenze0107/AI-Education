@@ -17,7 +17,7 @@ let lastCharts=null;
 function captureDraft(){
  const fields={};
  for(const el of document.querySelectorAll("input[id],select[id],textarea[id]")){
-  if(el.closest("#labTutor,.tutor-feedback"))continue;
+  if(el.closest("#labTutor,.tutor-feedback,#academyRoot,.learning-review"))continue;
   if(el.type==="file"||el.id.startsWith("row-")||DYNAMIC_ROWS.some(id=>$(id).contains(el)))continue;
   fields[el.id]={value:el.value,checked:el.checked};
  }
@@ -108,6 +108,8 @@ function renderPage({focus=false}={}){
  configureExperiment();renderOverview();
  window.refreshCatalog?.();
  window.refreshLearning?.();
+  window.refreshAcademy?.();
+  window.refreshLearningReview?.();
  $("revisionEmpty").hidden=!!state.attempt;
  const heading=document.querySelector(`[data-view="${currentPage}"] h1`);
  document.title=`${heading?.textContent||"实验学习助手"} | 实验学习助手`;
