@@ -11,7 +11,8 @@
   let status = null, currentKey = "", thread = "", busy = false;
   let revision = 0, feedbackController = null, timer = null, historyEpoch = 0, statusEpoch = 0;
   let lastFeedback = "", lastFeedbackAt = 0, lastContext = null;
-  let autoEnabled = false, autoTimer = null, lastAutoAt = 0;
+  let autoEnabled = false, autoTimer = null, lastAutoAt = 0, statusConnected = false;
+  let autoPauseNotice = "";
   let historyPromise = Promise.resolve();
   const autoSeen = new Set();
   const touched = new Set();
@@ -192,8 +193,62 @@
   }
   async function refreshStatus() {
     const epoch = ++statusEpoch;
-    try { const next = await api("/status"); if (epoch !== statusEpoch) return; status = next; refreshContext(); }
-    catch (_) { get("tutorMode").textContent = "暂时未连接，实验资料仍可继续使用。"; }
+    try {
+      const next = await api("/status"); if (epoch !== statusEpoch) return;
+      if (status && status.scope !== next.scope) { autoEnabled = false; autoPauseNotice = "账号已变更，自动提示已关闭。请按需要重新开启。"; clearTimeout(autoTimer); }
+      status = next; statusConnected = true; syncAutoControls(); refreshContext();
+    }
+    catch (_) {
+      if (epoch !== statusEpoch) return;
+      statusConnected = false; syncAutoControls();
+      get("tutorMode").textContent = "暂时未连接，实验资料仍可继续使用。";
+    }
+  }
+
+  function autoAvailability() {
+    if (!statusConnected) return {ready: false, reason: status ? "暂时无法确认 AI 连接。重新检查连接后再开启；上方数据检查仍可使用。" : "正在确认 AI 连接，请稍候。", retry: true};
+    if (!status?.configured) return {ready: false, reason: "AI 服务尚未启用，暂不能开启自动提示。上方数据检查和课程资料仍可使用。"};
+    if (!status.signed_in) return {ready: false, reason: "请先登录班级账号，再开启 AI 自动提示。上方数据检查可直接使用。", login: true};
+    return {ready: true};
+  }
+
+  function syncAutoControls() {
+    const availability = autoAvailability();
+    if (!availability.ready && autoEnabled) { autoEnabled = false; clearTimeout(autoTimer); }
+    document.querySelectorAll(".tutor-auto-controls").forEach(controls => {
+      const toggle = controls.querySelector('input[type="checkbox"]');
+      toggle.checked = autoEnabled; toggle.disabled = !availability.ready;
+      controls.dataset.enabled = String(autoEnabled);
+      controls.querySelector(".tutor-auto-state").textContent = autoEnabled ? "已开启" : availability.ready ? "已关闭" : "暂不可用";
+      controls.querySelector(".tutor-auto-status").textContent = availability.ready ? (autoEnabled ? "已开启：暂停录入后，AI 会给出下一步提示。可再次点击方框关闭。" : autoPauseNotice || "已关闭：勾选方框后开启 AI 自动提示。") : availability.reason;
+      controls.querySelector(".tutor-auto-login").hidden = !availability.login;
+      controls.querySelector(".tutor-auto-retry").hidden = !availability.retry;
+    });
+  }
+
+  function autoControls(ctx, box) {
+    const controls = make("div", null, "tutor-auto-controls");
+    const option = make("label", null, "tutor-auto-option"), toggle = make("input");
+    const descriptionId = `tutor-auto-status-${ctx.stage}`, limitsId = `tutor-auto-limits-${ctx.stage}`;
+    toggle.type = "checkbox"; toggle.id = `tutor-auto-${ctx.stage}`;
+    toggle.setAttribute("aria-describedby", `${descriptionId} ${limitsId}`);
+    option.append(toggle, make("span", "让 AI 在我暂停录入后给出下一步提示"), make("strong", "", "tutor-auto-state"));
+    const description = make("p", null, "tutor-auto-status"); description.id = descriptionId;
+    description.setAttribute("role", "status"); description.setAttribute("aria-live", "polite"); description.setAttribute("aria-atomic", "true");
+    const login = make("a", "去登录 →", "tutor-auto-login"); login.href = "/classroom"; login.hidden = true;
+    const retry = make("button", "重新检查连接", "tutor-auto-retry"); retry.type = "button"; retry.hidden = true;
+    retry.addEventListener("click", () => { refreshStatus(); });
+    const limits = make("small", "自动提示与主动提问共用每日额度，最多每 20 秒一次；上方自动数据检查不消耗 AI 提问额度。", "tutor-auto-note"); limits.id = limitsId;
+    controls.append(option, description, login, retry, limits);
+    toggle.addEventListener("change", () => {
+      // Preserve the native checkbox state in one shared setting, including keyboard changes.
+      // Read the current draft so an earlier feedback response cannot schedule stale data.
+      const availability = autoAvailability();
+      autoEnabled = availability.ready && toggle.checked; autoPauseNotice = ""; clearTimeout(autoTimer);
+      syncAutoControls();
+      if (autoEnabled) { const current = context(); scheduleAuto(current, JSON.stringify(current), box); }
+    });
+    return controls;
   }
   function refreshContext() {
     const ctx = context(); lastContext = ctx;
@@ -225,7 +280,7 @@
         box = make("section", null, "tutor-feedback"); box.dataset.tutorStage = ctx.stage;
         box.setAttribute("aria-label", "当前步骤的检查与问题");
       }
-      const lesson = ctx.stage === "data" && ["ohms_law", "simple_pendulum", "rc_time_constant"].includes(ctx.experiment_id);
+      const lesson = ctx.stage === "data" && (window.LabAcademyCourseList || []).some(course => course.experiment_id === ctx.experiment_id);
       const anchor = document.querySelector(lesson ? '[data-view="data"] > .card' : `[data-view="${ctx.stage}"] .page-heading`);
       if (anchor && box.previousElementSibling !== anchor) anchor.after(box);
       scheduleFeedback();
@@ -283,18 +338,7 @@
         const cleared = (previousChecks.get(checkKey) || []).filter(t => !pending.includes(t));
         if (cleared.length) box.append(make("p", "本次检查不再提示：" + cleared.join("、") + "。仍需核实原始记录与实验条件。", "tutor-check-cleared"));
         previousChecks.set(checkKey, pending);
-        const option = make("label", null, "tutor-auto-option"), toggle = make("input");
-        toggle.type = "checkbox"; toggle.checked = autoEnabled;
-        toggle.addEventListener("change", () => {
-          if (toggle.checked && (!status?.configured || !status?.signed_in)) {
-            toggle.checked = false; open(); return;
-          }
-          autoEnabled = toggle.checked; clearTimeout(autoTimer);
-          document.querySelectorAll('.tutor-auto-option input').forEach(el => el.checked = autoEnabled);
-          if (autoEnabled) scheduleAuto(ctx, fingerprint, box);
-        });
-        option.append(toggle, document.createTextNode("让 AI 在我暂停录入后给出下一步提示"));
-        box.append(option, make("small", "可随时关闭；自动提示与主动提问共用每日额度，最多每 20 秒一次。", "tutor-auto-note"));
+        box.append(autoControls(ctx, box)); syncAutoControls();
         const ask = make("button", "和 AI 一起检查这一步 →", "tutor-inline-ask"); ask.type = "button"; ask.addEventListener("click", () => { open(); get("tutorQuestion").value = "请结合我当前的步骤和数据，帮我找出下一项需要检查的问题。"; }); box.append(ask);
         lastFeedback = fingerprint; lastFeedbackAt = Date.now();
         scheduleAuto(ctx, fingerprint, box);
@@ -309,11 +353,11 @@
 
   function scheduleAuto(ctx, fingerprint, box) {
     clearTimeout(autoTimer);
-    if (!autoEnabled || !status?.configured || !status.signed_in || autoSeen.has(fingerprint) || ctx.selected_content) return;
+    if (!autoEnabled || !autoAvailability().ready || autoSeen.has(fingerprint) || ctx.selected_content) return;
     autoTimer = setTimeout(async () => {
       if (!autoEnabled || busy || document.hidden || JSON.stringify(context()) !== fingerprint) return;
       await refreshStatus(); await historyPromise;
-      if (!autoEnabled || busy || !status?.configured || !status.signed_in || JSON.stringify(context()) !== fingerprint) return;
+      if (!autoEnabled || busy || !autoAvailability().ready || JSON.stringify(context()) !== fingerprint) return;
       autoSeen.add(fingerprint); lastAutoAt = Date.now(); busy = true;
       get("tutorSend").disabled = true; get("tutorSend").textContent = "正在检查…";
       const key = currentKey;
@@ -326,9 +370,15 @@
           note.replaceChildren(make("strong", result.mode === "openai" ? "AI 随行提示" : "课程资料提示"));
           const text = make("p"); richText(text, result.reply.answer); note.append(text, make("p", result.reply.next_question), make("small", result.notice));
         }
+        if (result.mode !== "openai") { autoEnabled = false; autoPauseNotice = "AI 暂未返回模型回答，已关闭自动提示。你仍可使用课程资料或主动提问。"; syncAutoControls(); }
       } catch (error) {
         if (note.isConnected) note.textContent = error.message || "暂未取得提示，可继续录入或主动提问。";
-        if (error.status === 429 || error.status === 401) { autoEnabled = false; document.querySelectorAll('.tutor-auto-option input').forEach(el => el.checked = false); }
+        if (error.status === 429 || error.status === 401) {
+          autoEnabled = false;
+          if (error.status === 401 && status) status = {...status, signed_in: false};
+          autoPauseNotice = error.status === 429 ? "请求或每日额度达到限制，自动提示已关闭。上方数据检查仍可使用。" : "登录状态已失效，自动提示已关闭。请重新登录。";
+          syncAutoControls();
+        }
       } finally { busy = false; get("tutorSend").disabled = false; get("tutorSend").textContent = "发送问题 →"; }
     }, Math.max(1800, 20000 - (Date.now() - lastAutoAt)));
   }
@@ -370,7 +420,7 @@
   document.addEventListener("click", event => { if (!root.contains(event.target) && !event.target.closest(".tutor-feedback,#academyRoot,.learning-review")) setTimeout(refreshContext, 0); });
   new MutationObserver(refreshContext).observe(document.body, {attributes: true, attributeFilter: ["data-page"]});
   window.addEventListener("tutor-ready", refreshContext);
-  window.addEventListener("lab-account-changed", () => { autoEnabled = false; clearTimeout(autoTimer); historyEpoch++; messages.replaceChildren(); currentKey = ""; previousChecks.clear(); selectedContent = null; selectedExperiment = ""; renderSelection(); refreshStatus(); });
+  window.addEventListener("lab-account-changed", () => { autoEnabled = false; autoPauseNotice = ""; statusConnected = false; clearTimeout(autoTimer); syncAutoControls(); historyEpoch++; messages.replaceChildren(); currentKey = ""; previousChecks.clear(); selectedContent = null; selectedExperiment = ""; renderSelection(); refreshStatus(); });
   window.addEventListener("focus", refreshStatus);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshStatus(); });
   refreshStatus();

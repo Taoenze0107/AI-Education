@@ -143,3 +143,16 @@
   .academy-response { padding: 12px; }
 }
 @media (prefers-reduced-motion: reduce) { .lab-academy * { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
+
+/* Teaching diagrams use the same scale and parameter readings as the accompanying plots. */
+.academy-schematic { background: #eeeee9; margin-top: 13px; }
+.academy-mass { fill: #d4dde3; stroke: #173e5d; stroke-width: 2; }
+.academy-ray { fill: none; stroke: #9a3444; stroke-width: 2; }
+.academy-lens { fill: #d5e6eb; fill-opacity: .65; stroke: #2d6279; stroke-width: 2; }
+.academy-object { fill: none; stroke: #173e5d; stroke-width: 3; }
+.academy-image { fill: none; stroke: #9a3444; stroke-width: 3; }
+.academy-medium { fill: #dce8ec; }
+.academy-heat-release { fill: #9a3444; }
+.academy-heat-absorb { fill: #426c85; }
+
+.academy-formula-button { max-width: 100%; overflow-x: auto; overflow-y: hidden; }

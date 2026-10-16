@@ -1,6 +1,7 @@
 "use strict";
 (() => {
   // These functions describe ideal teaching models. They never modify measured data.
+  const finiteResult = result => { if (Object.values(result).some(value => typeof value === "number" && !Number.isFinite(value))) throw new RangeError("参数超出本教学模型的数值范围。"); return result; };
   const models = {
     pendulum(lengthM, gravity = 9.81) {
       if (![lengthM, gravity].every(Number.isFinite) || !(lengthM > 0) || !(gravity > 0)) throw new RangeError("摆长与重力加速度必须为正数。");
@@ -10,6 +11,43 @@
     ohms(resistanceOhm, voltageV) {
       if (![resistanceOhm, voltageV].every(Number.isFinite) || !(resistanceOhm > 0) || !(voltageV >= 0)) throw new RangeError("电阻须为正数，电压不能为负。");
       return {resistance_ohm: resistanceOhm, voltage_V: voltageV, current_mA: voltageV / resistanceOhm * 1000};
+    },
+    hooke(stiffnessNPerM, forceN) {
+      if (![stiffnessNPerM, forceN].every(Number.isFinite) || !(stiffnessNPerM > 0) || !(forceN >= 0)) throw new RangeError("劲度系数须为正数，载荷不能为负。");
+      return finiteResult({stiffness_N_m: stiffnessNPerM, force_N: forceN, extension_m: forceN / stiffnessNPerM, extension_cm: forceN / stiffnessNPerM * 100});
+    },
+    spring(massKg, stiffnessNPerM) {
+      if (![massKg, stiffnessNPerM].every(Number.isFinite) || !(massKg > 0) || !(stiffnessNPerM > 0)) throw new RangeError("质量与劲度系数必须为正数。");
+      const period = 2 * Math.PI * Math.sqrt(massKg / stiffnessNPerM);
+      return finiteResult({mass_kg: massKg, stiffness_N_m: stiffnessNPerM, period_s: period, period_squared_s2: period * period});
+    },
+    lens(focalCm, objectCm) {
+      if (![focalCm, objectCm].every(Number.isFinite) || !(focalCm > 0) || !(objectCm > focalCm)) throw new RangeError("本实像模型要求正焦距且物距大于焦距。");
+      const image = focalCm / (1 - focalCm / objectCm);
+      return finiteResult({focal_cm: focalCm, object_cm: objectCm, image_cm: image, magnification: -image / objectCm});
+    },
+    refraction(index2, incidenceDeg) {
+      if (![index2, incidenceDeg].every(Number.isFinite) || !(index2 >= 1) || !(incidenceDeg >= 0 && incidenceDeg < 90)) throw new RangeError("本模型从空气入射，介质折射率至少为 1，入射角须在 0° 至 90° 之间。");
+      const sine = Math.sin(incidenceDeg * Math.PI / 180), refracted = Math.asin(sine / index2);
+      return finiteResult({index_1: 1, index_2: index2, incidence_deg: incidenceDeg, refraction_deg: refracted * 180 / Math.PI, sine_incidence: sine, sine_refraction: Math.sin(refracted)});
+    },
+    doubleSlit(wavelengthNm, distanceM, slitSpacingMm) {
+      if (![wavelengthNm, distanceM, slitSpacingMm].every(Number.isFinite) || !(wavelengthNm > 0 && distanceM > 0 && slitSpacingMm > 0)) throw new RangeError("波长、屏距和缝距必须为正数。");
+      const spacing = wavelengthNm * 1e-6 * distanceM / slitSpacingMm * 1000;
+      return finiteResult({wavelength_nm: wavelengthNm, distance_m: distanceM, slit_spacing_mm: slitSpacingMm, fringe_spacing_mm: spacing});
+    },
+    fringeIntensity(positionMm, fringeSpacingMm) {
+      if (![positionMm, fringeSpacingMm].every(Number.isFinite) || !(fringeSpacingMm > 0)) throw new RangeError("屏幕位置须为有限数，条纹间距须为正数。");
+      const phase = Math.PI * (positionMm / fringeSpacingMm);
+      if (!Number.isFinite(phase)) throw new RangeError("条纹相位超出数值范围。");
+      return Math.cos(phase) ** 2;
+    },
+    calorimetry(metalMassG, waterMassG, waterTempC, metalTempC, metalSpecificJkgK = 900) {
+      if (![metalMassG, waterMassG, waterTempC, metalTempC, metalSpecificJkgK].every(Number.isFinite) || !(metalMassG > 0 && waterMassG > 0 && metalSpecificJkgK > 0) || !(waterTempC >= 0 && waterTempC < metalTempC && metalTempC <= 100)) throw new RangeError("质量与比热容须为正数，温度要求 0 ≤ 水初温 < 金属初温 ≤ 100 ℃。");
+      const metalCapacity = metalMassG / 1000 * metalSpecificJkgK, waterCapacity = waterMassG / 1000 * 4180;
+      const equilibrium = waterTempC + (metalTempC - waterTempC) * metalCapacity / (metalCapacity + waterCapacity);
+      const absorbed = waterCapacity * (equilibrium - waterTempC), released = metalCapacity * (metalTempC - equilibrium);
+      return finiteResult({metal_mass_g: metalMassG, water_mass_g: waterMassG, water_temp_C: waterTempC, metal_temp_C: metalTempC, metal_specific_J_kg_K: metalSpecificJkgK, equilibrium_C: equilibrium, absorbed_J: absorbed, released_J: released, recovered_specific_J_kg_K: absorbed / (metalMassG / 1000 * (metalTempC - equilibrium))});
     },
     rc(resistanceKohm, capacitanceUf, timeMs, discharge = false, sourceV = 5) {
       if (![resistanceKohm, capacitanceUf, timeMs, sourceV].every(Number.isFinite) || !(resistanceKohm > 0) || !(capacitanceUf > 0) || !(timeMs >= 0) || !(sourceV > 0)) throw new RangeError("RC 参数与电源须为正数，时间不能为负。");
@@ -25,8 +63,15 @@
   const supported = {
     simple_pendulum: {title: "单摆：摆长如何改变周期？", subtitle: "先作一个预测，再用摆动和图线检验。", goal: "理解小角度条件下的周期、摆长与重力加速度。", formula: "T = 2π√(L/g)", tex: "T = 2\\pi\\sqrt{\\frac{L}{g}}", condition: "理想单摆；小角度、无阻尼；g = 9.81 m/s²。", initial: {length: 1}, symbols: [["T", "周期 T：完成一次完整往返所需的时间，单位 s。"], ["L", "摆长 L：从悬点到摆球质心的距离，单位 m。"], ["g", "重力加速度 g：本仿真固定为 9.81 m/s²。"]]},
     ohms_law: {title: "伏安法：图线的斜率意味着什么？", subtitle: "改变电阻与电压，观察同一个欧姆元件的读数。", goal: "联系电压、电流、电阻，辨别坐标轴和单位。", formula: "U = IR", tex: "U = IR", condition: "恒温欧姆元件；电表理想化；忽略导线电阻。", initial: {resistance: 250, voltage: 3}, symbols: [["U", "电压 U：电阻两端的电势差，单位 V。"], ["I", "电流 I：公式使用 A；图中使用 mA。1 mA = 0.001 A。"], ["R", "电阻 R：U–I 图纵轴为 U、横轴为 I 时，斜率对应电阻。若横轴用 mA，斜率还要乘 1000 才得到 Ω。"]]},
+    hookes_law: {title: "胡克定律：弹簧伸长与载荷", subtitle: "改变载荷和弹簧，比较 F–x 图的斜率。", goal: "理解弹性限度内的线性关系与劲度系数。", formula: "F = kx", tex: "F = kx", condition: "理想轻弹簧；处于弹性限度内；F 为外加拉力，x 为相对原长的伸长。", initial: {stiffness: 50, force: 2}, symbols: [["F", "外加拉力 F，单位 N；静力平衡时与弹簧恢复力大小相等。"], ["k", "劲度系数 k，单位 N/m；F–x 图中横轴若用 cm，斜率需乘 100 才得到 N/m。"], ["x", "伸长 x = F/k，公式使用 m，读数和图横轴显示 cm。"]]},
+    spring_oscillation: {title: "弹簧振子：质量怎样改变周期？", subtitle: "保持弹簧不变，比较不同质量的周期平方。", goal: "区分质量与劲度系数对简谐振动周期的影响。", formula: "T = 2π√(m/k)", tex: "T = 2\\pi\\sqrt{\\frac{m}{k}}", condition: "理想轻弹簧和质点；无阻尼；在弹性限度内作简谐振动。", initial: {mass: .2, stiffness: 20}, symbols: [["T", "振动周期 T，单位 s；振幅在理想线性模型中不改变周期。"], ["m", "振子质量 m，单位 kg；本模型忽略弹簧自身质量。"], ["k", "劲度系数 k，单位 N/m；T²–m 图的斜率为 4π²/k。"]]},
+    thin_lens: {title: "薄透镜：物体移动，像在哪里？", subtitle: "调整焦距和物距，观察倒立实像及光路。", goal: "理解实像位置、放大率与物距的非线性关系。", formula: "1/f = 1/u + 1/v", tex: "\\frac{1}{f}=\\frac{1}{u}+\\frac{1}{v}", condition: "薄凸透镜；近轴光线；本课只研究 u > f 的实像。光路按几何关系绘制，坐标使用 cm。", initial: {focal: 10, distance: 30}, symbols: [["f", "焦距 f，单位 cm；本模型取正值。"], ["u", "物距 u，单位 cm；滑杆范围保证 u > f，避免在焦点处无有限像距。"], ["v", "像距 v，单位 cm；本课实像位于透镜另一侧，v 为正。"], ["M", "横向放大率 M = −v/u；负号表示实像倒立。"]]},
+    snell_refraction: {title: "折射：光线为什么向法线偏折？", subtitle: "改变入射角和介质，比较角度与正弦关系。", goal: "把斯涅尔定律与光路、折射率联系起来。", formula: "n₁ sin θ₁ = n₂ sin θ₂", tex: "n_1\\sin\\theta_1=n_2\\sin\\theta_2", condition: "单色光由空气 n₁ = 1 入射均匀介质 n₂ ≥ 1；角度从法线量起。此方向不会发生全反射。", initial: {index: 1.5, angle: 45}, symbols: [["n₁", "入射介质为空气，折射率 n₁ 固定为 1。"], ["n₂", "下方介质折射率 n₂，无量纲；本课范围 1.1–2.0。"], ["θ₁", "入射角 θ₁：入射光与界面法线的夹角，读数使用 °。"], ["θ₂", "折射角 θ₂：折射光与法线的夹角。sin θ₂–sin θ₁ 图的斜率为 1/n₂。"]]},
+    double_slit: {title: "双缝干涉：条纹间距由什么决定？", subtitle: "改变波长、屏距和缝距，比较相邻亮纹的距离。", goal: "理解条纹间距与波长、屏距成正比，与缝距成反比。", formula: "Δx = λD/d", tex: "\\Delta x=\\frac{\\lambda D}{d}", condition: "理想相干、等强双缝；远场小角度近似；忽略单缝衍射包络。亮度示意采用相对强度。", initial: {wavelength: 550, distance: 1, spacing: .5}, symbols: [["λ", "波长 λ，滑杆使用 nm；代入 SI 公式时乘 10⁻⁹ 换算为 m。"], ["D", "双缝到屏幕的距离 D，单位 m；缝距远小于屏距。"], ["d", "双缝间距 d，滑杆使用 mm；SI 公式需换算为 m。"], ["Δx", "相邻亮纹的间距 Δx；图示与读数使用 mm。"]]},
+    calorimetry: {title: "量热法：怎样测出金属的比热容？", subtitle: "把热金属放入水中，观察平衡温度与能量交换。", goal: "用水的吸热量回算金属比热容，辨别质量与温差的作用。", formula: "m金c金(T热−T) = m水c水(T−T冷)", tex: "\\begin{aligned}&m_m c_m(T_h-T)\\\\&\\quad=m_w c_w(T-T_c)\\end{aligned}", condition: "热金属与水达到热平衡；水的比热容 c水 = 4180 J/(kg·K)；忽略量热器吸热、散热、蒸发与相变。", initial: {metalMass: 100, waterMass: 150, waterTemp: 20, metalTemp: 80, specific: 900}, symbols: [["m金", "金属质量，读数使用 g，计算热量时换算为 kg。"], ["c金", "金属比热容，单位 J/(kg·K)；本模型可设置，再用水的吸热量回算验证。"], ["m水", "水的质量；水比热容固定为 4180 J/(kg·K)，质量使用 kg 代入。"], ["T", "最终平衡温度应位于水和金属的初温之间。温差 1 ℃ 与 1 K 相等。"], ["Q", "水吸热量等于金属放热量，单位 J；实际实验须考虑量热器与散热修正。"]]},
     rc_time_constant: {title: "RC：为什么是 63.2%？", subtitle: "改变电阻和电容，追踪充电与放电的同一时刻。", goal: "把时间常数与曲线上的电压比例对应起来。", formula: "τ = RC", tex: "\\tau = RC", condition: "理想一阶 RC 电路；电源 5 V；充电从 0 V 开始，放电从 5 V 开始。", initial: {resistance: 10, capacitance: 1, time: 1, discharge: false}, symbols: [["τ", "时间常数 τ = RC：R 用 Ω、C 用 F 时，τ 的单位是 s。此处 R 用 kΩ、C 用 μF，因此读数为 ms。"], ["R", "电阻 R：增大电阻，会按相同比例增大充电与放电的时间常数。"], ["C", "电容 C：增大电容，会按相同比例增大时间常数。"], ["Vc", "电容电压 Vc：充电时为 5(1−e^(−t/τ)) V，放电时为 5e^(−t/τ) V。"]]}
   };
+  window.LabAcademyCourseList = Object.entries(supported).map(([experiment_id, config]) => ({experiment_id, title: config.title, summary: config.goal}));
   const get = id => document.getElementById(id);
   const make = (tag, text, cls) => { const el = document.createElement(tag); if (text != null) el.textContent = text; if (cls) el.className = cls; return el; };
   const button = (text, callback, cls = "academy-button") => { const el = make("button", text, cls); el.type = "button"; el.addEventListener("click", callback); return el; };
@@ -200,16 +245,44 @@
       range(parent, "resistance", "电阻 R", 100, 1000, 50, p.resistance, n => `${number(n)} Ω`, n => p.resistance = n);
       range(parent, "voltage", "电压 U", .5, 5, .1, p.voltage, n => `${number(n)} V`, n => p.voltage = n);
       parent.append(make("p", "保持 R 不变，改变 U；再换一个 R，比较 U–I 图的斜率。", "academy-muted"));
-    } else {
+    } else if (activeId === "rc_time_constant") {
       range(parent, "resistance", "电阻 R", 1, 50, 1, p.resistance, n => `${number(n)} kΩ`, n => p.resistance = n);
       range(parent, "capacitance", "电容 C", .5, 10, .5, p.capacitance, n => `${number(n)} μF`, n => p.capacitance = n);
       range(parent, "time", "观察时刻 t", 0, 5, .1, p.time, n => `${number(n)} τ`, n => p.time = n);
       const modes = make("div", null, "academy-modes"); modes.setAttribute("role", "group"); modes.setAttribute("aria-label", "RC 模式");
       [false, true].forEach(discharge => { const b = button(discharge ? "放电" : "充电", () => { p.discharge = discharge; [...modes.children].forEach(el => el.setAttribute("aria-pressed", String(el === b))); updateVisual(); }, "academy-mode"); b.setAttribute("aria-pressed", String(discharge === p.discharge)); modes.append(b); }); parent.append(modes);
+    } else if (activeId === "hookes_law") {
+      range(parent, "stiffness", "劲度系数 k", 20, 100, 5, p.stiffness, n => `${number(n)} N/m`, n => p.stiffness = n);
+      range(parent, "force", "外加拉力 F", 0, 4, .1, p.force, n => `${number(n)} N`, n => p.force = n);
+      parent.append(make("p", "观察伸长 x，而不是弹簧总长。只在弹性限度内使用本关系。", "academy-muted"));
+    } else if (activeId === "spring_oscillation") {
+      range(parent, "mass", "振子质量 m", .05, .5, .025, p.mass, n => `${number(n)} kg`, n => p.mass = n);
+      range(parent, "stiffness", "劲度系数 k", 10, 50, 2, p.stiffness, n => `${number(n)} N/m`, n => p.stiffness = n);
+      parent.append(make("p", "图中质量沿平衡位置振动的示意为静态快照；周期由读数与 T²–m 图比较。", "academy-muted"));
+    } else if (activeId === "thin_lens") {
+      range(parent, "focal", "焦距 f", 5, 20, 1, p.focal, n => `${number(n)} cm`, n => p.focal = n);
+      range(parent, "distance", "物距 u", 25, 100, 1, p.distance, n => `${number(n)} cm`, n => p.distance = n);
+      parent.append(make("p", "焦距最多 20 cm、物距至少 25 cm，始终保持 u > f。图中物、像和焦点按同一尺度绘制。", "academy-muted"));
+    } else if (activeId === "snell_refraction") {
+      range(parent, "index", "介质折射率 n₂", 1.1, 2, .05, p.index, n => number(n), n => p.index = n);
+      range(parent, "angle", "入射角 θ₁", 0, 75, 1, p.angle, n => `${number(n)}°`, n => p.angle = n);
+      parent.append(make("p", "从法线量角；折射率保持不变时，比较正弦图上的不同点。", "academy-muted"));
+    } else if (activeId === "double_slit") {
+      range(parent, "wavelength", "单色光波长 λ", 400, 700, 10, p.wavelength, n => `${number(n)} nm`, n => p.wavelength = n);
+      range(parent, "distance", "双缝到屏幕距离 D", .5, 2, .1, p.distance, n => `${number(n)} m`, n => p.distance = n);
+      range(parent, "spacing", "双缝间距 d", .2, 1, .05, p.spacing, n => `${number(n)} mm`, n => p.spacing = n);
+      parent.append(make("p", "屏幕示意固定显示中央 ±15 mm。改变 λ、D、d，比较同一尺度上的条纹疏密。", "academy-muted"));
+    } else if (activeId === "calorimetry") {
+      range(parent, "metalMass", "金属质量 m金", 50, 250, 10, p.metalMass, n => `${number(n)} g`, n => p.metalMass = n);
+      range(parent, "waterMass", "水质量 m水", 50, 300, 10, p.waterMass, n => `${number(n)} g`, n => p.waterMass = n);
+      range(parent, "waterTemp", "水初温 T冷", 10, 40, 1, p.waterTemp, n => `${number(n)} ℃`, n => p.waterTemp = n);
+      range(parent, "metalTemp", "金属初温 T热", 50, 95, 1, p.metalTemp, n => `${number(n)} ℃`, n => p.metalTemp = n);
+      range(parent, "specific", "金属比热容 c金", 200, 1000, 50, p.specific, n => `${number(n)} J/(kg·K)`, n => p.specific = n);
+      parent.append(make("p", "温度范围始终保持金属比水热。改变质量或比热容，观察平衡温度靠近哪一侧。", "academy-muted"));
     }
   }
   function buildFormula(parent, state, config) {
-    const panel = make("div", null, "academy-formula"), formula = button("", () => ask(`请解释教学仿真中的公式 ${config.formula}，并说明适用条件。`, {kind: "formula", label: config.formula}), "academy-formula-button");
+    const panel = make("div", null, "academy-formula"), formula = button("", () => ask(`请解释教学仿真中的公式 ${config.formula}。当前模拟：${pointLabel(activeId, currentPoint(state))}。适用条件：${config.condition}`, {kind: "formula", label: config.formula, values: {...currentPoint(state), condition: config.condition}}), "academy-formula-button");
     if (window.katex) window.katex.render(config.tex, formula, {throwOnError: false, trust: false, displayMode: false}); else formula.textContent = config.formula;
     formula.setAttribute("aria-label", `向助教询问公式 ${config.formula}`); panel.append(make("p", "读懂模型", "academy-kicker"), formula);
     const symbols = make("div", null, "academy-symbols"), explanation = make("p", config.symbols[state.symbol][1], "academy-symbol-explanation"); explanation.setAttribute("aria-live", "polite");
@@ -241,7 +314,14 @@
     const p = state.params;
     if (activeId === "simple_pendulum") return models.pendulum(p.length);
     if (activeId === "ohms_law") return models.ohms(p.resistance, p.voltage);
-    return models.rc(p.resistance, p.capacitance, p.time * p.resistance * p.capacitance, p.discharge);
+    if (activeId === "rc_time_constant") return models.rc(p.resistance, p.capacitance, p.time * p.resistance * p.capacitance, p.discharge);
+    if (activeId === "hookes_law") return models.hooke(p.stiffness, p.force);
+    if (activeId === "spring_oscillation") return models.spring(p.mass, p.stiffness);
+    if (activeId === "thin_lens") return models.lens(p.focal, p.distance);
+    if (activeId === "snell_refraction") return models.refraction(p.index, p.angle);
+    if (activeId === "double_slit") return models.doubleSlit(p.wavelength, p.distance, p.spacing);
+    if (activeId === "calorimetry") return models.calorimetry(p.metalMass, p.waterMass, p.waterTemp, p.metalTemp, p.specific);
+    throw new RangeError("未配置的教学模型。");
   }
   function buildVisual(parent, state) {
     parent.id = "academyVisual";
@@ -254,6 +334,12 @@
   function pointLabel(eid, point) {
     if (eid === "simple_pendulum") return `L = ${number(point.length_m)} m，T = ${number(point.period_s)} s，T² = ${number(point.period_squared_s2)} s²`;
     if (eid === "ohms_law") return `I = ${number(point.current_mA)} mA，U = ${number(point.voltage_V)} V，R = ${number(point.resistance_ohm)} Ω`;
+    if (eid === "hookes_law") return `F = ${number(point.force_N)} N，x = ${number(point.extension_cm)} cm，k = ${number(point.stiffness_N_m)} N/m`;
+    if (eid === "spring_oscillation") return `m = ${number(point.mass_kg)} kg，k = ${number(point.stiffness_N_m)} N/m，T = ${number(point.period_s)} s，T² = ${number(point.period_squared_s2)} s²`;
+    if (eid === "thin_lens") return `f = ${number(point.focal_cm)} cm，u = ${number(point.object_cm)} cm，v = ${number(point.image_cm)} cm，M = ${number(point.magnification)}`;
+    if (eid === "snell_refraction") return `n₂ = ${number(point.index_2)}，θ₁ = ${number(point.incidence_deg)}°，θ₂ = ${number(point.refraction_deg)}°，sin θ₁ = ${number(point.sine_incidence)}，sin θ₂ = ${number(point.sine_refraction)}`;
+    if (eid === "double_slit") return `λ = ${number(point.wavelength_nm)} nm，D = ${number(point.distance_m)} m，d = ${number(point.slit_spacing_mm)} mm，Δx = ${number(point.fringe_spacing_mm)} mm`;
+    if (eid === "calorimetry") return `m金 = ${number(point.metal_mass_g)} g，m水 = ${number(point.water_mass_g)} g，T热 = ${number(point.metal_temp_C)} ℃，T冷 = ${number(point.water_temp_C)} ℃，c金 = ${number(point.metal_specific_J_kg_K)} J/(kg·K)，T = ${number(point.equilibrium_C)} ℃，吸热 = 放热 = ${number(point.absorbed_J)} J`;
     return `t = ${number(point.time_ms)} ms，Vc = ${number(point.voltage_V)} V，τ = ${number(point.tau_ms)} ms（${point.discharge ? "放电" : "充电"}）`;
   }
   function updateVisual(preserveSelected = false) {
@@ -276,19 +362,90 @@
       reading(readings, "模拟电流 I", `${number(current.current_mA)} mA`); reading(readings, "U/I（I 换算为 A）", `${number(p.resistance)} Ω`);
       points = [0, 1, 2, 3, 4, 5].map(voltage => models.ohms(p.resistance, voltage)); if (!points.some(point => Math.abs(point.voltage_V - p.voltage) < 1e-6)) points.push(current); points.sort((a, b) => a.voltage_V - b.voltage_V);
       chart = plot({label: "恒温欧姆元件 U–I 教学模型；横轴电流毫安，纵轴电压伏特", xLabel: "电流 I / mA", yLabel: "电压 U / V", maxX: 50, maxY: 5.5, line: points.map(point => ({x: point.current_mA, y: point.voltage_V})), points: points.map(point => ({x: point.current_mA, y: point.voltage_V, label: pointLabel(activeId, point)})), selected: points.findIndex(point => Math.abs(point.voltage_V - state.selected.voltage_V) < 1e-6), onSelect: index => choose(points[index], true)});
-    } else {
+    } else if (activeId === "rc_time_constant") {
       reading(readings, "时间常数 τ", `${number(current.tau_ms)} ms`); reading(readings, `t = ${number(p.time)} τ 时的 Vc`, `${number(current.voltage_V)} V`);
       const threshold = models.rc(p.resistance, p.capacitance, current.tau_ms, p.discharge);
       curve = Array.from({length: 101}, (_, i) => models.rc(p.resistance, p.capacitance, current.tau_ms * i / 20, p.discharge));
       points = [0, .5, 1, 2, 3, 4, 5].map(time => models.rc(p.resistance, p.capacitance, time * current.tau_ms, p.discharge)); if (!points.some(point => Math.abs(point.time_ms - current.time_ms) < 1e-8)) points.push(current); points.sort((a, b) => a.time_ms - b.time_ms);
       chart = plot({label: `RC ${p.discharge ? "放电" : "充电"}教学曲线，标出一个时间常数的电压比例`, xLabel: "时间 t / ms", yLabel: "电容电压 Vc / V", maxX: 5 * current.tau_ms, maxY: 5.5, threshold: {x: threshold.time_ms, y: threshold.voltage_V, label: `τ · ${p.discharge ? "36.8%" : "63.2%"}`}, line: curve.map(point => ({x: point.time_ms, y: point.voltage_V})), points: points.map(point => ({x: point.time_ms, y: point.voltage_V, label: pointLabel(activeId, point)})), selected: points.findIndex(point => Math.abs(point.time_ms - state.selected.time_ms) < 1e-8), onSelect: index => choose(points[index], true)});
     }
+    if (!chart) ({points, chart} = extendedVisual(state, current, graphic, readings, choose));
     graphic.append(chart); holder.replaceChildren();
     const pointChoice = make("select"), pointChoiceLabel = make("label", "选择模拟点"); pointChoice.id = `academy-point-${activeId}`; pointChoiceLabel.htmlFor = pointChoice.id;
     points.forEach((point, index) => { const option = make("option", `${index + 1}. ${pointLabel(activeId, point)}`); option.value = index; option.selected = pointLabel(activeId, point) === pointLabel(activeId, state.selected); pointChoice.append(option); });
     pointChoice.addEventListener("change", () => { const index = Number(pointChoice.value); choose(points[index]); get(`academy-point-${activeId}`)?.focus({preventScroll: true}); });
     holder.append(pointChoiceLabel, pointChoice, make("span", "已选模拟点", "academy-kicker"), make("p", pointLabel(activeId, state.selected)));
-    holder.append(button("解释这个点 ↗", () => { const point = {...state.selected}, label = pointLabel(activeId, point); ask(`这是教学仿真的点（不是我的实测数据）：${label}。请解释它在图中的含义、单位与模型条件。`, {kind: "simulation_point", label, values: point}); }, "academy-text-button"));
+    holder.append(button("解释这个点 ↗", () => { const point = {...state.selected}, label = pointLabel(activeId, point); ask(`这是教学仿真的点（不是我的实测数据）：${label}。适用条件：${supported[activeId].condition}。请解释它在图中的含义、单位与模型条件。`, {kind: "simulation_point", label, values: {...point, condition: supported[activeId].condition}}); }, "academy-text-button"));
+  }
+  // All diagrams use the same SI-derived readings as the plots; no readings are written to the experiment form.
+  function schematic(label, height = 205) {
+    const drawing = newSvg(label, height); drawing.classList.add("academy-schematic"); return drawing;
+  }
+  function springDrawing(drawing, endX, blockWidth = 45, note = "") {
+    drawing.append(svgEl("line", {x1: 45, x2: 45, y1: 35, y2: 145, class: "academy-support"}));
+    const start = 55, tail = endX - 15, steps = 20;
+    const d = [`M45,90L${start},90`];
+    for (let i = 0; i <= steps; i++) d.push(`L${start + (tail - start) * i / steps},${i === 0 || i === steps ? 90 : i % 2 ? 76 : 104}`);
+    d.push(`L${endX},90`); drawing.append(svgEl("path", {d: d.join(" "), class: "academy-model-line"}), svgEl("rect", {x: endX, y: 64, width: blockWidth, height: 52, rx: 3, class: "academy-mass"}), svgEl("line", {x1: endX + blockWidth, x2: endX + blockWidth + 55, y1: 90, y2: 90, class: "academy-ray"}), svgEl("path", {d: `M${endX + blockWidth + 48},84l7,6l-7,6`, class: "academy-ray"}));
+    drawing.append(svgEl("text", {x: 55, y: 175, class: "academy-axis-label"}, note));
+  }
+  function extendedVisual(state, current, graphic, readings, choose) {
+    const p = state.params; let points, chart;
+    // The currently adjusted value is always a selectable point, even between the fixed reference samples.
+    function drawPlot(config, samples, key, curve) {
+      points = samples;
+      if (!points.some(point => Math.abs(point[key] - current[key]) < 1e-8)) points.push(current);
+      points.sort((a, b) => a[key] - b[key]);
+      const x = config.x, y = config.y;
+      chart = plot({...config, line: (curve || points).map(point => ({x: x(point), y: y(point)})), points: points.map(point => ({x: x(point), y: y(point), label: pointLabel(activeId, point)})), selected: points.findIndex(point => Math.abs(point[key] - state.selected[key]) < 1e-8), onSelect: index => choose(points[index], true)});
+    }
+    if (activeId === "hookes_law") {
+      reading(readings, "伸长 x（相对原长）", `${number(current.extension_cm)} cm`); reading(readings, "劲度系数 k", `${number(current.stiffness_N_m)} N/m`);
+      const drawing = schematic(`弹簧伸长示意，外加拉力 ${number(current.force_N)} N，伸长 ${number(current.extension_cm)} cm。`);
+      springDrawing(drawing, 165 + current.extension_cm * 12, 45, `F = ${number(p.force)} N · 伸长 x = ${number(current.extension_cm)} cm`);
+      drawing.append(svgEl("line", {x1: 165, x2: 165, y1: 35, y2: 145, class: "academy-rest-line"}), svgEl("text", {x: 125, y: 28, class: "academy-tick"}, "零载荷位置")); graphic.append(drawing);
+      drawPlot({label: "弹性限度内拉力与伸长的关系", xLabel: "伸长 x / cm", yLabel: "拉力 F / N", maxX: 20, maxY: 4.5, x: point => point.extension_cm, y: point => point.force_N}, [0, 1, 2, 3, 4].map(force => models.hooke(p.stiffness, force)), "force_N");
+    } else if (activeId === "spring_oscillation") {
+      reading(readings, "振动周期 T", `${number(current.period_s)} s`); reading(readings, "周期平方 T²", `${number(current.period_squared_s2)} s²`);
+      const drawing = schematic(`弹簧振子示意，质量 ${number(p.mass)} kg，劲度系数 ${number(p.stiffness)} N/m。`);
+      springDrawing(drawing, 280, 35 + p.mass * 90, `m = ${number(p.mass)} kg · k = ${number(p.stiffness)} N/m`);
+      drawing.append(svgEl("line", {x1: 250, x2: 410, y1: 137, y2: 137, class: "academy-rest-line"}), svgEl("text", {x: 325, y: 125, class: "academy-tick"}, "往返振动")); graphic.append(drawing);
+      drawPlot({label: "理想弹簧振子的周期平方与质量关系", xLabel: "质量 m / kg", yLabel: "周期平方 T² / s²", maxX: .5, maxY: 2.1, x: point => point.mass_kg, y: point => point.period_squared_s2}, [.05, .1, .2, .3, .4, .5].map(mass => models.spring(mass, p.stiffness)), "mass_kg");
+    } else if (activeId === "thin_lens") {
+      reading(readings, "实像像距 v", `${number(current.image_cm)} cm`); reading(readings, "放大率 M（负号表示倒立）", number(current.magnification));
+      const drawing = schematic(`薄凸透镜近轴实像光路，物距 ${number(p.distance)} cm，像距 ${number(current.image_cm)} cm，焦距 ${number(p.focal)} cm。`, 265);
+      const origin = 300, axis = 125, scale = 230 / Math.max(current.object_cm, current.image_cm, 2 * p.focal), objectX = origin - p.distance * scale, imageX = origin + current.image_cm * scale, height = Math.min(32, 55 / Math.abs(current.magnification)), objectY = axis - height, imageY = axis - height * current.magnification;
+      drawing.append(svgEl("line", {x1: 25, x2: 575, y1: axis, y2: axis, class: "academy-rest-line"}), svgEl("path", {d: "M300,25Q275,125 300,225Q325,125 300,25", class: "academy-lens"}));
+      for (const direction of [-1, 1]) drawing.append(svgEl("circle", {cx: origin + direction * p.focal * scale, cy: axis, r: 3, class: "academy-bob"}), svgEl("text", {x: origin + direction * p.focal * scale, y: axis + 22, "text-anchor": "middle", class: "academy-tick"}, "F"));
+      drawing.append(svgEl("path", {d: `M${objectX},${objectY}L${origin},${objectY}L${imageX},${imageY}`, class: "academy-ray"}), svgEl("path", {d: `M${objectX},${objectY}L${imageX},${imageY}`, class: "academy-model-line"}), svgEl("path", {d: `M${objectX},${axis}V${objectY}m-5,7l5,-7l5,7`, class: "academy-object"}), svgEl("path", {d: `M${imageX},${axis}V${imageY}m-5,-7l5,7l5,-7`, class: "academy-image"}), svgEl("text", {x: objectX, y: 235, "text-anchor": "middle", class: "academy-axis-label"}, `物 · ${number(p.distance)} cm`), svgEl("text", {x: imageX, y: 255, "text-anchor": "middle", class: "academy-axis-label"}, `像 · ${number(current.image_cm)} cm`)); graphic.append(drawing);
+      const curve = Array.from({length: 76}, (_, i) => models.lens(p.focal, 25 + i));
+      drawPlot({label: "固定焦距下实像像距与物距关系", xLabel: "物距 u / cm", yLabel: "像距 v / cm", maxX: 100, maxY: Math.max(20, Math.ceil(models.lens(p.focal, 25).image_cm / 10) * 10), x: point => point.object_cm, y: point => point.image_cm}, [25, 40, 60, 80, 100].map(distance => models.lens(p.focal, distance)), "object_cm", curve);
+    } else if (activeId === "snell_refraction") {
+      reading(readings, "折射角 θ₂", `${number(current.refraction_deg)}°`); reading(readings, "sin θ₁ / sin θ₂", p.angle === 0 ? "0 / 0 · 未定义" : number(p.index));
+      const drawing = schematic(`空气进入折射率为 ${number(p.index)} 的介质，入射角 ${number(p.angle)}°，折射角 ${number(current.refraction_deg)}°。`, 240), boundary = 112, radius = 85, incidence = p.angle * Math.PI / 180, refracted = current.refraction_deg * Math.PI / 180;
+      drawing.append(svgEl("rect", {x: 25, y: boundary, width: 550, height: 112, class: "academy-medium"}), svgEl("line", {x1: 25, x2: 575, y1: boundary, y2: boundary, class: "academy-axis"}), svgEl("line", {x1: 300, x2: 300, y1: 15, y2: 222, class: "academy-rest-line"}), svgEl("path", {d: `M${300 - radius * Math.sin(incidence)},${boundary - radius * Math.cos(incidence)}L300,${boundary}L${300 + radius * Math.sin(refracted)},${boundary + radius * Math.cos(refracted)}`, class: "academy-ray"}), svgEl("text", {x: 42, y: 38, class: "academy-axis-label"}, "空气 n₁ = 1"), svgEl("text", {x: 42, y: 205, class: "academy-axis-label"}, `介质 n₂ = ${number(p.index)}`), svgEl("text", {x: 315, y: 25, class: "academy-tick"}, "法线"), svgEl("text", {x: 420, y: 75, class: "academy-axis-label"}, `θ₁ = ${number(p.angle)}°`), svgEl("text", {x: 420, y: 158, class: "academy-axis-label"}, `θ₂ = ${number(current.refraction_deg)}°`)); graphic.append(drawing);
+      drawPlot({label: "空气折射至均匀介质的角度正弦关系", xLabel: "sin θ₁（无量纲）", yLabel: "sin θ₂（无量纲）", maxX: 1, maxY: 1, x: point => point.sine_incidence, y: point => point.sine_refraction}, [0, 15, 30, 45, 60, 75].map(angle => models.refraction(p.index, angle)), "incidence_deg");
+    } else if (activeId === "double_slit") {
+      reading(readings, "相邻亮纹间距 Δx", `${number(current.fringe_spacing_mm)} mm`); reading(readings, "波长 λ", `${number(p.wavelength)} nm`);
+      const drawing = schematic(`双缝干涉屏幕中央正负 15 毫米，亮纹间距 ${number(current.fringe_spacing_mm)} 毫米。`, 190);
+      drawing.append(svgEl("rect", {x: 40, y: 35, width: 520, height: 90, fill: "#081622"}));
+      for (let i = 0; i < 520; i++) {
+        const positionMm = (i / 519 - .5) * 30, intensity = models.fringeIntensity(positionMm, current.fringe_spacing_mm);
+        drawing.append(svgEl("rect", {x: 40 + i, y: 35, width: 1.1, height: 90, fill: "#f2d298", opacity: intensity}));
+      }
+      for (const value of [-15, 0, 15]) { const x = 300 + value / 30 * 520; drawing.append(svgEl("text", {x, y: 148, "text-anchor": "middle", class: "academy-tick"}, `${value} mm`)); }
+      drawing.append(svgEl("text", {x: 300, y: 179, "text-anchor": "middle", class: "academy-axis-label"}, "屏幕位置（中央亮纹为 0）")); graphic.append(drawing);
+      drawPlot({label: "固定波长与缝距，亮纹间距与屏距关系", xLabel: "屏距 D / m", yLabel: "条纹间距 Δx / mm", maxX: 2, maxY: 7.5, x: point => point.distance_m, y: point => point.fringe_spacing_mm}, [.5, .75, 1, 1.25, 1.5, 2].map(distance => models.doubleSlit(p.wavelength, distance, p.spacing)), "distance_m");
+    } else if (activeId === "calorimetry") {
+      reading(readings, "最终平衡温度 T", `${number(current.equilibrium_C)} ℃`); reading(readings, "回算金属比热容", `${number(current.recovered_specific_J_kg_K)} J/(kg·K)`);
+      const drawing = schematic(`理想量热能量平衡，金属放热和水吸热均为 ${number(current.absorbed_J)} J。`, 205), barWidth = current.absorbed_J / 20000 * 370;
+      drawing.append(svgEl("text", {x: 30, y: 29, class: "academy-axis-label"}, `金属 ${number(p.metalTemp)} ℃ + 水 ${number(p.waterTemp)} ℃ → ${number(current.equilibrium_C)} ℃`));
+      [["金属放热", 63, "academy-heat-release"], ["水吸热", 113, "academy-heat-absorb"]].forEach(([label, y, cls]) => { drawing.append(svgEl("text", {x: 30, y: y + 19, class: "academy-axis-label"}, label), svgEl("rect", {x: 130, y, width: barWidth, height: 26, class: cls}), svgEl("text", {x: 130 + barWidth + 8, y: y + 19, class: "academy-tick"}, `${number(current.absorbed_J)} J`)); });
+      drawing.append(svgEl("text", {x: 30, y: 177, class: "academy-tick"}, "能量条共用 0–20,000 J 尺度；理想条件下 Q放 = Q吸。")); graphic.append(drawing);
+      const curve = Array.from({length: 41}, (_, i) => models.calorimetry(50 + i * 5, p.waterMass, p.waterTemp, p.metalTemp, p.specific));
+      drawPlot({label: "水质量和初温固定时平衡温度与金属质量关系", xLabel: "金属质量 m金 / g", yLabel: "平衡温度 T / ℃", maxX: 250, maxY: 100, x: point => point.metal_mass_g, y: point => point.equilibrium_C}, [50, 100, 150, 200, 250].map(mass => models.calorimetry(mass, p.waterMass, p.waterTemp, p.metalTemp, p.specific)), "metal_mass_g", curve);
+    } else throw new RangeError("未配置的模型视图。");
+    return {points, chart};
   }
   function positionPendulum(theta, length) { const line = get("academyPendulumString"), bob = get("academyPendulumBob"); if (!line || !bob) return; const pixels = 55 + length / 1.5 * 80, x = 300 + pixels * Math.sin(theta), y = 14 + pixels * Math.cos(theta); line.setAttribute("x2", x); line.setAttribute("y2", y); bob.setAttribute("cx", x); bob.setAttribute("cy", y); }
   function beginAnimation() {

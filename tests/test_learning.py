@@ -11,10 +11,17 @@ from app.main import create_app
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "/api/v1/learning"
-TOPICS = ("simple_pendulum", "ohms_law", "rc_time_constant")
+TOPICS = ("simple_pendulum", "ohms_law", "rc_time_constant", "hookes_law",
+          "spring_oscillation", "thin_lens", "snell_refraction", "double_slit", "calorimetry")
 CORRECT = {"simple_pendulum": {"prediction": "b", "transfer": "a"},
            "ohms_law": {"prediction": "c", "transfer": "b"},
-           "rc_time_constant": {"prediction": "d", "transfer": "a"}}
+           "rc_time_constant": {"prediction": "d", "transfer": "a"},
+           "hookes_law": {"prediction": "b", "transfer": "c"},
+           "spring_oscillation": {"prediction": "d", "transfer": "a"},
+           "thin_lens": {"prediction": "c", "transfer": "b"},
+           "snell_refraction": {"prediction": "a", "transfer": "d"},
+           "double_slit": {"prediction": "b", "transfer": "c"},
+           "calorimetry": {"prediction": "d", "transfer": "a"}}
 
 
 @pytest.fixture
@@ -30,45 +37,57 @@ def answer(client, topic="ohms_law", node="prediction", choice="a"):
     return client.post(f"{BASE}/courses/{topic}/answers", json={"node_id": node, "choice_id": choice})
 
 
-def test_catalog_contains_three_courses_without_solutions(lab):
-    _, client = lab
+def test_catalog_contains_nine_courses_without_solutions(lab):
+    app, client = lab
     listing = client.get(BASE + "/courses").json()
     assert {course["experiment_id"] for course in listing["courses"]} == set(TOPICS)
+    catalog = client.get("/api/v1/experiments").json()
+    assert set(TOPICS) <= {topic["experiment_id"] for topic in catalog["topics"]}
     for topic in TOPICS:
         response = client.get(BASE + "/courses/" + topic)
         assert response.status_code == 200
         course = response.json()
         assert course["progress"] == []
+        assert {node["id"] for node in course["nodes"]} == {"prediction", "transfer"}
         assert {node["stage"] for node in course["nodes"]} == {"prediction", "transfer"}
+        assert len(course["nodes"]) == 2 and course["summary"]
         for node in course["nodes"]:
             assert len(node["choices"]) == 4 and node["tag"] and node["question"]
+            assert {choice["id"] for choice in node["choices"]} == set("abcd")
+            private = next(item for item in app.state.learning.by_id[topic]["nodes"] if item["id"] == node["id"])
+            assert private["correct_choice_id"] == CORRECT[topic][node["id"]]
+            assert len(private["hints"]) == len(set(private["hints"])) == 3
+            assert private["explanation"] and all(private["hints"])
         assert "correct_choice_id" not in response.text
         assert "explanation" not in response.text and "hints" not in response.text
 
 
 @pytest.mark.parametrize("topic", TOPICS)
 @pytest.mark.parametrize("node", ("prediction", "transfer"))
-def test_all_six_questions_grade_on_server_and_explain_only_after_success(lab, topic, node):
+def test_all_eighteen_questions_grade_all_choices_and_explain_only_after_success(lab, topic, node):
     app, client = lab
     right = CORRECT[topic][node]
-    wrong = next(choice for choice in "abcd" if choice != right)
-    first = answer(client, topic, node, wrong)
-    assert first.status_code == 200
-    body = first.json()
-    assert body["correct"] is False and body["explanation"] is None and body["hint"]
-    assert "correct_choice_id" not in first.text
     standard_explanation = next(n for n in app.state.learning.by_id[topic]["nodes"] if n["id"] == node)["explanation"]
-    assert standard_explanation not in first.text
+    wrong_choices = [choice for choice in "abcd" if choice != right]
+    for attempt, wrong in enumerate(wrong_choices, 1):
+        first = answer(client, topic, node, wrong)
+        assert first.status_code == 200
+        body = first.json()
+        assert body["correct"] is False and body["explanation"] is None and body["hint"]
+        assert body["cycle_attempt_count"] == attempt
+        assert "correct_choice_id" not in first.text
+        assert standard_explanation not in first.text
     second = answer(client, topic, node, right)
     assert second.status_code == 200
     result = second.json()
     assert result["correct"] is True and result["assisted"] is True
-    assert result["attempt_count"] == 2 and result["cycle_attempt_count"] == 2
+    assert result["attempt_count"] == 4 and result["cycle_attempt_count"] == 4
     assert result["hint"] is None and result["explanation"] == standard_explanation
     assert "不计正式成绩" in result["feedback"]
     with app.state.learning.db.connect() as con:
         saved = con.execute("SELECT choice_id,correct,assisted FROM lab_learning_answers ORDER BY answer_id").fetchall()
-        assert [tuple(row) for row in saved] == [(wrong, 0, 0), (right, 1, 1)]
+        assert [tuple(row) for row in saved] == [(choice, 0, int(index > 0))
+                                                for index, choice in enumerate(wrong_choices)] + [(right, 1, 1)]
 
 
 def test_hint_levels_are_bounded_and_attempts_do_not_claim_mastery(lab):

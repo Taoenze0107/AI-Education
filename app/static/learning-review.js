@@ -1,6 +1,6 @@
 "use strict";
 (() => {
-  const titles = {simple_pendulum: "单摆测重力加速度", ohms_law: "伏安法测电阻", rc_time_constant: "RC 时间常数"};
+  const courseList = () => window.LabAcademyCourseList || [];
   const make = (tag, text, cls) => {
     const el = document.createElement(tag);
     if (text != null) el.textContent = text;
@@ -15,7 +15,7 @@
   view.querySelector(".page-heading").after(root);
 
   window.startAcademyExperiment = (eid, nodeId) => {
-    if (!Object.hasOwn(titles, eid) || (typeof state !== "undefined" && state.busy)) return;
+    if (!courseList().some(course => course.experiment_id === eid) || (typeof state !== "undefined" && state.busy)) return;
     const path = "/data" + (["prediction", "transfer"].includes(nodeId) ? "?lesson=" + nodeId : "");
     if (document.getElementById("experimentId")?.value === eid) { goPage(path); return; }
     const topic = typeof catalogTopic === "function" ? catalogTopic(eid) : null;
@@ -64,9 +64,13 @@
       list.append(card);
     }
     root.append(list);
+    const directory = make("details", null, "learning-review-directory");
+    directory.open = !data.items.length;
+    directory.append(make("summary", `继续交互实验（${courseList().length} 门）`));
     const courses = make("div", null, "learning-review-courses");
-    for (const [id, title] of Object.entries(titles)) courses.append(start(title + " →", id));
-    root.append(courses, make("p", "这里记录的是概念自检表现；填写完成、提示后答对和独立答对分别保留，不作为实验成绩或掌握全部知识的证明。", "hint"));
+    for (const course of courseList()) courses.append(start(course.title + " →", course.experiment_id));
+    directory.append(courses);
+    root.append(directory, make("p", "这里记录的是概念自检表现；填写完成、提示后答对和独立答对分别保留，不作为实验成绩或掌握全部知识的证明。", "hint"));
   }
   async function load(force = false) {
     if (!window.tutorReady || document.body.dataset.page !== "history" || busy || (!force && Date.now() - loadedAt < 30000)) return;

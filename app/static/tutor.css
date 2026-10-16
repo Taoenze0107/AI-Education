@@ -48,8 +48,22 @@
 .tutor-step-question{font-size:14px;font-weight:600;line-height:1.8;margin:10px 0}
 .tutor-inline-ask{background:none;border:0;border-bottom:1px solid #8c2434;border-radius:0;color:#8c2434;font-size:13px;padding:6px 0;min-height:40px}
 .tutor-check-error{margin:0;font-size:12px}
-.tutor-auto-option{display:flex;align-items:center;gap:9px;font-size:13px;margin:16px 0 4px;line-height:1.7}
-.tutor-auto-option input{width:17px;height:17px;margin:0;flex:none}
+.tutor-auto-controls{margin-top:16px}
+.tutor-auto-controls [hidden]{display:none!important}
+.tutor-auto-option{display:flex;align-items:center;gap:10px;font-size:13px;margin:0;line-height:1.7;min-height:44px;cursor:pointer}
+.tutor-auto-option>span{flex:1;min-width:0}
+.tutor-auto-option input{appearance:none;-webkit-appearance:none;box-sizing:border-box;width:22px;height:22px;min-height:22px;margin:0;flex:none;border:2px solid #526575;border-radius:3px;background:#fff;cursor:pointer;background-repeat:no-repeat;background-position:center;background-size:18px 18px;transition:background-color .12s,border-color .12s}
+.tutor-auto-option input:checked{border-color:#173e56;background-color:#173e56;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'%3E%3Cpath d='m3.5 9 3.4 3.5 7.6-8' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.tutor-auto-option input:focus-visible{outline:3px solid #a57830;outline-offset:4px}
+.tutor-auto-option:has(input:disabled){cursor:default}
+.tutor-auto-option input:disabled{background-color:#e7e8e4;border-color:#9ba7a6;cursor:not-allowed}
+.tutor-auto-state{font-size:11px;font-weight:600;white-space:nowrap;color:#59666b;border:1px solid #b6c0be;padding:1px 7px;border-radius:3px}
+.tutor-auto-controls[data-enabled="true"] .tutor-auto-state{background:#173e56;border-color:#173e56;color:#fff}
+.tutor-auto-status{font-size:12px;line-height:1.7;margin:4px 0 7px;color:#435761}
+.tutor-auto-controls[data-enabled="true"] .tutor-auto-status{color:#204f43}
+.tutor-auto-login,.tutor-auto-retry{font-size:12px;display:inline-block;margin:0 0 8px;color:#172e48}
+.tutor-auto-retry{border:1px solid #aeb8bf;background:#fff;padding:6px 10px;min-height:36px}
+.tutor-auto-login:focus-visible{outline:3px solid #a57830;outline-offset:3px}
 .tutor-auto-note{display:block;font-size:10px;color:#66716c;line-height:1.6;margin-bottom:8px}
 .tutor-auto-reply{border-top:1px solid #b8bfba;margin-top:15px;padding-top:15px;font-size:13px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere}
 .tutor-auto-reply>strong{color:#172e48;font-size:14px}
@@ -58,3 +72,4 @@
 @media(max-width:600px){.tutor-toggle{right:16px;bottom:16px;padding:10px 14px;font-size:13px}.tutor-panel{right:8px;bottom:78px;width:calc(100vw - 16px);height:min(700px,calc(100dvh - 94px))}.tutor-header{padding:14px 16px 8px}.tutor-header h2{font-size:22px}.tutor-context,.tutor-mode{padding-left:16px;padding-right:16px}.tutor-messages{padding:14px 16px}.tutor-form{padding:10px 16px 14px}.tutor-form textarea{font-size:16px}.tutor-feedback{padding:16px}.tutor-message{font-size:13px}}
 @media print{.lab-tutor,.tutor-inline-ask{display:none!important}}
 .tutor-selected-content{display:grid;gap:7px;padding:12px 16px;background:#faf5ee;border-left:3px solid #8a3544;margin:4px 20px 14px;font-size:13px;overflow-wrap:anywhere}.tutor-selected-content small{color:#67625b}.tutor-selected-content button{justify-self:start;font-size:12px;padding:5px 9px}.tutor-check-target{font-size:13px;padding:7px 12px;background:#fff;color:#19354f;border:1px solid #c6cdd1;margin:6px 0}.tutor-check-cleared{font-size:14px;color:#245649;background:#eef6f1;padding:12px;line-height:1.7}
+@media(forced-colors:active){.tutor-auto-option input{appearance:auto;-webkit-appearance:checkbox;accent-color:auto}.tutor-auto-option input:checked{background-image:none}.tutor-auto-state{border-color:ButtonText}}

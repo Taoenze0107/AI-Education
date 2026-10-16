@@ -1,4 +1,4 @@
-"""Owner-scoped low-stakes checks and scheduled revision for three lab lessons.
+"""Owner-scoped low-stakes checks and scheduled revision for interactive lab lessons.
 
 Answers stay on the server. These checks are learning prompts, never formal grades.
 """
