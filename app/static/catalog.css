@@ -16,3 +16,12 @@
 
 .textbook-index{margin:22px 0 30px;padding:21px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px 22px;align-items:center}.textbook-index>label{font-size:14px}.textbook-index>select{width:100%;min-width:0;max-width:100%;font-size:13px}.textbook-index>p,.textbook-index>details{grid-column:1/-1}.textbook-index>p{font-size:11px;line-height:1.8;margin:0}.textbook-index summary{font-size:12px;color:var(--green);cursor:pointer}.textbook-book{margin:25px 0;border-top:1px solid var(--line);padding-top:15px}.textbook-book h3{font-size:16px;font-weight:500;line-height:1.7}.textbook-crosswalk{padding-left:24px;font-size:12px}.textbook-crosswalk li{padding:14px 0;border-bottom:1px solid var(--line)}.textbook-crosswalk strong{font-weight:500}.textbook-crosswalk .resource-actions{margin-top:8px;gap:9px 18px}.textbook-crosswalk .hint{margin:8px 0 0;font-size:11px;line-height:1.8}.textbook-book .text-link{font-size:11px}.textbook-index a{overflow-wrap:anywhere}
 @media(max-width:520px){.textbook-index{grid-template-columns:1fr;padding:18px 0;gap:10px}.textbook-index>select{font-size:12px}.textbook-book h3{font-size:14px}.textbook-crosswalk{padding-left:20px}.textbook-index .resource-actions a{font-size:11px}}
+
+/* Public course discovery scales with the available interactive lessons. */
+.catalog-mode-filters{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 0}
+.catalog-mode-filters button{min-height:44px;padding:9px 15px;border:1px solid #bac2c8;color:#17354e;background:#fff;font-size:13px}
+.catalog-mode-filters button[aria-pressed="true"]{background:#17354e;color:#fff;border-color:#17354e}
+.catalog-interactive-tag{display:inline-block;margin-top:12px;color:#7f2c3d;font-size:11px;line-height:1.7}
+.catalog-level-links .catalog-interactive-link{padding:0 0 5px;min-height:32px;border:0;border-bottom:1px solid #a77981;background:transparent;color:#842b39;font-size:12px;white-space:normal;text-align:left}
+.catalog-level-links .catalog-interactive-link:hover{background:transparent;color:#17354e;border-color:#17354e}
+@media(max-width:520px){.catalog-mode-filters{gap:8px}.catalog-mode-filters button{font-size:12px;flex:1;min-width:0;padding:10px}.catalog-level-links .catalog-interactive-link{min-height:40px}}

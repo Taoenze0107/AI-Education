@@ -156,3 +156,12 @@
 .academy-heat-absorb { fill: #426c85; }
 
 .academy-formula-button { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+
+/* Additional textbook models keep direction diagrams separate from measured observations. */
+.academy-submerged { fill: #9fc9dc; stroke: #426c85; stroke-width: 1.5; }
+.academy-wire { fill: #d4b28c; stroke: #7b5f44; stroke-width: 1.5; }
+.academy-wire-end { fill: #bd936b; stroke: #7b5f44; stroke-width: 1.5; }
+.academy-core { fill: #b4bec5; stroke: #596f7d; stroke-width: 2; }
+.academy-core-gap { fill: #eeeee9; }
+.academy-coil { fill: none; stroke: #9a6441; stroke-width: 2.5; }
+.academy-refracted-ray { fill: none; stroke: #2e7487; stroke-width: 2; }

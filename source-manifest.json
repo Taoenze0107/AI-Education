@@ -1,0 +1,1052 @@
+[
+  {
+    "path": ".dockerignore",
+    "bytes": 221,
+    "sha256": "46e52f670b68c1b932a9e6f79b16caedd9ba702deee732c329b5789f6d4c6605"
+  },
+  {
+    "path": ".env.example",
+    "bytes": 1170,
+    "sha256": "38873877b1244c2083dc66a79c80cae3e98a71f11db26221e121f4725fe59166"
+  },
+  {
+    "path": ".gitignore",
+    "bytes": 321,
+    "sha256": "9cd80e91d95df6d14a9d51adaca780629e12c64a57b9608e3d78cbeb29bcf361"
+  },
+  {
+    "path": "ACCESSIBILITY.md",
+    "bytes": 3846,
+    "sha256": "d24cf240618f725c555372f9fd47f2117b4a9076a13c84f7249135f81aad0632"
+  },
+  {
+    "path": "AI助教接入说明_20261015.md",
+    "bytes": 4803,
+    "sha256": "74a59fd611f24cb7c8ed382b561c73c2c7a3132269c4c21c5ae8437a1789f12f"
+  },
+  {
+    "path": "BACKGROUND_ASSETS.md",
+    "bytes": 1676,
+    "sha256": "bf79e5103fe3bec0ba8e1237345e65c353cb230ef405906195cafe0f7aafb906"
+  },
+  {
+    "path": "CHANGELOG.md",
+    "bytes": 1431,
+    "sha256": "a3838c3fcdaa147c7b3a30a24a6c83a82127108882ebe7155c0e0fdbfc308924"
+  },
+  {
+    "path": "Dockerfile",
+    "bytes": 493,
+    "sha256": "41a2d45938087793e8d4bac25ea4c9aee8d41a4774acd61fd22d529bac0ce33f"
+  },
+  {
+    "path": "EXPERIMENT_CATALOG.md",
+    "bytes": 726,
+    "sha256": "3cd41e25793068013c251f15a88be291a4b31d809ce7900e4b38d45c9037edf6"
+  },
+  {
+    "path": "INTERACTIVE_LESSONS_UPDATE_20261016.md",
+    "bytes": 2867,
+    "sha256": "61f89847c9b65a73e246b0de52aba38289dd454f58b089314a19837921e3210d"
+  },
+  {
+    "path": "INTERACTIVE_LESSONS_UPDATE_20261016B.md",
+    "bytes": 4732,
+    "sha256": "9e1bf389d3e7296b2aeede540618a70876f36b63fb00931d75e2e738edeb80a8"
+  },
+  {
+    "path": "KNOWLEDGE_SOURCES.md",
+    "bytes": 11347,
+    "sha256": "9531b2cddd40592676ed9f8df5eb8da5d4244fa0f6fae593ca5159240d615c40"
+  },
+  {
+    "path": "QUICKSTART.md",
+    "bytes": 4463,
+    "sha256": "0371614ab9a6a56f711a34ef331ed6fc125021292da51c64e98aac2395a7e5c5"
+  },
+  {
+    "path": "README.md",
+    "bytes": 2949,
+    "sha256": "ec9a0d517412c1295a124f2bc731dd8906f2743b4d054101c7307e8c885e1822"
+  },
+  {
+    "path": "RENDER_DEPLOY.md",
+    "bytes": 2100,
+    "sha256": "5e8b281422ca5bfdc4a7c140a3a2d74b7b8343c4cf3cafc98d6c71175bfb765c"
+  },
+  {
+    "path": "STEPWISE_VERIFICATION.md",
+    "bytes": 1522,
+    "sha256": "5893558e605803eb4ec66b08a2cde01a82ecd2af99b1ec03bfb2469e5dbf6a88"
+  },
+  {
+    "path": "anomaly_module/README.md",
+    "bytes": 2948,
+    "sha256": "b2323213683d4cbfc9fa7336fe96a91408de8ef7a32d9912cfe08dbb53d22ff4"
+  },
+  {
+    "path": "anomaly_module/TEAM_INTEGRATION.md",
+    "bytes": 2366,
+    "sha256": "abeecbb5f62d29d8346b1d9b1a5512ff87b9d49f78f64807936d324f0a8d92be"
+  },
+  {
+    "path": "anomaly_module/data/ohms_law_dataset.csv",
+    "bytes": 492,
+    "sha256": "5aa5a2186d2359b4475d277de51065156b6387d9d8f2e77a80d6f9d718db7c0e"
+  },
+  {
+    "path": "anomaly_module/data/ohms_law_training.csv",
+    "bytes": 196442,
+    "sha256": "2f0d543f35935b68e9a8ad1e509ff476f650f86f26f06b99bce0021230795a81"
+  },
+  {
+    "path": "anomaly_module/data/real_data_template.csv",
+    "bytes": 114,
+    "sha256": "27adb0dc1a63a8779003efb6d06db5a8e129b25c5e428771633914429decfcc6"
+  },
+  {
+    "path": "anomaly_module/evaluate_real_data.py",
+    "bytes": 4450,
+    "sha256": "1996fe997c92b3db79b401e29afa48faf8bbc609f829477756c0eab3af660e6b"
+  },
+  {
+    "path": "anomaly_module/generate_dataset.py",
+    "bytes": 3397,
+    "sha256": "b88475b5158e87c402bcf8b6c551ec452de5d783d3cd0a3d023ffc49d5461829"
+  },
+  {
+    "path": "anomaly_module/models/ohms_law_rf.joblib",
+    "bytes": 1126203,
+    "sha256": "0235bbd95f6f796e1023bfa41ce438c74d18ae7fd694837da0892f553242c7f0"
+  },
+  {
+    "path": "anomaly_module/reports/evaluation.json",
+    "bytes": 1941,
+    "sha256": "00e7f355924a7c0748e130f5b18b9245421d62b5db0e09e838f590aa58f62ae9"
+  },
+  {
+    "path": "anomaly_module/train_model.py",
+    "bytes": 4338,
+    "sha256": "ebf5a69375cf3ce14adcb90ddc5ade8f71761e108fbbf76f1893fab79d2ab363"
+  },
+  {
+    "path": "app/__init__.py",
+    "bytes": 81,
+    "sha256": "f042c01e9a90b61a0d30b777386e69fdc08beb10ba41d9d48511dec069219628"
+  },
+  {
+    "path": "app/anomaly.py",
+    "bytes": 26210,
+    "sha256": "5099853ac2c870e113e2f3d7820e2c10baeb5da383f197b03defa3a22ce5aa41"
+  },
+  {
+    "path": "app/anomaly_detector.py",
+    "bytes": 285,
+    "sha256": "a01303f240a2616019839d9d61ae49dbe141f9b7c0ce19687ffb98a911733708"
+  },
+  {
+    "path": "app/anomaly_import.py",
+    "bytes": 6863,
+    "sha256": "bf399ad03a1959c4f404435bc7babdc4ad24e445b298cb7cc911342de4833a12"
+  },
+  {
+    "path": "app/catalog_extension.py",
+    "bytes": 13244,
+    "sha256": "ed0663f41406fa02088cf38cd1c8e2de1bfdf3da463905b3e31b548a7eabce0a"
+  },
+  {
+    "path": "app/catalog_routes.py",
+    "bytes": 9452,
+    "sha256": "0a8b891961fb91932a9b16f8607052268baa29bed0191ff299ed78b275c12457"
+  },
+  {
+    "path": "app/chart_generator.py",
+    "bytes": 823,
+    "sha256": "0a5692fbb6f724aa9925d9ea937b49f9189c85cfc5376408e8326464575e95c3"
+  },
+  {
+    "path": "app/classroom.py",
+    "bytes": 31099,
+    "sha256": "f84047ad3123160b5b36d5977ed1f7c60f965aafdec90cad7422feef9d5fa798"
+  },
+  {
+    "path": "app/cloud_database.py",
+    "bytes": 3267,
+    "sha256": "86240a10d7b44538f51705e26f34f39c4653d951bdb835106b8e78d49e44adf9"
+  },
+  {
+    "path": "app/config.py",
+    "bytes": 2506,
+    "sha256": "734ed0386143f2f76a8cce7729c48fb2305bc44d0c885465e02b2a2ef643ab52"
+  },
+  {
+    "path": "app/data/experiment_catalog.json",
+    "bytes": 1892886,
+    "sha256": "17f5e3d3e3793faa9ce16e0af70d1d80094acda3be0639b50f24380c314d04e8"
+  },
+  {
+    "path": "app/data/knowledge_base.json",
+    "bytes": 474852,
+    "sha256": "e8339c19ab16fab940af8aaffc1446b9728a010f6602159d84ef02d342d09d66"
+  },
+  {
+    "path": "app/data/learning_courses.json",
+    "bytes": 57088,
+    "sha256": "2962a1db4d838a55aae5bd6231740d7c39783fcb2beead280151aaf0c03b281e"
+  },
+  {
+    "path": "app/data/textbook_coverage.json",
+    "bytes": 41024,
+    "sha256": "f071f6b502c7b16ba763493bb3cd756d3d94e5db3bbdb7aae2fa62f3bc611727"
+  },
+  {
+    "path": "app/database.py",
+    "bytes": 3051,
+    "sha256": "00c3b005a3b91a928da6158bf10d600f52f535c77436fb8de553726b149e3ab7"
+  },
+  {
+    "path": "app/evidence.py",
+    "bytes": 9858,
+    "sha256": "ab7a5976fba2f58bbf0f6e4c068b9544690d7bf0d17c1a229723c861a2de4707"
+  },
+  {
+    "path": "app/experiment_catalog.py",
+    "bytes": 24043,
+    "sha256": "8c14aa44df9ff6bfe1a02af89c876bb3e9ff82de6127252483263e17af80cfc4"
+  },
+  {
+    "path": "app/knowledge.py",
+    "bytes": 6103,
+    "sha256": "3991dcb173ca86a92343ef1db98d8f62aa60fd9271148bcd8bc51c155dc1fe69"
+  },
+  {
+    "path": "app/learning.py",
+    "bytes": 13195,
+    "sha256": "604a9589961e3ab1b7449314591b5411ddb934500f3baaec536c45d97a30c558"
+  },
+  {
+    "path": "app/llm.py",
+    "bytes": 10737,
+    "sha256": "a4a38bd94b03c8617918c3432daf095f2157edbfa02f037738473ee099e11979"
+  },
+  {
+    "path": "app/main.py",
+    "bytes": 11478,
+    "sha256": "c175806fa80e6bfe28c104c30eaa36f72706d892b7cbcb4e0a76d1d601329d8f"
+  },
+  {
+    "path": "app/material_parser.py",
+    "bytes": 3595,
+    "sha256": "7abcabfe2e2687a11d1744fb30706248098335871e3db909a1fa38fb79ea4a5f"
+  },
+  {
+    "path": "app/math_engine.py",
+    "bytes": 4995,
+    "sha256": "f17062fc95a8cce9ded66cea53427b6acb1ce2ae8b630870a64cd55309b1a2cd"
+  },
+  {
+    "path": "app/models.py",
+    "bytes": 9647,
+    "sha256": "676c370224275656c791f0eb84a9bc71b06708de046bb6779c1a07cfb7c0b764"
+  },
+  {
+    "path": "app/ms_gates.py",
+    "bytes": 15441,
+    "sha256": "0600f058ccb3b0841cb3ae1d27de3d77ce73eb031574ae0c5d72dc659370c63a"
+  },
+  {
+    "path": "app/repository.py",
+    "bytes": 10169,
+    "sha256": "af5ce5bacf219e3c3bf2549e8cda7c7552ab1b88fe2bdd187db38eabe9d4f369"
+  },
+  {
+    "path": "app/service.py",
+    "bytes": 3561,
+    "sha256": "6dfd6d2c1efec1bbbd758d719256c2d80b5a8294771876eec41b5e0a45c200f9"
+  },
+  {
+    "path": "app/standards.py",
+    "bytes": 2758,
+    "sha256": "f7ae9df5d288dc4fee3deed036d095dc3344f7c8a541e6f5199acc7821a576b2"
+  },
+  {
+    "path": "app/static/academy.css",
+    "bytes": 13627,
+    "sha256": "04012bfc7da62115c588cfbb2fb3c0e89894b69c68ac6b414a88b791bf9b7b71"
+  },
+  {
+    "path": "app/static/academy.js",
+    "bytes": 100470,
+    "sha256": "07b77d4d171e9d96e88fed6c4d6676d117ce8ea7f5158aa57ff7344f8fb5f606"
+  },
+  {
+    "path": "app/static/account-sync.js",
+    "bytes": 955,
+    "sha256": "aec763d3f88f2929c501906f5025ac7007a9ac7b95f168dca8673146f681fa97"
+  },
+  {
+    "path": "app/static/app.js",
+    "bytes": 75726,
+    "sha256": "596552f76397c5b2188e725d239b192fa9361a60ad3640c0f4ee49324854e6af"
+  },
+  {
+    "path": "app/static/catalog.css",
+    "bytes": 12901,
+    "sha256": "9251fb24b6fabe621659bd5aeb6091330d62b25a80c217dba9d9a99333c7e5a6"
+  },
+  {
+    "path": "app/static/catalog.js",
+    "bytes": 36335,
+    "sha256": "03a8ca4007ca484269f864782067d68c9a8bfcdb93a3c72f52029fde84c1bcc6"
+  },
+  {
+    "path": "app/static/classroom-links.js",
+    "bytes": 4129,
+    "sha256": "337046c002edd582172760a88b62dabac0a420f7d4dca67b74d9a13de85900c6"
+  },
+  {
+    "path": "app/static/classroom.css",
+    "bytes": 8341,
+    "sha256": "1c439b239589249616e3c499ea6a9d475b3023309ba7cc6bdf59afbb9ab19964"
+  },
+  {
+    "path": "app/static/classroom.html",
+    "bytes": 2801,
+    "sha256": "4e100424a520d2941a997aaf74fd6115ec65e48b7291baba53adffadcb038cf1"
+  },
+  {
+    "path": "app/static/classroom.js",
+    "bytes": 34213,
+    "sha256": "e3c766ea5832de7e452178c4e0036cd7e1785e053c46b1c1e14850bc056e2059"
+  },
+  {
+    "path": "app/static/flow.js",
+    "bytes": 9354,
+    "sha256": "20525475e566d50c66c01dcee7c1eb76d148e4f5f3843c07d0100c4ddcafe233"
+  },
+  {
+    "path": "app/static/formula-catalog.js",
+    "bytes": 22727,
+    "sha256": "dc87a6509657bb930f0a794075273f66f3caf5b4f5851b7a98a584cd704d7551"
+  },
+  {
+    "path": "app/static/guide.js",
+    "bytes": 36086,
+    "sha256": "f13daecb92467131ed398dde0afbfb02de4587415bc1cc160972efcb09f31380"
+  },
+  {
+    "path": "app/static/images/book-lightbulb.jpg",
+    "bytes": 151161,
+    "sha256": "ba1d4f2da932be817f6d472ed7f6c91c714e0353a19a94e95358dfb962ca0a39"
+  },
+  {
+    "path": "app/static/images/chalkboard-books.jpg",
+    "bytes": 48024,
+    "sha256": "f55c6d73bc48569a1fa3b77bfa3f774b1be02ce9c8c5abc5278023fa11fd0799"
+  },
+  {
+    "path": "app/static/images/lab-desk.webp",
+    "bytes": 140096,
+    "sha256": "cf094d36f165fae6069e32a6188e2ed1ef7b3b7a1bf3c783a09f230512ed42a4"
+  },
+  {
+    "path": "app/static/index.html",
+    "bytes": 42019,
+    "sha256": "b4f80a8ac56f7a53ae107dc9871b4c72de89a9eec23867625490066bf18726e8"
+  },
+  {
+    "path": "app/static/learning-math.js",
+    "bytes": 3355,
+    "sha256": "74d564cef6272467466686974c1503af311b5175123530e3417d0d1cb41f8708"
+  },
+  {
+    "path": "app/static/learning-review.css",
+    "bytes": 2657,
+    "sha256": "90ff89cec586af80500d3fa3d86e40385a88823479876445f92315ebbd61e056"
+  },
+  {
+    "path": "app/static/learning-review.js",
+    "bytes": 6159,
+    "sha256": "8dea2a21a546c4c5bb0d43c03197fdd18ce769f9858950d07aa92d0c96893c49"
+  },
+  {
+    "path": "app/static/learning.css",
+    "bytes": 7997,
+    "sha256": "08b3636bc27a4b67123a213af4f85c44b07474e702332f53e4dc914f0f266688"
+  },
+  {
+    "path": "app/static/math-render.js",
+    "bytes": 10051,
+    "sha256": "ed8b40666d110b1a54407002477eb639291c7d494d7c177030e51dcdb6651ca3"
+  },
+  {
+    "path": "app/static/pages.css",
+    "bytes": 11517,
+    "sha256": "298c8d5593ea5bed4805bf83649362ba2490f27c0722fdbfc8b313a28ffc2ff1"
+  },
+  {
+    "path": "app/static/render-fixes.css",
+    "bytes": 3623,
+    "sha256": "cb6a82534de62e211a2cdd244157d4d66317e82706c22493685a805f4496e51e"
+  },
+  {
+    "path": "app/static/styles.css",
+    "bytes": 15647,
+    "sha256": "35e943d26af88c8e6d700284584a105c62b437c2ab8758d8b3a37d7998adfd02"
+  },
+  {
+    "path": "app/static/tutor.css",
+    "bytes": 8634,
+    "sha256": "2a177e4d80e69e9e1e1c708a52c39a413566751607e4bc4b6a34f8cebe82f63d"
+  },
+  {
+    "path": "app/static/tutor.js",
+    "bytes": 30210,
+    "sha256": "1b3a34ec6b60272339f9f41cd89064a4bfe65eaa3b1df3d093fec9c86b76b212"
+  },
+  {
+    "path": "app/static/university-classroom.css",
+    "bytes": 16015,
+    "sha256": "cea31821b2d80c0de8eb0b509acaf6ec859f9180707a090e63a535681c5bd91f"
+  },
+  {
+    "path": "app/static/university-resources.css",
+    "bytes": 17371,
+    "sha256": "691bf5595b71588f1caf971ec041b666b7f36152695bcf72b7bff8a852790110"
+  },
+  {
+    "path": "app/static/university.css",
+    "bytes": 20665,
+    "sha256": "c33c9e1d116709c959b6c6c20d7783162b2278f1ede4115abf98b74423fe86ca"
+  },
+  {
+    "path": "app/static/university.js",
+    "bytes": 1248,
+    "sha256": "1939fedc672a705122001f77601f7809bcc884d792ecd8aec9a3e312cc0863b2"
+  },
+  {
+    "path": "app/static/vendor/katex/LICENSE",
+    "bytes": 1107,
+    "sha256": "766ccc1f306c885aa45542a9846bbd0a505b27a0374f146778171c2254ce18e3"
+  },
+  {
+    "path": "app/static/vendor/katex/SOURCE.md",
+    "bytes": 153,
+    "sha256": "3c82dd3d63e6fe36316451656fbaf987cc78932596437a12dc14609ceeffe5bd"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_AMS-Regular.ttf",
+    "bytes": 63632,
+    "sha256": "68534840bcfdd2bffb6f0e8deb48684dd01e7f04ea2813267577afb906de1d13"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_AMS-Regular.woff",
+    "bytes": 33516,
+    "sha256": "30da91e84c893f875e252689faebdc590b2871145e8adc7f9a9d4dbd8ce0b251"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_AMS-Regular.woff2",
+    "bytes": 28076,
+    "sha256": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Caligraphic-Bold.ttf",
+    "bytes": 12368,
+    "sha256": "07d8e303ce4fc12b4bb54f1004170dd190a1f3db45d400fe68060df3e0897268"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Caligraphic-Bold.woff",
+    "bytes": 7716,
+    "sha256": "1ae6bd7475590e97e7f145a89e09ccde322f7a6bc0b91607b1c8b8ee28290fed"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Caligraphic-Bold.woff2",
+    "bytes": 6912,
+    "sha256": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Caligraphic-Regular.ttf",
+    "bytes": 12344,
+    "sha256": "ed0b74372feefcbb9c0666b2e210da37b7e49fa7fbbf3eeb11db5f693dacfbb7"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Caligraphic-Regular.woff",
+    "bytes": 7656,
+    "sha256": "3398dd02302557a793f2863f88e02d96ce10df2abffa07c8e9fa90775116e65c"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Caligraphic-Regular.woff2",
+    "bytes": 6908,
+    "sha256": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Fraktur-Bold.ttf",
+    "bytes": 19584,
+    "sha256": "9163df9c7122432e6495b4229fa9071cf9ae86a758ae5efc4924ec2e1a6dbce1"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Fraktur-Bold.woff",
+    "bytes": 13296,
+    "sha256": "9be7ceb88004ab8ad124082246fbfcca4091e36385d4ec6ed1df67375dad50fb"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Fraktur-Bold.woff2",
+    "bytes": 11348,
+    "sha256": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Fraktur-Regular.ttf",
+    "bytes": 19572,
+    "sha256": "1e6f9579e90e2cac37f8f60a597c436e075c114385652b7cbeb0dec0421291b3"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Fraktur-Regular.woff",
+    "bytes": 13208,
+    "sha256": "5e28753be717dac97f559f49bc10be9cf3c124ddcabda6659d11cb68febc6463"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Fraktur-Regular.woff2",
+    "bytes": 11316,
+    "sha256": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Main-Bold.ttf",
+    "bytes": 51336,
+    "sha256": "138ac28d1663b3037e9c5f52371fa5c63d8324f4a38d22cd573e6ea3a3fd0cf8"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Main-Bold.woff",
+    "bytes": 29912,
+    "sha256": "c76c5d696297d51b9cb1639c7da4334f0e7dec81b42b11213b5e25ef671bb822"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Main-Bold.woff2",
+    "bytes": 25324,
+    "sha256": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Main-BoldItalic.ttf",
+    "bytes": 32968,
+    "sha256": "70ee1f64a20f2048c21940ef46d0144fd215baa953ca69afd1e31e98544f708f"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Main-BoldItalic.woff",
+    "bytes": 19412,
+    "sha256": "a6f7ec0d846ac7ad975adb8959c37ed49b94acbc4ae436db9ce9e20287e4a64c"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Main-BoldItalic.woff2",
+    "bytes": 16780,
+    "sha256": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Main-Italic.ttf",
+    "bytes": 33580,
+    "sha256": "0d85ae7cc30f23790a7f1a58c4a112fdca8aae769b6ba11429af1d98b1b6cb3a"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Main-Italic.woff",
+    "bytes": 19676,
+    "sha256": "f1d6ef86f3b11a528bd5185199bd2443ecb2b0dead96d88674b5a2c12be24bdf"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Main-Italic.woff2",
+    "bytes": 16988,
+    "sha256": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Main-Regular.ttf",
+    "bytes": 53580,
+    "sha256": "d0332f52868370fd83ae7fa46470f90c8f2eab2fcf12bc4f88080b340c95a830"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Main-Regular.woff",
+    "bytes": 30772,
+    "sha256": "c6368d87e8a1a3a5d337623d83d8dc4b868f242a9ad476237d6f8d1e0f168cdc"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Main-Regular.woff2",
+    "bytes": 26272,
+    "sha256": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Math-BoldItalic.ttf",
+    "bytes": 31196,
+    "sha256": "f9377ab0271cda59af24bcffbd46a4d0c8a3572ffafdbb38de2ad5ea7b0d5ee5"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Math-BoldItalic.woff",
+    "bytes": 18668,
+    "sha256": "850c0af5c2238497febaf5e461d880bf458c341f42f4f330f1b1ab5698b1998e"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Math-BoldItalic.woff2",
+    "bytes": 16400,
+    "sha256": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Math-Italic.ttf",
+    "bytes": 31308,
+    "sha256": "08ce98e51b04d58945a301e639e02b6998af29fdfd61a7b8afdd07bbfc479d4a"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Math-Italic.woff",
+    "bytes": 18748,
+    "sha256": "8a8d244581371912b8f3f5a23e2437cb2a59cd9bcaebb0346e722c05737a2571"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Math-Italic.woff2",
+    "bytes": 16440,
+    "sha256": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_SansSerif-Bold.ttf",
+    "bytes": 24504,
+    "sha256": "1ece03f79f95277d57dc7f6b435a74e1379b0d46104a8530286b60ff49369ea0"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_SansSerif-Bold.woff",
+    "bytes": 14408,
+    "sha256": "ece03cfd83e22c212cdef66feb8442d25a083beb988db3f1883f3f9738d750ba"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_SansSerif-Bold.woff2",
+    "bytes": 12216,
+    "sha256": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_SansSerif-Italic.ttf",
+    "bytes": 22364,
+    "sha256": "3931dd81faed86ba021bb2bbdc36f5bed9a38d6b4f4077aca59b265aa1b02083"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_SansSerif-Italic.woff",
+    "bytes": 14112,
+    "sha256": "91ee67500cc0129aa0ace3ac5c61ff1692102f0f31d02b69347fba35dcb75bf2"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_SansSerif-Italic.woff2",
+    "bytes": 12028,
+    "sha256": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_SansSerif-Regular.ttf",
+    "bytes": 19436,
+    "sha256": "f36ea897e19f4a2e571d1e900e4e3710e438deb05a842486045ba0a3e616a4ad"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_SansSerif-Regular.woff",
+    "bytes": 12316,
+    "sha256": "11e4dc8a6471ff6d6ee561d53d10fde8f7489e798257ff449c5d37c197435605"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_SansSerif-Regular.woff2",
+    "bytes": 10344,
+    "sha256": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Script-Regular.ttf",
+    "bytes": 16648,
+    "sha256": "1c67f068fea8bb09bf099c088b1cf64bd27516a6e07f4684344873564bb66a67"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Script-Regular.woff",
+    "bytes": 10588,
+    "sha256": "d96cdf2b3bdd4d64a8fd5f74a4c467f123a8a73931cd435889f08ffaf9bf947a"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Script-Regular.woff2",
+    "bytes": 9644,
+    "sha256": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Size1-Regular.ttf",
+    "bytes": 12228,
+    "sha256": "95b6d2f1a50173bfedb8c63e1d1c99b10427d0a4df4201cb44513b226951a22b"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Size1-Regular.woff",
+    "bytes": 6496,
+    "sha256": "c943cc986384f59e86bea5fd7dc50a9c4dfe567a7c05eb40d6790720dead97c9"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Size1-Regular.woff2",
+    "bytes": 5468,
+    "sha256": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Size2-Regular.ttf",
+    "bytes": 11508,
+    "sha256": "a6b2099fb555c60e3a0db3a08842ebf1d732c6eb4e4bf44913613bed4fc4e39b"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Size2-Regular.woff",
+    "bytes": 6188,
+    "sha256": "2014c523c3210bcc166648c4d4cc57f05b747df07a24277bf71c51e67dc79e3d"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Size2-Regular.woff2",
+    "bytes": 5208,
+    "sha256": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Size3-Regular.ttf",
+    "bytes": 7588,
+    "sha256": "500e04d54f0d51666332c9d2089aa803be22aa878eca539e59fa53c6e522b082"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Size3-Regular.woff",
+    "bytes": 4420,
+    "sha256": "6ab6b62e9b62dae2c00dd90f791bd10950be0ecc3490d7d6045f51c2e8fe0949"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Size3-Regular.woff2",
+    "bytes": 3624,
+    "sha256": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Size4-Regular.ttf",
+    "bytes": 10364,
+    "sha256": "c647367d1dd4e162468717d020e1fc0f1dc5c26ebfdffbe55261713bf88c5877"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Size4-Regular.woff",
+    "bytes": 5980,
+    "sha256": "99f9c6750b489c9462bf04900bd3f939df9b829339daaaaa99ef5495cdddea58"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Size4-Regular.woff2",
+    "bytes": 4928,
+    "sha256": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Typewriter-Regular.ttf",
+    "bytes": 27556,
+    "sha256": "f01f3e87d9c6a61c0c081ceb577abd864eb00a612f7ac1620dd6915fad2ef5aa"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Typewriter-Regular.woff",
+    "bytes": 16028,
+    "sha256": "e14fed02b1aba7ce9f5afd5844b5d0321b22351febc720e0de8b8723527609f7"
+  },
+  {
+    "path": "app/static/vendor/katex/fonts/KaTeX_Typewriter-Regular.woff2",
+    "bytes": 13568,
+    "sha256": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b"
+  },
+  {
+    "path": "app/static/vendor/katex/katex.min.css",
+    "bytes": 24793,
+    "sha256": "d4ab5b8ee16989b070cdb0ea24bd6ad48fc8df1b787f280f29d3ae4f959f2c00"
+  },
+  {
+    "path": "app/static/vendor/katex/katex.min.js",
+    "bytes": 272868,
+    "sha256": "103a53763cc033bba8d175bf3f0ba597c3505c9b6747dd3f2c7bc2a6bfcc8ae7"
+  },
+  {
+    "path": "app/stats.py",
+    "bytes": 16309,
+    "sha256": "b60128ee0f0a4a1fb05c0fa0bba8c297c545e01642fa0f660539acd6c9e489da"
+  },
+  {
+    "path": "app/teaching.py",
+    "bytes": 1883,
+    "sha256": "69f0b61336e38a946beb6a5a01f39b0e0f8b2f2048a220c5e1f66fa054264363"
+  },
+  {
+    "path": "app/textbook_models.py",
+    "bytes": 42776,
+    "sha256": "c67bf93ea58203faec71104c89a90ab7406f82cd3c1d86b8933cdb6f952d8f34"
+  },
+  {
+    "path": "app/tutor.py",
+    "bytes": 22688,
+    "sha256": "edd20184d5280a841d9efd3ca4a2f2d98720b431203d48fc21fee63d6c9c741d"
+  },
+  {
+    "path": "eval_data/make_normal_cases.py",
+    "bytes": 4596,
+    "sha256": "8cc0aeb60ec08a92d48c76d67a6bd6f9f2612dc48e1c8307da567194b75bb02c"
+  },
+  {
+    "path": "eval_data/make_record_sheet.py",
+    "bytes": 7782,
+    "sha256": "cf2ba7f0576aa9a8bb56a65f8fac8cd0aa9f6ff849826aba9954a2f17a846b96"
+  },
+  {
+    "path": "eval_data/normal_cases.csv",
+    "bytes": 1208,
+    "sha256": "52a61e58609fac45dd6242e346b985af3bb89ae3fd2bc2fa3837623228343018"
+  },
+  {
+    "path": "eval_data/simulated_record_sheet.xlsx",
+    "bytes": 7993,
+    "sha256": "70f674382e44f9bb7e96b8cdbe77bc74e5ae7998b77fc0974c7887222f566989"
+  },
+  {
+    "path": "examples/insufficient_evidence.json",
+    "bytes": 465,
+    "sha256": "c46e2a0cb122954de1197301203487cb2d2155fa7987dae3c0eb8c0ba6d982c5"
+  },
+  {
+    "path": "examples/sufficient_calculation_error.json",
+    "bytes": 1222,
+    "sha256": "a9f8c4320d9d124b2c202bfb8f39292192a39af93848c29af48eec5bfe6dabbf"
+  },
+  {
+    "path": "models/anomaly_classifier.pkl",
+    "bytes": 1126203,
+    "sha256": "0235bbd95f6f796e1023bfa41ce438c74d18ae7fd694837da0892f553242c7f0"
+  },
+  {
+    "path": "pyproject.toml",
+    "bytes": 769,
+    "sha256": "799f74a8a247235e470d5b2faf6588623a35ba78ef2ff6ae41fe60d8a4e1ad24"
+  },
+  {
+    "path": "render.yaml",
+    "bytes": 659,
+    "sha256": "7618471e32c9cacd2be5c64222c52704edce91aa12a4b9e4009551a0b2bae537"
+  },
+  {
+    "path": "requirements.txt",
+    "bytes": 153,
+    "sha256": "bc55e7e8f985f54aa5357aeb6aaac3f431663281d795b5ba01e0b36917c1615c"
+  },
+  {
+    "path": "standards/ohms_law.json",
+    "bytes": 3588,
+    "sha256": "31a4f960707ba1bf1bbcd95c61ac02fb4ddc839d5538300fb512f5720393f00c"
+  },
+  {
+    "path": "standards/rc_time_constant.json",
+    "bytes": 3917,
+    "sha256": "93b8a6231e69e15aa6acf742a3d50104ff3386474b43efb99813210788da0594"
+  },
+  {
+    "path": "standards/simple_pendulum.json",
+    "bytes": 4057,
+    "sha256": "936f609697740d57f5e91f647e94072fd6c4b97632aa8434f539fcf50ed933c2"
+  },
+  {
+    "path": "start.cmd",
+    "bytes": 1581,
+    "sha256": "56d2202903c9ad8e5020c41ab297fe377310c0af9c5c8b54d6e3cd3ac0144357"
+  },
+  {
+    "path": "start.command",
+    "bytes": 166,
+    "sha256": "6caa4bb82d66ee661ac5f8ee04903adb2f589e7abf49ea1575130d0cb810df6d"
+  },
+  {
+    "path": "start.sh",
+    "bytes": 1471,
+    "sha256": "a168211773b27ff5c8cf97c26f4cbe275d3c2fd0847bfd9878e457a93f013be8"
+  },
+  {
+    "path": "test_cases_filled.csv",
+    "bytes": 4061,
+    "sha256": "ab44923b9f41d276cbe02e91b9c5545d7d74b04af70ec48df63266aeb122d71f"
+  },
+  {
+    "path": "tests/academy_models.cjs",
+    "bytes": 17388,
+    "sha256": "703622c2b594dc80dd2a1fdd6b5096f5de5a3d43a44aa269d33fb2adfe5ef78c"
+  },
+  {
+    "path": "tests/browser/README.md",
+    "bytes": 634,
+    "sha256": "132fa0f1c70b7a63154075dd202d30b47a99cfabb847a33dafe47d5f4ade234d"
+  },
+  {
+    "path": "tests/browser/edges.cjs",
+    "bytes": 6531,
+    "sha256": "d35bee6071aacae044e6d3b296e9f8a3df10e4712709cb1bbd7bd06867fd5cb1"
+  },
+  {
+    "path": "tests/browser/formula-render.cjs",
+    "bytes": 2565,
+    "sha256": "918aca8645a0c63d3934116e1e46b7dc4ae268d36c5a46c326d2e1827cc958e0"
+  },
+  {
+    "path": "tests/browser/learning-math.cjs",
+    "bytes": 1796,
+    "sha256": "1d444e907468cad3f9635883d056a1aeb02bfe1b26060aa119aa7d2afd6c5b0f"
+  },
+  {
+    "path": "tests/browser/package.json",
+    "bytes": 216,
+    "sha256": "e9ea0baa9fac7b5832be8b1d61b9fc2241768a8f875710ec2d398bc4f044d653"
+  },
+  {
+    "path": "tests/browser/tutor.cjs",
+    "bytes": 5627,
+    "sha256": "ea7437eeef02b390b4190bb60f969331544148991c786de5b9aaa1b438dafcc5"
+  },
+  {
+    "path": "tests/browser/workflow.cjs",
+    "bytes": 8056,
+    "sha256": "eb92d259bd4a5d70f2990ed770aa236370ba6c3e207e797279e7ee9af487cbfd"
+  },
+  {
+    "path": "tests/test_anomaly.py",
+    "bytes": 6373,
+    "sha256": "dbd6fe340d018cd59a26fff85814975e8882097c6fdbb6d91e7297824d0442c7"
+  },
+  {
+    "path": "tests/test_api.py",
+    "bytes": 13685,
+    "sha256": "31fd10daa3db2a8d99a78ed0f420dd820a908f80c720054023b1132e3821d045"
+  },
+  {
+    "path": "tests/test_catalog_expansion_20261011.py",
+    "bytes": 4543,
+    "sha256": "c0e89efcb7978f0dee30b7c766fba353ceafee7035b6761438b624648d7d7056"
+  },
+  {
+    "path": "tests/test_classroom.py",
+    "bytes": 17926,
+    "sha256": "238adc1c2a565f0d42795e61b359758b89e98fab4bf90f5c6a5ed67974fca7e8"
+  },
+  {
+    "path": "tests/test_cloud_database.py",
+    "bytes": 5947,
+    "sha256": "ed4aff64264b73230bdb7914eaf3b16ad06756bdea5d626e2058be7df9fd4ee0"
+  },
+  {
+    "path": "tests/test_config.py",
+    "bytes": 1261,
+    "sha256": "44bffe8e9d09ab9c8d9ba1638773b618834a17ccf7ec46798ab534a37d12b0bf"
+  },
+  {
+    "path": "tests/test_doubled_catalog.py",
+    "bytes": 7823,
+    "sha256": "bce7858d7b62273fca714abd9c3475fc1045e1336b782c53254771e6a0b0110e"
+  },
+  {
+    "path": "tests/test_evidence.py",
+    "bytes": 3277,
+    "sha256": "a81f05c0bf19f3844aa3316fc5d6306642e20f46bcdd3c1e9c80eec14614b864"
+  },
+  {
+    "path": "tests/test_experiment_catalog.py",
+    "bytes": 10829,
+    "sha256": "9c600aa7b55659082557df5a001216d13f498f1017b00938d019b93281bc9175"
+  },
+  {
+    "path": "tests/test_knowledge_sources.py",
+    "bytes": 1191,
+    "sha256": "7ed9b0809f5492c304e71ef28190daf13dbc5fe17488a67f6ae30505673a5dff"
+  },
+  {
+    "path": "tests/test_learning.py",
+    "bytes": 14878,
+    "sha256": "cd3c0cc2e86f1cf29c202250ceca3b9d030ac244c9cf5c6de8b9b26b8b1a9058"
+  },
+  {
+    "path": "tests/test_llm.py",
+    "bytes": 2545,
+    "sha256": "3fadfcae2fa83f15b2339281a1ffa55753b7ab4036587407cad71cece7ff17a2"
+  },
+  {
+    "path": "tests/test_math_engine.py",
+    "bytes": 1588,
+    "sha256": "0a8846157ca266247003369934fb0d81a024d1ac14e65ed589662362675a792e"
+  },
+  {
+    "path": "tests/test_ms13_cases.py",
+    "bytes": 5422,
+    "sha256": "73a1424088458679af40c713ef2719407cb04b38552f5c3179b82df5646d335d"
+  },
+  {
+    "path": "tests/test_page_navigation.py",
+    "bytes": 1364,
+    "sha256": "74bf0ffe02f8dd1a0ef8c50ad94fd31f8d630052685f62979a10b00b98e51d66"
+  },
+  {
+    "path": "tests/test_stats.py",
+    "bytes": 6982,
+    "sha256": "e72509220620b3d05a9125364ef238419396337956ae1e85026af1ac436ae362"
+  },
+  {
+    "path": "tests/test_textbook_catalog.py",
+    "bytes": 9604,
+    "sha256": "2e404f59a417e07db853a9237768fa017cc2ccbf13ed15814998187c443f61f4"
+  },
+  {
+    "path": "tests/test_tutor.py",
+    "bytes": 14066,
+    "sha256": "5f3f53de5af4a5d56aaf11aff6a748127d3845315a6ef6e1abd7cfb1331c4a6f"
+  },
+  {
+    "path": "tools/build_textbook_catalog.py",
+    "bytes": 6780,
+    "sha256": "c37552c280306093d9c0ac649ddb1aff9941de0502903e87b0b600568336d47b"
+  },
+  {
+    "path": "tools/claim_legacy_records.py",
+    "bytes": 2843,
+    "sha256": "a097211f43f64ed8c644cabac2b0594beae84bf282025065a8c03d9494de9a32"
+  },
+  {
+    "path": "tools/expand_catalog_20261011.py",
+    "bytes": 8126,
+    "sha256": "7bba3fee21df96f0baf456d5932ad62204058cdced364559b19afeef1bf5f8d5"
+  },
+  {
+    "path": "tools/export_textbook_bundle.py",
+    "bytes": 6550,
+    "sha256": "a7899b75b62f45e3685db7337cdd883ea5602416f0d31c0c92b24a07d8e6d4eb"
+  },
+  {
+    "path": "tools/package_expansion_20261011.py",
+    "bytes": 3238,
+    "sha256": "4c8996ef48c9f0f55b00f10d3337e70c05d2b14f3c6ee08c6461433aa3c81fc9"
+  },
+  {
+    "path": "tools/textbook_blueprints.py",
+    "bytes": 76027,
+    "sha256": "8ecf62b63d117896eb652998f1eb36f75a39653a29eafb89989993188b08a4e4"
+  },
+  {
+    "path": "tools/textbook_mapping.py",
+    "bytes": 8831,
+    "sha256": "7f9b7d478a253f83ec5936191ff73b4d703fe178c2215a1734b5f8d7029d7011"
+  },
+  {
+    "path": "tools/vendor_katex.py",
+    "bytes": 2154,
+    "sha256": "ad073ff9249eaf249b58ef9b1a7aeb699c479dfbaab975a81903412d6c46603b"
+  },
+  {
+    "path": "交互课程升级说明_20261015.md",
+    "bytes": 4214,
+    "sha256": "ff0f7b17c1a7d454437dbb0bd80c523cea77fef52acd0bffd0913901727967d0"
+  },
+  {
+    "path": "启动实验网站.command",
+    "bytes": 339,
+    "sha256": "0cb18e879b166cfec31f58bcef1d98c2fb05b44459faf65ef293ec9e9737655e"
+  },
+  {
+    "path": "开启公网.command",
+    "bytes": 697,
+    "sha256": "80130f664c96a52f305af8d9c74e71bd26f3d07b70064a0c5510657cbf124017"
+  },
+  {
+    "path": "教师班级版使用说明.md",
+    "bytes": 3803,
+    "sha256": "ff3cf1e438092967a35f25ee137fc644af720ebe879ca6854dc1ce09ddf87887"
+  },
+  {
+    "path": "本轮扩充说明_20261011.md",
+    "bytes": 4574,
+    "sha256": "91b6edc1e80de187cc89547c030dfa172fd8958ba322605faaee457b2935a90f"
+  },
+  {
+    "path": "本轮教材资料扩充_20261012.md",
+    "bytes": 6504,
+    "sha256": "d0778cde912e97f05b1b1e1a2270882bf8c9c6cae638d648b535ed9fc651edfe"
+  }
+]

@@ -49,6 +49,56 @@
       const absorbed = waterCapacity * (equilibrium - waterTempC), released = metalCapacity * (metalTempC - equilibrium);
       return finiteResult({metal_mass_g: metalMassG, water_mass_g: waterMassG, water_temp_C: waterTempC, metal_temp_C: metalTempC, metal_specific_J_kg_K: metalSpecificJkgK, equilibrium_C: equilibrium, absorbed_J: absorbed, released_J: released, recovered_specific_J_kg_K: absorbed / (metalMassG / 1000 * (metalTempC - equilibrium))});
     },
+    buoyancy(densityKgM3, volumeCm3, gravity = 9.81) {
+      if (![densityKgM3, volumeCm3, gravity].every(Number.isFinite) || !(densityKgM3 > 0 && volumeCm3 >= 0 && gravity > 0)) throw new RangeError("液体密度与重力加速度须为正数，排液体积不能为负。");
+      return finiteResult({density_kg_m3: densityKgM3, volume_cm3: volumeCm3, displaced_mass_kg: densityKgM3 * volumeCm3 * 1e-6, buoyancy_N: densityKgM3 * gravity * volumeCm3 * 1e-6});
+    },
+    resistivity(resistivityMicroOhmM, lengthM, diameterMm) {
+      if (![resistivityMicroOhmM, lengthM, diameterMm].every(Number.isFinite) || !(resistivityMicroOhmM > 0 && lengthM > 0 && diameterMm > 0)) throw new RangeError("电阻率、导线长度与直径必须为正数。");
+      const area = Math.PI * (diameterMm * .001) ** 2 / 4;
+      if (!(area > 0)) throw new RangeError("截面积超出数值范围。");
+      return finiteResult({resistivity_microohm_m: resistivityMicroOhmM, length_m: lengthM, diameter_mm: diameterMm, area_mm2: area * 1e6, resistance_ohm: resistivityMicroOhmM * 1e-6 * lengthM / area});
+    },
+    joule(currentA, resistanceOhm, timeS, waterMassG, efficiency = .8, initialC = 20) {
+      if (![currentA, resistanceOhm, timeS, waterMassG, efficiency, initialC].every(Number.isFinite) || !(currentA >= 0 && resistanceOhm > 0 && timeS >= 0 && waterMassG > 0 && efficiency > 0 && efficiency <= 1 && initialC >= 0 && initialC < 100)) throw new RangeError("焦耳热参数不合法：质量、电阻、效率须为正，电流和时间非负，效率不超过 1。");
+      const energy = currentA ** 2 * resistanceOhm * timeS, absorbed = efficiency * energy, rise = absorbed / (waterMassG / 1000 * 4180), finalC = initialC + rise;
+      if (!(finalC < 100)) throw new RangeError("本模型仅研究水未沸腾且无相变的情形。");
+      return finiteResult({current_A: currentA, resistance_ohm: resistanceOhm, time_s: timeS, water_mass_g: waterMassG, efficiency, initial_C: initialC, electrical_energy_J: energy, water_heat_J: absorbed, temperature_rise_C: rise, final_C: finalC});
+    },
+    transformer(primaryTurns, secondaryTurns, primaryVrms) {
+      if (![primaryTurns, secondaryTurns, primaryVrms].every(Number.isFinite) || !Number.isInteger(primaryTurns) || !Number.isInteger(secondaryTurns) || !(primaryTurns > 0 && secondaryTurns > 0 && primaryVrms >= 0)) throw new RangeError("线圈匝数须为正整数，交流输入有效值不能为负。");
+      const ratio = secondaryTurns / primaryTurns;
+      return finiteResult({primary_turns: primaryTurns, secondary_turns: secondaryTurns, primary_V_rms: primaryVrms, secondary_V_rms: primaryVrms * ratio, turns_ratio: ratio});
+    },
+    grating(linesPerMm, wavelengthNm, order = 1) {
+      if (![linesPerMm, wavelengthNm, order].every(Number.isFinite) || !(linesPerMm > 0 && wavelengthNm > 0) || !Number.isInteger(order) || order < 0) throw new RangeError("光栅线密度和波长须为正，级次须为非负整数。");
+      const spacingNm = 1e6 / linesPerMm, requiredSine = order * wavelengthNm / spacingNm;
+      if (!Number.isFinite(requiredSine)) throw new RangeError("衍射参数超出数值范围。");
+      const exists = requiredSine <= 1 + 1e-12, grazing = exists && requiredSine >= 1 - 1e-12;
+      return finiteResult({lines_per_mm: linesPerMm, wavelength_nm: wavelengthNm, order, spacing_nm: spacingNm, required_sine: requiredSine, exists, diffraction_deg: exists ? Math.asin(Math.min(1, requiredSine)) * 180 / Math.PI : null, diffraction_state: !exists ? "absent" : grazing ? "grazing" : "propagating"});
+    },
+    totalReflection(indexHigh, indexLow, incidenceDeg) {
+      if (![indexHigh, indexLow, incidenceDeg].every(Number.isFinite) || !(indexHigh > indexLow && indexLow > 0 && incidenceDeg >= 0 && incidenceDeg < 90)) throw new RangeError("全反射模型要求光从高折射率到低折射率，角度在 0° 至 90° 之间。");
+      const critical = Math.asin(indexLow / indexHigh) * 180 / Math.PI, requiredSine = indexHigh / indexLow * Math.sin(incidenceDeg * Math.PI / 180);
+      if (!Number.isFinite(requiredSine)) throw new RangeError("折射参数超出数值范围。");
+      const total = requiredSine > 1 + 1e-12, grazing = !total && requiredSine >= 1 - 1e-12;
+      return finiteResult({index_high: indexHigh, index_low: indexLow, incidence_deg: incidenceDeg, critical_deg: critical, required_sine: requiredSine, reflection_deg: incidenceDeg, refraction_deg: total ? null : Math.asin(Math.min(1, requiredSine)) * 180 / Math.PI, optical_state: total ? "total" : grazing ? "critical" : "refracting"});
+    },
+    expansion(alphaMicroPerK, initialCm, deltaC) {
+      if (![alphaMicroPerK, initialCm, deltaC].every(Number.isFinite) || !(alphaMicroPerK > 0 && initialCm > 0 && deltaC >= 0)) throw new RangeError("线膨胀系数与原长须为正数，本课温升不能为负。");
+      const extensionMm = initialCm * alphaMicroPerK * deltaC * 1e-5;
+      return finiteResult({alpha_micro_K: alphaMicroPerK, initial_cm: initialCm, temperature_rise_C: deltaC, extension_mm: extensionMm, final_cm: initialCm + extensionMm / 10});
+    },
+    stringWave(lengthM, tensionN, densityGramPerM) {
+      if (![lengthM, tensionN, densityGramPerM].every(Number.isFinite) || !(lengthM > 0 && tensionN > 0 && densityGramPerM > 0)) throw new RangeError("弦长、张力与线密度须为正数。");
+      const speed = Math.sqrt(tensionN / (densityGramPerM * .001));
+      return finiteResult({length_m: lengthM, tension_N: tensionN, linear_density_g_m: densityGramPerM, speed_m_s: speed, fundamental_Hz: speed / (2 * lengthM), wavelength_m: 2 * lengthM});
+    },
+    malus(angleDeg, inputIntensity = 1, background = 0) {
+      if (![angleDeg, inputIntensity, background].every(Number.isFinite) || !(angleDeg >= 0 && angleDeg <= 180 && inputIntensity > 0 && background >= 0)) throw new RangeError("两偏振轴夹角须在 0°–180° 之间，入射光强须为正，背景非负。");
+      const fraction = angleDeg === 90 ? 0 : Math.cos(angleDeg * Math.PI / 180) ** 2;
+      return finiteResult({angle_deg: angleDeg, input_intensity: inputIntensity, background, transmission_fraction: fraction, signal_intensity: inputIntensity * fraction, measured_intensity: inputIntensity * fraction + background});
+    },
     rc(resistanceKohm, capacitanceUf, timeMs, discharge = false, sourceV = 5) {
       if (![resistanceKohm, capacitanceUf, timeMs, sourceV].every(Number.isFinite) || !(resistanceKohm > 0) || !(capacitanceUf > 0) || !(timeMs >= 0) || !(sourceV > 0)) throw new RangeError("RC 参数与电源须为正数，时间不能为负。");
       const tau = resistanceKohm * capacitanceUf;
@@ -71,7 +121,19 @@
     calorimetry: {title: "量热法：怎样测出金属的比热容？", subtitle: "把热金属放入水中，观察平衡温度与能量交换。", goal: "用水的吸热量回算金属比热容，辨别质量与温差的作用。", formula: "m金c金(T热−T) = m水c水(T−T冷)", tex: "\\begin{aligned}&m_m c_m(T_h-T)\\\\&\\quad=m_w c_w(T-T_c)\\end{aligned}", condition: "热金属与水达到热平衡；水的比热容 c水 = 4180 J/(kg·K)；忽略量热器吸热、散热、蒸发与相变。", initial: {metalMass: 100, waterMass: 150, waterTemp: 20, metalTemp: 80, specific: 900}, symbols: [["m金", "金属质量，读数使用 g，计算热量时换算为 kg。"], ["c金", "金属比热容，单位 J/(kg·K)；本模型可设置，再用水的吸热量回算验证。"], ["m水", "水的质量；水比热容固定为 4180 J/(kg·K)，质量使用 kg 代入。"], ["T", "最终平衡温度应位于水和金属的初温之间。温差 1 ℃ 与 1 K 相等。"], ["Q", "水吸热量等于金属放热量，单位 J；实际实验须考虑量热器与散热修正。"]]},
     rc_time_constant: {title: "RC：为什么是 63.2%？", subtitle: "改变电阻和电容，追踪充电与放电的同一时刻。", goal: "把时间常数与曲线上的电压比例对应起来。", formula: "τ = RC", tex: "\\tau = RC", condition: "理想一阶 RC 电路；电源 5 V；充电从 0 V 开始，放电从 5 V 开始。", initial: {resistance: 10, capacitance: 1, time: 1, discharge: false}, symbols: [["τ", "时间常数 τ = RC：R 用 Ω、C 用 F 时，τ 的单位是 s。此处 R 用 kΩ、C 用 μF，因此读数为 ms。"], ["R", "电阻 R：增大电阻，会按相同比例增大充电与放电的时间常数。"], ["C", "电容 C：增大电容，会按相同比例增大时间常数。"], ["Vc", "电容电压 Vc：充电时为 5(1−e^(−t/τ)) V，放电时为 5e^(−t/τ) V。"]]}
   };
+  Object.assign(supported, {
+    archimedes: {title: "阿基米德原理：浮力由什么决定？", subtitle: "比较不同排液体积，分清体积和密度的作用。", goal: "用排开液体的重力解释浮力，建立 F浮–V 关系。", formula: "F浮 = ρ液gV排", tex: "F_b=\\rho gV", condition: "静止液体、均匀密度；V 为浸入液体的排液体积；g = 9.81 m/s²；忽略表面张力。", initial: {density: 1000, volume: 100}, symbols: [["ρ", "液体密度 ρ，单位 kg/m³；不是物体密度。"], ["V", "排液体积 V，滑杆用 cm³；1 cm³ = 10⁻⁶ m³。"], ["F浮", "浮力等于排开液体的重力，单位 N；部分浸入时不能使用整个物体体积。"]]},
+    resistivity: {title: "电阻率：导线粗细有多大影响？", subtitle: "改变长度、直径和材料，比较电阻。", goal: "理解 R 与长度成正比，与直径平方成反比。", formula: "R = ρL/A，A = πd²/4", tex: "R=\\frac{\\rho L}{A},\\quad A=\\frac{\\pi d^2}{4}", condition: "均匀圆柱导线；温度不变；忽略接触、引线电阻；不考虑自热。", initial: {rho: .49, length: 1, diameter: .5}, symbols: [["ρ", "电阻率滑杆使用 μΩ·m；1 μΩ·m = 10⁻⁶ Ω·m。"], ["L", "有效导线长度 L，单位 m。"], ["d", "直径 d 的单位 mm；求面积时换算为 m，面积与 d² 成正比。"], ["R", "电阻 R，单位 Ω；直径加倍时，截面积变为四倍。"]]},
+    joule_heating: {title: "焦耳热：电流加倍，水温怎样变？", subtitle: "比较电能和水吸收的热量，识别 I² 关系。", goal: "把电流、电阻、时间与温升、水储热比例联系起来。", formula: "ΔT = ηI²Rt/(mc)", tex: "\\Delta T=\\frac{\\eta I^2Rt}{mc}", condition: "理想恒流、电阻不变；水 c = 4180 J/(kg·K)，初温 20 ℃；η 是电能最终进入水的比例，简化为常数；把容器吸热与散热等统一简化为固定比例；水不沸腾、无相变。", initial: {current: 1, resistance: 10, time: 120, mass: 200, efficiency: .8}, symbols: [["I", "电流 I，单位 A；固定其他量时，温升与 I² 成正比。"], ["η", "水储热比例 η = 水吸热/输入电能，在 0 至 1 之间；不等于温度比。"], ["m", "水质量滑杆用 g，公式中换算为 kg。"], ["t", "通电时间 t，单位 s。"], ["ΔT", "水温升 ΔT，单位 ℃（与 K 温差数值相同）；最终温度 = 20 ℃ + ΔT。"]]},
+    transformer_ratio: {title: "变压器：匝数比怎样决定电压？", subtitle: "调整两个线圈，观察理想空载的交流有效值。", goal: "区分匝数比与电压比，理解升压和降压。", formula: "U₂/U₁ = N₂/N₁", tex: "\\frac{U_2}{U_1}=\\frac{N_2}{N_1}", condition: "理想变压器、交流输入、次级空载；只讨论电压有效值，忽略损耗与漏磁。此为教学仿真，不得接入市电；真实操作仅用实验室安全低压电源。", initial: {primary: 200, secondary: 100, voltage: 6}, symbols: [["U₁", "初级交流电压有效值 U₁，单位 V；不是直流电压。"], ["U₂", "次级交流电压有效值 U₂，单位 V；空载理想模型不能推断负载功率。"], ["N₁", "初级匝数 N₁，无量纲的正整数。"], ["N₂", "次级匝数 N₂；N₂ > N₁ 时理想空载次级电压更高。"]]},
+    grating_diffraction: {title: "光栅衍射：每个级次都存在吗？", subtitle: "改变波长与光栅线密度，寻找允许的衍射方向。", goal: "用 |mλ/d| ≤ 1 判断级次，理解线密度的单位。", formula: "d sin θ = mλ", tex: "d\\sin\\theta=m\\lambda", condition: "单色光垂直入射理想光栅；研究一侧正级次；线密度用 线/mm，d = 10⁶/线密度 nm。mλ/d > 1 时该级次不存在，等于 1 时沿光栅面，不能在有限远的垂直屏上形成亮点。", initial: {lines: 600, wavelength: 550, order: 1}, symbols: [["d", "光栅常数 d：相邻缝间距。线密度为 n 线/mm 时，d = 1/n mm。"], ["m", "衍射级次 m，为整数；本课滑杆取正级次 1–3。"], ["λ", "波长 λ，单位 nm；与光栅常数使用同一长度单位后计算。"], ["θ", "衍射角 θ 从光栅法线量起；要求 |sin θ| ≤ 1。"]]},
+    total_internal_reflection: {title: "全反射：光线何时不再折射？", subtitle: "从高折射率介质向空气入射，跨越临界角。", goal: "区分普通折射、临界沿面与全反射三个状态。", formula: "sin θc = n低/n高", tex: "\\sin\\theta_c=\\frac{n_l}{n_h}", condition: "单色光从高折射率介质进入空气 n低 = 1；角度从法线量起。θ < θc 时有折射，θ = θc 时折射沿界面，θ > θc 时发生全反射。", initial: {index: 1.5, angle: 50}, symbols: [["n高", "入射介质折射率 n高，大于出射介质折射率；本课出射介质为空气。"], ["θ", "入射角 θ，从法线量起；反射角始终等于入射角。"], ["θc", "临界角 θc = arcsin(n低/n高)；等于临界角属于临界沿面状态。"], ["折射", "斯涅尔定律要求的 sin θ折 > 1 时不存在传播折射光，不能继续计算 arcsin。"]]},
+    thermal_expansion: {title: "线膨胀：金属杆伸长了多少？", subtitle: "比较材料、原长与温升，辨别微小长度变化。", goal: "正确换算微量膨胀系数和毫米伸长。", formula: "ΔL = αL₀ΔT", tex: "\\Delta L=\\alpha L_0\\Delta T", condition: "各向同性金属杆、小温升近似；α 在范围内视为常数，温度均匀；忽略测量架膨胀。示意图对伸长作放大显示。", initial: {alpha: 17, length: 50, temperature: 50}, symbols: [["α", "线膨胀系数滑杆以 10⁻⁶/K 为单位，例如 17 表示 17×10⁻⁶/K。"], ["L₀", "原长 L₀，滑杆用 cm；ΔL 读数用 mm。"], ["ΔT", "温升 ΔT，用 ℃；温差的 ℃ 与 K 数值相同。"], ["ΔL", "伸长量 ΔL；最终长度 L = L₀ + ΔL，求和前统一单位。"]]},
+    string_waves: {title: "弦驻波：怎样改变基频？", subtitle: "调节弦长、张力与线密度，观察一个波腹的基模。", goal: "理解基频与张力平方根、弦长和线密度的关系。", formula: "f₁ = (1/2L)√(F/μ)", tex: "f_1=\\frac{1}{2L}\\sqrt{\\frac{F}{\\mu}}", condition: "均匀细弦，两端固定；张力恒定，小振幅；只研究基频（一个波腹），λ₁ = 2L；忽略弦的弯曲刚度和阻尼。", initial: {length: 1, tension: 10, density: 1}, symbols: [["L", "两固定端间的有效弦长 L，单位 m。"], ["F", "张力 F，单位 N；不是振动频率。"], ["μ", "线密度 μ = 质量/长度，滑杆用 g/m；计算前乘 0.001 换为 kg/m。"], ["f₁", "基频 f₁，单位 Hz；两端为波节，中间为一个波腹。"]]},
+    malus_law: {title: "马吕斯定律：转过 90° 就全黑吗？", subtitle: "转动检偏器，同时比较光信号与背景。", goal: "把 cos² 关系、透振方向和背景修正联系起来。", formula: "I测 = I₀ cos² θ + I背景", tex: "I=I_0\\cos^2\\theta+I_{bg}", condition: "入射光已线偏振；θ 为其偏振方向与检偏器透振轴的夹角；理想检偏器；背景视为与角度无关的常量。所有光强为相对单位。", initial: {angle: 45, intensity: 1, background: .05}, symbols: [["θ", "偏振方向与检偏器透振轴夹角，单位 °；180° 与 0° 透射情况相同。"], ["I₀", "沿检偏器轴方向对齐时的理想信号光强，相对单位。"], ["I背景", "角度无关的背景光或探测器零点；90° 时信号为零，测得值仍可能非零。"], ["cos²", "cos² θ 不是 cos(2θ)；无量纲，取值 0 至 1。"]]}
+  });
   window.LabAcademyCourseList = Object.entries(supported).map(([experiment_id, config]) => ({experiment_id, title: config.title, summary: config.goal}));
+  window.dispatchEvent(new Event("lab-academy-ready"));
   const get = id => document.getElementById(id);
   const make = (tag, text, cls) => { const el = document.createElement(tag); if (text != null) el.textContent = text; if (cls) el.className = cls; return el; };
   const button = (text, callback, cls = "academy-button") => { const el = make("button", text, cls); el.type = "button"; el.addEventListener("click", callback); return el; };
@@ -279,7 +341,25 @@
       range(parent, "metalTemp", "金属初温 T热", 50, 95, 1, p.metalTemp, n => `${number(n)} ℃`, n => p.metalTemp = n);
       range(parent, "specific", "金属比热容 c金", 200, 1000, 50, p.specific, n => `${number(n)} J/(kg·K)`, n => p.specific = n);
       parent.append(make("p", "温度范围始终保持金属比水热。改变质量或比热容，观察平衡温度靠近哪一侧。", "academy-muted"));
-    }
+    } else buildExtendedControls(parent, state);
+  }
+  function buildExtendedControls(parent, state) {
+    const p = state.params;
+    const definitions = {
+      archimedes: [["density", "液体密度 ρ", 700, 1400, 50, "kg/m³"], ["volume", "排液体积 V", 0, 200, 5, "cm³"]],
+      resistivity: [["rho", "电阻率 ρ", .02, 1.1, .01, "μΩ·m"], ["length", "导线长度 L", .2, 2, .1, "m"], ["diameter", "导线直径 d", .2, 1.2, .05, "mm"]],
+      joule_heating: [["current", "电流 I", 0, 2, .1, "A"], ["resistance", "电阻 R", 2, 20, 1, "Ω"], ["time", "通电时间 t", 0, 180, 10, "s"], ["mass", "水质量 m", 200, 500, 25, "g"], ["efficiency", "水储热比例 η", .2, 1, .05, ""]],
+      transformer_ratio: [["primary", "初级匝数 N₁", 100, 600, 20, "匝"], ["secondary", "次级匝数 N₂", 100, 600, 20, "匝"], ["voltage", "初级电压有效值 U₁", 1, 12, .5, "V"]],
+      grating_diffraction: [["lines", "光栅线密度", 100, 1200, 50, "线/mm"], ["wavelength", "波长 λ", 400, 700, 10, "nm"], ["order", "正衍射级次 m", 1, 3, 1, ""]],
+      total_internal_reflection: [["index", "入射介质折射率 n高", 1.3, 1.8, .05, ""], ["angle", "入射角 θ", 0, 80, "any", "°"]],
+      thermal_expansion: [["alpha", "线膨胀系数 α / 10⁻⁶ K⁻¹", 2, 30, 1, ""], ["length", "金属杆原长 L₀", 20, 100, 5, "cm"], ["temperature", "温升 ΔT", 0, 80, 5, "℃"]],
+      string_waves: [["length", "有效弦长 L", .4, 1.5, .05, "m"], ["tension", "弦张力 F", 1, 20, 1, "N"], ["density", "线密度 μ", .5, 5, .25, "g/m"]],
+      malus_law: [["angle", "检偏器夹角 θ", 0, 180, 5, "°"], ["intensity", "入射信号光强 I₀", .2, 1, .05, "相对单位"], ["background", "背景光强", 0, .2, .01, "相对单位"]]
+    };
+    for (const [key, label, min, max, step, unit] of definitions[activeId] || []) range(parent, key, label, min, max, step, p[key], n => `${number(n)}${unit ? " " + unit : ""}`, n => p[key] = n);
+    const notes = {archimedes: "体积为 0 时排开液体的质量和浮力均为 0；图中的排液体积不代表物体总容积。", resistivity: "固定材料和直径，看 R–L 直线；再把直径加倍，检查电阻是否变成四分之一。", joule_heating: "固定电流、电阻、质量与效率，观察温升随时间的关系。滑杆组合最高水温低于 38 ℃，不涉及沸腾。", transformer_ratio: "图线比较固定初级匝数下的次级电压；只模拟交流空载，不将线圈接入市电。", grating_diffraction: "图纵轴是定律要求的 sin θ；超过 1 表示该级次不存在，不会继续画出衍射光线。", total_internal_reflection: "折射要求的 sin θ 达到 1 是临界状态，超过 1 后仅绘制反射光；图中不表示反射光强。", thermal_expansion: "伸长示意放大 80 倍，读数使用真实模型数值；比较时固定材料与原长。", string_waves: "图中展示基模静态轮廓（振幅仅为示意），没有将振幅变化当作频率变化。", malus_law: "先把背景设为 0，再加入背景，比较 90° 的测得值；信号强度需扣除背景。"};
+    parent.append(make("p", notes[activeId] || "", "academy-muted"));
+    if (activeId === "total_internal_reflection") parent.append(button("将入射角设为临界角", () => { p.angle = models.totalReflection(p.index, 1, 0).critical_deg; renderContent(); }, "academy-text-button"));
   }
   function buildFormula(parent, state, config) {
     const panel = make("div", null, "academy-formula"), formula = button("", () => ask(`请解释教学仿真中的公式 ${config.formula}。当前模拟：${pointLabel(activeId, currentPoint(state))}。适用条件：${config.condition}`, {kind: "formula", label: config.formula, values: {...currentPoint(state), condition: config.condition}}), "academy-formula-button");
@@ -321,6 +401,15 @@
     if (activeId === "snell_refraction") return models.refraction(p.index, p.angle);
     if (activeId === "double_slit") return models.doubleSlit(p.wavelength, p.distance, p.spacing);
     if (activeId === "calorimetry") return models.calorimetry(p.metalMass, p.waterMass, p.waterTemp, p.metalTemp, p.specific);
+    if (activeId === "archimedes") return models.buoyancy(p.density, p.volume);
+    if (activeId === "resistivity") return models.resistivity(p.rho, p.length, p.diameter);
+    if (activeId === "joule_heating") return models.joule(p.current, p.resistance, p.time, p.mass, p.efficiency);
+    if (activeId === "transformer_ratio") return models.transformer(p.primary, p.secondary, p.voltage);
+    if (activeId === "grating_diffraction") return models.grating(p.lines, p.wavelength, p.order);
+    if (activeId === "total_internal_reflection") return models.totalReflection(p.index, 1, p.angle);
+    if (activeId === "thermal_expansion") return models.expansion(p.alpha, p.length, p.temperature);
+    if (activeId === "string_waves") return models.stringWave(p.length, p.tension, p.density);
+    if (activeId === "malus_law") return models.malus(p.angle, p.intensity, p.background);
     throw new RangeError("未配置的教学模型。");
   }
   function buildVisual(parent, state) {
@@ -340,6 +429,15 @@
     if (eid === "snell_refraction") return `n₂ = ${number(point.index_2)}，θ₁ = ${number(point.incidence_deg)}°，θ₂ = ${number(point.refraction_deg)}°，sin θ₁ = ${number(point.sine_incidence)}，sin θ₂ = ${number(point.sine_refraction)}`;
     if (eid === "double_slit") return `λ = ${number(point.wavelength_nm)} nm，D = ${number(point.distance_m)} m，d = ${number(point.slit_spacing_mm)} mm，Δx = ${number(point.fringe_spacing_mm)} mm`;
     if (eid === "calorimetry") return `m金 = ${number(point.metal_mass_g)} g，m水 = ${number(point.water_mass_g)} g，T热 = ${number(point.metal_temp_C)} ℃，T冷 = ${number(point.water_temp_C)} ℃，c金 = ${number(point.metal_specific_J_kg_K)} J/(kg·K)，T = ${number(point.equilibrium_C)} ℃，吸热 = 放热 = ${number(point.absorbed_J)} J`;
+    if (eid === "archimedes") return `ρ液 = ${number(point.density_kg_m3)} kg/m³，V排 = ${number(point.volume_cm3)} cm³，F浮 = ${number(point.buoyancy_N)} N`;
+    if (eid === "resistivity") return `ρ = ${number(point.resistivity_microohm_m)} μΩ·m，L = ${number(point.length_m)} m，d = ${number(point.diameter_mm)} mm，A = ${number(point.area_mm2)} mm²，R = ${number(point.resistance_ohm)} Ω`;
+    if (eid === "joule_heating") return `I = ${number(point.current_A)} A，R = ${number(point.resistance_ohm)} Ω，t = ${number(point.time_s)} s，水质量 = ${number(point.water_mass_g)} g，η = ${number(point.efficiency)}，输入电能 = ${number(point.electrical_energy_J)} J，水吸热 = ${number(point.water_heat_J)} J，温升 = ${number(point.temperature_rise_C)} ℃`;
+    if (eid === "transformer_ratio") return `N₁ = ${point.primary_turns}，N₂ = ${point.secondary_turns}，U₁有效 = ${number(point.primary_V_rms)} V，U₂有效 = ${number(point.secondary_V_rms)} V，匝数比 = ${number(point.turns_ratio)}`;
+    if (eid === "grating_diffraction") return `${number(point.lines_per_mm)} 线/mm，λ = ${number(point.wavelength_nm)} nm，m = ${point.order}，mλ/d = ${number(point.required_sine)}，${point.diffraction_state === "absent" ? "该级次不存在" : point.diffraction_state === "grazing" ? "θ = 90°，沿面方向" : `θ = ${number(point.diffraction_deg)}°`}`;
+    if (eid === "total_internal_reflection") return `n高 = ${number(point.index_high)}，n低 = ${number(point.index_low)}，θ = ${number(point.incidence_deg)}°，θc = ${number(point.critical_deg)}°，${point.optical_state === "total" ? "全反射，无传播折射光" : point.optical_state === "critical" ? "临界状态，折射沿界面" : `折射角 = ${number(point.refraction_deg)}°`}`;
+    if (eid === "thermal_expansion") return `α = ${number(point.alpha_micro_K)}×10⁻⁶/K，L₀ = ${number(point.initial_cm)} cm，ΔT = ${number(point.temperature_rise_C)} ℃，ΔL = ${number(point.extension_mm)} mm`;
+    if (eid === "string_waves") return `L = ${number(point.length_m)} m，F = ${number(point.tension_N)} N，μ = ${number(point.linear_density_g_m)} g/m，v = ${number(point.speed_m_s)} m/s，f₁ = ${number(point.fundamental_Hz)} Hz，λ₁ = ${number(point.wavelength_m)} m`;
+    if (eid === "malus_law") return `θ = ${number(point.angle_deg)}°，I₀ = ${number(point.input_intensity)}，背景 = ${number(point.background)}，信号 = ${number(point.signal_intensity)}，测得光强 = ${number(point.measured_intensity)}（相对单位）`;
     return `t = ${number(point.time_ms)} ms，Vc = ${number(point.voltage_V)} V，τ = ${number(point.tau_ms)} ms（${point.discharge ? "放电" : "充电"}）`;
   }
   function updateVisual(preserveSelected = false) {
@@ -444,6 +542,99 @@
       drawing.append(svgEl("text", {x: 30, y: 177, class: "academy-tick"}, "能量条共用 0–20,000 J 尺度；理想条件下 Q放 = Q吸。")); graphic.append(drawing);
       const curve = Array.from({length: 41}, (_, i) => models.calorimetry(50 + i * 5, p.waterMass, p.waterTemp, p.metalTemp, p.specific));
       drawPlot({label: "水质量和初温固定时平衡温度与金属质量关系", xLabel: "金属质量 m金 / g", yLabel: "平衡温度 T / ℃", maxX: 250, maxY: 100, x: point => point.metal_mass_g, y: point => point.equilibrium_C}, [50, 100, 150, 200, 250].map(mass => models.calorimetry(mass, p.waterMass, p.waterTemp, p.metalTemp, p.specific)), "metal_mass_g", curve);
+    } else return extendedVisualV2(state, current, graphic, readings, choose);
+    return {points, chart};
+  }
+  function extendedVisualV2(state, current, graphic, readings, choose) {
+    const p = state.params; let points, chart;
+    function drawPlot(config, samples, key, curve) {
+      points = samples.slice();
+      if (!points.some(point => Math.abs(point[key] - current[key]) < 1e-8)) points.push(current);
+      points.sort((a, b) => a[key] - b[key]);
+      chart = plot({...config, line: (curve || points).map(point => ({x: config.x(point), y: config.y(point)})), points: points.map(point => ({x: config.x(point), y: config.y(point), label: pointLabel(activeId, point)})), selected: points.findIndex(point => Math.abs(point[key] - state.selected[key]) < 1e-8), onSelect: index => choose(points[index], true)});
+    }
+    const caption = (drawing, text, y = 185) => drawing.append(svgEl("text", {x: 30, y, class: "academy-axis-label"}, text));
+    const arrow = (drawing, x1, y1, x2, y2, cls = "academy-ray") => {
+      drawing.append(svgEl("line", {x1, y1, x2, y2, class: cls}));
+      if (Math.hypot(x2 - x1, y2 - y1) < 1e-8) return;
+      const a = Math.atan2(y2 - y1, x2 - x1), size = 7;
+      drawing.append(svgEl("path", {d: `M${x2 - size * Math.cos(a - .5)},${y2 - size * Math.sin(a - .5)}L${x2},${y2}L${x2 - size * Math.cos(a + .5)},${y2 - size * Math.sin(a + .5)}`, class: cls}));
+    };
+    if (activeId === "archimedes") {
+      reading(readings, "浮力 F浮", `${number(current.buoyancy_N)} N`); reading(readings, "排开液体的质量", `${number(current.displaced_mass_kg)} kg`);
+      const drawing = schematic(`排液体积 ${number(p.volume)} cm³，液体密度 ${number(p.density)} kg/m³，浮力 ${number(current.buoyancy_N)} N。`, 235), immersed = p.volume / 200 * 70, blockY = 100 - 70 + immersed;
+      drawing.append(svgEl("path", {d: "M65,34V192H345V34", class: "academy-support"}), svgEl("rect", {x: 67, y: 100, width: 276, height: 90, class: "academy-medium"}), svgEl("rect", {x: 155, y: blockY, width: 95, height: 70, class: "academy-mass"}));
+      if (immersed > 0) drawing.append(svgEl("rect", {x: 155, y: 100, width: 95, height: immersed, class: "academy-submerged"}));
+      drawing.append(svgEl("line", {x1: 67, x2: 343, y1: 100, y2: 100, class: "academy-axis"}));
+      arrow(drawing, 410, 174, 410, 174 - immersed * .9);
+      drawing.append(svgEl("text", {x: 430, y: 132, class: "academy-axis-label"}, `F浮 ${number(current.buoyancy_N)} N`), svgEl("text", {x: 90, y: 215, class: "academy-axis-label"}, `着色部分：V排 = ${number(p.volume)} cm³`)); graphic.append(drawing);
+      drawPlot({label: "固定液体密度时浮力与排液体积关系", xLabel: "排液体积 V / cm³", yLabel: "浮力 F浮 / N", maxX: 200, maxY: 3, x: point => point.volume_cm3, y: point => point.buoyancy_N}, [0, 40, 80, 120, 160, 200].map(volume => models.buoyancy(p.density, volume)), "volume_cm3");
+    } else if (activeId === "resistivity") {
+      reading(readings, "导线电阻 R", `${number(current.resistance_ohm)} Ω`); reading(readings, "圆形截面积 A", `${number(current.area_mm2)} mm²`);
+      const drawing = schematic(`圆柱导线长度 ${number(p.length)} m，直径 ${number(p.diameter)} mm。`, 200), width = 420 * p.length / 2, thickness = 10 + p.diameter * 25;
+      drawing.append(svgEl("rect", {x: 65, y: 100 - thickness / 2, width, height: thickness, rx: thickness / 2, class: "academy-wire"}), svgEl("ellipse", {cx: 65 + width, cy: 100, rx: thickness / 4, ry: thickness / 2, class: "academy-wire-end"}), svgEl("line", {x1: 65, x2: 65 + width, y1: 45, y2: 45, class: "academy-axis"}));
+      caption(drawing, `L = ${number(p.length)} m · d = ${number(p.diameter)} mm`, 165); graphic.append(drawing);
+      drawPlot({label: "固定材料和直径时导线电阻与长度关系", xLabel: "长度 L / m", yLabel: "电阻 R / Ω", maxX: 2, maxY: models.resistivity(p.rho, 2, p.diameter).resistance_ohm * 1.1, x: point => point.length_m, y: point => point.resistance_ohm}, [.2, .5, 1, 1.5, 2].map(length => models.resistivity(p.rho, length, p.diameter)), "length_m");
+    } else if (activeId === "joule_heating") {
+      reading(readings, "水温升 ΔT", `${number(current.temperature_rise_C)} ℃`); reading(readings, "最终水温", `${number(current.final_C)} ℃`);
+      const drawing = schematic(`输入电能 ${number(current.electrical_energy_J)} J，其中 ${number(current.water_heat_J)} J 进入水。`, 215);
+      [["输入电能", current.electrical_energy_J, 48, "academy-heat-release"], ["水吸热", current.water_heat_J, 100, "academy-heat-absorb"]].forEach(([name, value, y, cls]) => {
+        drawing.append(svgEl("text", {x: 25, y: y + 18, class: "academy-axis-label"}, name), svgEl("rect", {x: 125, y, width: value / 15000 * 340, height: 25, class: cls}), svgEl("text", {x: 132 + value / 15000 * 340, y: y + 18, class: "academy-tick"}, `${number(value)} J`));
+      });
+      caption(drawing, `水初温 20 ℃ → ${number(current.final_C)} ℃ · η = ${number(p.efficiency)}`, 166);
+      caption(drawing, "能量条共用 0–15,000 J 尺度；不含沸腾或相变。", 195); graphic.append(drawing);
+      drawPlot({label: "固定电流与热参数时水温升和通电时间的关系", xLabel: "通电时间 t / s", yLabel: "水温升 ΔT / ℃", maxX: 180, maxY: 18, x: point => point.time_s, y: point => point.temperature_rise_C}, [0, 30, 60, 90, 120, 180].map(time => models.joule(p.current, p.resistance, time, p.mass, p.efficiency)), "time_s");
+    } else if (activeId === "transformer_ratio") {
+      reading(readings, "次级电压有效值 U₂", `${number(current.secondary_V_rms)} V`); reading(readings, "匝数比 N₂/N₁", number(current.turns_ratio));
+      const drawing = schematic(`理想变压器空载，初级 ${p.primary} 匝，次级 ${p.secondary} 匝，输入交流有效值 ${number(p.voltage)} V。`, 220);
+      drawing.append(svgEl("rect", {x: 190, y: 40, width: 220, height: 115, class: "academy-core"}), svgEl("rect", {x: 220, y: 65, width: 160, height: 65, class: "academy-core-gap"}));
+      for (const x of [200, 400]) for (let i = 0; i < 7; i++) drawing.append(svgEl("ellipse", {cx: x, cy: 55 + i * 13, rx: 20, ry: 6, class: "academy-coil"}));
+      drawing.append(svgEl("text", {x: 55, y: 85, class: "academy-axis-label"}, `N₁ = ${p.primary}`), svgEl("text", {x: 55, y: 115, class: "academy-axis-label"}, `U₁ ~ ${number(p.voltage)} V`), svgEl("text", {x: 445, y: 85, class: "academy-axis-label"}, `N₂ = ${p.secondary}`), svgEl("text", {x: 445, y: 115, class: "academy-axis-label"}, `U₂ ~ ${number(current.secondary_V_rms)} V`));
+      caption(drawing, "交流有效值 · 理想空载 · 线圈绘图圈数为示意", 196); graphic.append(drawing);
+      drawPlot({label: "固定初级匝数与输入电压时次级电压随次级匝数的关系", xLabel: "次级匝数 N₂", yLabel: "次级有效电压 U₂ / V", maxX: 600, maxY: Math.max(2, models.transformer(p.primary, 600, p.voltage).secondary_V_rms * 1.1), x: point => point.secondary_turns, y: point => point.secondary_V_rms}, [100, 200, 300, 400, 500, 600].map(turns => models.transformer(p.primary, turns, p.voltage)), "secondary_turns");
+    } else if (activeId === "grating_diffraction") {
+      reading(readings, "选定正级次的方向", current.diffraction_state === "absent" ? "该级次不存在" : current.diffraction_state === "grazing" ? "90° · 沿面" : `${number(current.diffraction_deg)}°`);
+      reading(readings, "光栅常数 d", `${number(current.spacing_nm)} nm`);
+      const drawing = schematic(`光栅第 ${p.order} 级，${current.diffraction_state === "absent" ? "不存在传播方向" : current.diffraction_state === "grazing" ? "90 度掠射" : `衍射角 ${number(current.diffraction_deg)} 度`}。`, 230);
+      drawing.append(svgEl("line", {x1: 245, x2: 245, y1: 24, y2: 192, class: "academy-support"}), svgEl("line", {x1: 35, x2: 555, y1: 110, y2: 110, class: "academy-rest-line"}));
+      arrow(drawing, 55, 110, 245, 110, "academy-model-line");
+      if (current.exists) { const a = current.diffraction_deg * Math.PI / 180; arrow(drawing, 245, 110, 245 + 90 * Math.cos(a), 110 - 90 * Math.sin(a)); }
+      drawing.append(svgEl("text", {x: 275, y: 165, class: "academy-axis-label"}, current.diffraction_state === "absent" ? "mλ/d > 1：无此级次" : current.diffraction_state === "grazing" ? "沿光栅面：不是有限屏幕亮点" : `m = ${p.order}，θ = ${number(current.diffraction_deg)}°`));
+      caption(drawing, "水平虚线为法线；仅画选定正级次，不表示光强。", 215); graphic.append(drawing);
+      drawPlot({label: "光栅定律要求的正弦值随波长的关系；超过1则该级不存在", xLabel: "波长 λ / nm", yLabel: "定律要求的 sin θ", maxX: 700, maxY: 2.7, threshold: {x: 700, y: 1, label: "允许上限 1"}, x: point => point.wavelength_nm, y: point => point.required_sine}, [400, 450, 500, 550, 600, 650, 700].map(wavelength => models.grating(p.lines, wavelength, p.order)), "wavelength_nm");
+    } else if (activeId === "total_internal_reflection") {
+      reading(readings, "当前光路状态", current.optical_state === "total" ? "全反射" : current.optical_state === "critical" ? "临界 · 沿界面" : "有折射光"); reading(readings, "临界角 θc", `${number(current.critical_deg, 5)}°`);
+      const drawing = schematic(`从折射率 ${number(p.index)} 的介质进入空气，入射角 ${number(p.angle)} 度，${current.optical_state === "total" ? "全反射，无传播折射光" : current.optical_state === "critical" ? "临界角，折射光沿界面" : `折射角 ${number(current.refraction_deg)} 度`}。`, 260), boundary = 120, a = p.angle * Math.PI / 180, r = 94;
+      drawing.append(svgEl("rect", {x: 25, y: boundary, width: 550, height: 112, class: "academy-medium"}), svgEl("line", {x1: 25, x2: 575, y1: boundary, y2: boundary, class: "academy-axis"}), svgEl("line", {x1: 300, x2: 300, y1: 18, y2: 225, class: "academy-rest-line"}));
+      arrow(drawing, 300 - r * Math.sin(a), boundary + r * Math.cos(a), 300, boundary, "academy-model-line");
+      arrow(drawing, 300, boundary, 300 + r * Math.sin(a), boundary + r * Math.cos(a));
+      if (current.refraction_deg !== null) { const b = current.refraction_deg * Math.PI / 180; arrow(drawing, 300, boundary, 300 + r * Math.sin(b), boundary - r * Math.cos(b), "academy-refracted-ray"); }
+      drawing.append(svgEl("text", {x: 40, y: 42, class: "academy-axis-label"}, "空气 n低 = 1"), svgEl("text", {x: 40, y: 212, class: "academy-axis-label"}, `介质 n高 = ${number(p.index)}`), svgEl("text", {x: 315, y: 30, class: "academy-tick"}, "法线"));
+      caption(drawing, "光线仅表示方向；未用明暗比较反射、透射能量。", 250); graphic.append(drawing);
+      const curve = Array.from({length: 81}, (_, angle) => models.totalReflection(p.index, 1, angle));
+      drawPlot({label: "折射定律要求的正弦值与入射角；临界值为1", xLabel: "入射角 θ / °", yLabel: "要求的 sin θ折", maxX: 80, maxY: 2, threshold: {x: current.critical_deg, y: 1, label: "临界 · sin θ折 = 1"}, x: point => point.incidence_deg, y: point => point.required_sine}, [0, 20, 40, current.critical_deg, 60, 80].map(angle => models.totalReflection(p.index, 1, angle)), "incidence_deg", curve);
+    } else if (activeId === "thermal_expansion") {
+      reading(readings, "伸长量 ΔL", `${number(current.extension_mm)} mm`); reading(readings, "最终长度 L", `${number(current.final_cm, 6)} cm`);
+      const drawing = schematic(`金属杆原长 ${number(p.length)} cm，温升 ${number(p.temperature)} ℃，伸长 ${number(current.extension_mm)} mm；伸长绘图放大80倍。`, 215), initialWidth = p.length * 3, extraWidth = current.extension_mm * 24;
+      drawing.append(svgEl("rect", {x: 65, y: 45, width: initialWidth, height: 25, class: "academy-wire"}), svgEl("rect", {x: 65, y: 107, width: initialWidth, height: 25, class: "academy-wire"}), svgEl("rect", {x: 65 + initialWidth, y: 107, width: extraWidth, height: 25, class: "academy-heat-release"}), svgEl("line", {x1: 65 + initialWidth, x2: 65 + initialWidth, y1: 25, y2: 150, class: "academy-rest-line"}));
+      caption(drawing, `上：原长 L₀ = ${number(p.length)} cm`, 92); caption(drawing, `下：伸长 ΔL = ${number(current.extension_mm)} mm（放大 80 倍）`, 178); graphic.append(drawing);
+      drawPlot({label: "固定材料和原长时金属杆伸长与温升的关系", xLabel: "温升 ΔT / ℃", yLabel: "伸长 ΔL / mm", maxX: 80, maxY: 2.5, x: point => point.temperature_rise_C, y: point => point.extension_mm}, [0, 20, 40, 60, 80].map(temperature => models.expansion(p.alpha, p.length, temperature)), "temperature_rise_C");
+    } else if (activeId === "string_waves") {
+      reading(readings, "基频 f₁", `${number(current.fundamental_Hz)} Hz`); reading(readings, "弦波速 v", `${number(current.speed_m_s)} m/s`);
+      const drawing = schematic(`两端固定弦的基模：一个波腹，弦长 ${number(p.length)} m，基频 ${number(current.fundamental_Hz)} Hz。`, 210), width = p.length / 1.5 * 450, wave = [];
+      for (let i = 0; i <= 80; i++) wave.push(`${i ? "L" : "M"}${65 + width * i / 80},${95 - 42 * Math.sin(Math.PI * i / 80)}`);
+      drawing.append(svgEl("line", {x1: 65, x2: 65 + width, y1: 95, y2: 95, class: "academy-rest-line"}), svgEl("path", {d: wave.join(" "), class: "academy-model-line"}));
+      for (const x of [65, 65 + width]) drawing.append(svgEl("line", {x1: x, x2: x, y1: 70, y2: 120, class: "academy-support"}), svgEl("circle", {cx: x, cy: 95, r: 4, class: "academy-bob"}));
+      caption(drawing, `两端波节 · 一个波腹 · λ₁ = 2L = ${number(current.wavelength_m)} m`, 155); caption(drawing, "静态轮廓，振幅为示意；弦长按同一尺度绘制。", 185); graphic.append(drawing);
+      const curve = Array.from({length: 77}, (_, i) => models.stringWave(p.length, 1 + i / 4, p.density));
+      drawPlot({label: "固定弦长和线密度时基频与张力关系", xLabel: "张力 F / N", yLabel: "基频 f₁ / Hz", maxX: 20, maxY: models.stringWave(p.length, 20, p.density).fundamental_Hz * 1.1, x: point => point.tension_N, y: point => point.fundamental_Hz}, [1, 4, 8, 12, 16, 20].map(tension => models.stringWave(p.length, tension, p.density)), "tension_N", curve);
+    } else if (activeId === "malus_law") {
+      reading(readings, "信号光强（已扣背景）", number(current.signal_intensity)); reading(readings, "测得光强（相对单位）", number(current.measured_intensity));
+      const drawing = schematic(`线偏振光通过检偏器，夹角 ${number(p.angle)} 度，信号强度 ${number(current.signal_intensity)}，背景 ${number(p.background)}。`, 220), a = p.angle * Math.PI / 180;
+      drawing.append(svgEl("circle", {cx: 120, cy: 95, r: 55, class: "academy-lens"}), svgEl("circle", {cx: 285, cy: 95, r: 55, class: "academy-lens"}), svgEl("line", {x1: 120, x2: 120, y1: 45, y2: 145, class: "academy-model-line"}), svgEl("line", {x1: 285 - 50 * Math.sin(a), x2: 285 + 50 * Math.sin(a), y1: 95 - 50 * Math.cos(a), y2: 95 + 50 * Math.cos(a), class: "academy-ray"}));
+      drawing.append(svgEl("text", {x: 70, y: 179, class: "academy-axis-label"}, "入射偏振方向"), svgEl("text", {x: 240, y: 179, class: "academy-axis-label"}, `检偏轴 ${number(p.angle)}°`), svgEl("rect", {x: 415, y: 143 - current.signal_intensity * 80, width: 45, height: current.signal_intensity * 80, class: "academy-heat-absorb"}), svgEl("rect", {x: 415, y: 143, width: 45, height: p.background * 80, class: "academy-heat-release"}), svgEl("text", {x: 390, y: 188, class: "academy-tick"}, "蓝：信号 / 红：背景")); graphic.append(drawing);
+      const curve = Array.from({length: 91}, (_, i) => models.malus(i * 2, p.intensity, p.background));
+      drawPlot({label: "已线偏振入射光的测得强度随检偏器夹角关系；含恒定背景", xLabel: "偏振方向夹角 θ / °", yLabel: "测得光强 / 相对单位", maxX: 180, maxY: 1.3, x: point => point.angle_deg, y: point => point.measured_intensity}, [0, 30, 45, 60, 90, 120, 150, 180].map(angle => models.malus(angle, p.intensity, p.background)), "angle_deg", curve);
     } else throw new RangeError("未配置的模型视图。");
     return {points, chart};
   }

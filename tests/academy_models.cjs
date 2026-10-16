@@ -111,4 +111,138 @@ assert.throws(() => models.spring(Number.MAX_VALUE, Number.MIN_VALUE), RangeErro
 assert.throws(() => models.doubleSlit(700, Number.MAX_VALUE, Number.MIN_VALUE), RangeError);
 assert.throws(() => models.fringeIntensity(Infinity, 1), RangeError);
 assert.throws(() => models.fringeIntensity(1, 0), RangeError);
-console.log("Academy physical models: nine lessons, units, proportions and boundary invariants passed.");
+
+
+// Archimedes: cubic centimetres convert to cubic metres, not litres or cubic millimetres.
+near(models.buoyancy(1000, 100).buoyancy_N, .981);
+near(models.buoyancy(1000, 100).displaced_mass_kg, .1);
+near(models.buoyancy(1000, 200).buoyancy_N / models.buoyancy(1000, 100).buoyancy_N, 2);
+near(models.buoyancy(1400, 100).buoyancy_N / models.buoyancy(700, 100).buoyancy_N, 2);
+near(models.buoyancy(1000, 0).buoyancy_N, 0);
+
+// Resistivity: micro-ohm-metres and millimetre diameter; R scales with inverse d squared.
+near(models.resistivity(.5, 1, .5).resistance_ohm, 2.5464790894703255);
+near(models.resistivity(.5, 1, .5).area_mm2, Math.PI * .5 ** 2 / 4);
+near(models.resistivity(.5, 2, .5).resistance_ohm / models.resistivity(.5, 1, .5).resistance_ohm, 2);
+near(models.resistivity(1, 1, .5).resistance_ohm / models.resistivity(.5, 1, .5).resistance_ohm, 2);
+near(models.resistivity(.5, 1, 1).resistance_ohm / models.resistivity(.5, 1, .5).resistance_ohm, .25);
+
+// Joule heating: grams -> kilograms; water storage is eta times electrical energy.
+const joule = models.joule(.5, 40, 60, 25, 1);
+near(joule.electrical_energy_J, 600); near(joule.water_heat_J, 600); near(joule.temperature_rise_C, 600 / (.025 * 4180));
+near(models.joule(1, 10, 60, 200, .8).temperature_rise_C / models.joule(.5, 10, 60, 200, .8).temperature_rise_C, 4);
+near(models.joule(.5, 10, 120, 200, .8).temperature_rise_C / models.joule(.5, 10, 60, 200, .8).temperature_rise_C, 2);
+near(models.joule(.5, 10, 60, 200, .4).temperature_rise_C / models.joule(.5, 10, 60, 200, .8).temperature_rise_C, .5);
+near(models.joule(0, 20, 180, 200).temperature_rise_C, 0);
+near(models.joule(2, 20, 0, 200).temperature_rise_C, 0);
+assert.ok(models.joule(2, 20, 180, 200, 1).final_C < 38);
+assert.throws(() => models.joule(10, 100, 100, 1, 1), RangeError);
+
+// Ideal transformer uses rms voltage, with integral positive turns.
+near(models.transformer(600, 300, 12).secondary_V_rms, 6);
+near(models.transformer(100, 600, 12).secondary_V_rms, 72);
+near(models.transformer(200, 400, 0).secondary_V_rms, 0);
+near(models.transformer(200, 400, 6).turns_ratio, 2);
+near(models.transformer(100, 300, 6).secondary_V_rms, models.transformer(200, 600, 6).secondary_V_rms);
+
+// Grating: 200 lines/mm -> d 5000 nm; absent orders return null rather than NaN.
+near(models.grating(200, 500, 1).spacing_nm, 5000);
+near(models.grating(200, 500, 1).required_sine, .1);
+near(models.grating(200, 500, 1).diffraction_deg, 5.739170477266787);
+const grazing = models.grating(2000, 500, 1), absent = models.grating(2000, 500, 2);
+assert.equal(grazing.exists, true); assert.equal(grazing.diffraction_state, "grazing"); near(grazing.diffraction_deg, 90);
+assert.equal(absent.exists, false); assert.equal(absent.diffraction_state, "absent"); assert.equal(absent.diffraction_deg, null);
+assert.equal(models.grating(2000, 500, 0).diffraction_deg, 0);
+assert.equal(models.grating(2000, 500 + 1e-6, 1).exists, false);
+assert.ok(models.grating(2000, 500 - 1e-6, 1).diffraction_deg < 90);
+near(models.grating(400, 500, 1).required_sine / models.grating(200, 500, 1).required_sine, 2);
+
+// TIR has three distinct physical states; equality is grazing, not total reflection.
+const critical = Math.asin(1 / 1.5) * 180 / Math.PI;
+near(models.totalReflection(1.5, 1, 30).refraction_deg, 48.59037789072914);
+near(models.totalReflection(1.5, 1, 0).refraction_deg, 0);
+const tir = models.totalReflection(1.5, 1, 45), atCritical = models.totalReflection(1.5, 1, critical);
+assert.equal(tir.optical_state, "total"); assert.equal(tir.refraction_deg, null); near(tir.reflection_deg, 45);
+assert.equal(atCritical.optical_state, "critical"); near(atCritical.refraction_deg, 90); near(atCritical.critical_deg, critical);
+assert.equal(models.totalReflection(1.5, 1, critical + 1e-6).optical_state, "total");
+assert.equal(models.totalReflection(1.5, 1, critical - 1e-6).optical_state, "refracting");
+assert.ok(models.totalReflection(1.8, 1, 0).critical_deg < models.totalReflection(1.3, 1, 0).critical_deg);
+
+// Expansion: alpha 12 means 12e-6 / K; L in cm and extension in mm.
+near(models.expansion(12, 60, 50).extension_mm, .36);
+near(models.expansion(12, 60, 50).final_cm, 60.036);
+near(models.expansion(12, 60, 0).extension_mm, 0);
+near(models.expansion(24, 60, 50).extension_mm / models.expansion(12, 60, 50).extension_mm, 2);
+near(models.expansion(12, 100, 80).extension_mm / models.expansion(12, 50, 40).extension_mm, 4);
+
+// Fixed-ended string: mu g/m converts to kg/m, lambda_1=2L and f_1=v/(2L).
+near(models.stringWave(.6, 1.8, 2).speed_m_s, 30);
+near(models.stringWave(.6, 1.8, 2).fundamental_Hz, 25);
+near(models.stringWave(.6, 1.8, 2).wavelength_m, 1.2);
+near(models.stringWave(1, 16, 1).fundamental_Hz / models.stringWave(1, 4, 1).fundamental_Hz, 2);
+near(models.stringWave(1, 4, 4).fundamental_Hz / models.stringWave(1, 4, 1).fundamental_Hz, .5);
+near(models.stringWave(1, 4, 1).fundamental_Hz / models.stringWave(.5, 4, 1).fundamental_Hz, .5);
+
+// Malus: linearly polarized signal plus angle-independent background.
+near(models.malus(0, 100, 10).measured_intensity, 110);
+near(models.malus(60, 100, 10).measured_intensity, 35);
+near(models.malus(90, 100, 10).measured_intensity, 10);
+assert.equal(models.malus(90).signal_intensity, 0);
+near(models.malus(180, 100, 10).measured_intensity, 110);
+near(models.malus(30, 100, 10).measured_intensity, models.malus(150, 100, 10).measured_intensity);
+near(models.malus(45, 2, .1).signal_intensity, 2 * models.malus(45, 1, .1).signal_intensity);
+
+const allFiniteOrState = value => {
+  for (const item of Object.values(value)) assert.ok(item === null || typeof item === "string" || typeof item === "boolean" || Number.isFinite(item));
+};
+for (const density of [700, 1400]) for (const volume of [0, 200]) allFiniteOrState(models.buoyancy(density, volume));
+for (const rho of [.02, 1.1]) for (const length of [.2, 2]) for (const diameter of [.2, 1.2]) allFiniteOrState(models.resistivity(rho, length, diameter));
+for (const i of [0, 2]) for (const r of [2, 20]) for (const t of [0, 180]) for (const mass of [200, 500]) for (const eta of [.2, 1]) allFiniteOrState(models.joule(i, r, t, mass, eta));
+for (const n1 of [100, 600]) for (const n2 of [100, 600]) for (const v of [1, 12]) allFiniteOrState(models.transformer(n1, n2, v));
+for (const lines of [100, 1200]) for (const wavelength of [400, 700]) for (const order of [1, 3]) { const value = models.grating(lines, wavelength, order); allFiniteOrState(value); assert.equal(value.exists, value.required_sine <= 1); }
+for (const n of [1.3, 1.8]) for (const angle of [0, 80]) { const value = models.totalReflection(n, 1, angle); allFiniteOrState(value); assert.equal(value.refraction_deg === null, value.optical_state === "total"); }
+for (const alpha of [2, 30]) for (const length of [20, 100]) for (const t of [0, 80]) allFiniteOrState(models.expansion(alpha, length, t));
+for (const length of [.4, 1.5]) for (const tension of [1, 20]) for (const density of [.5, 5]) allFiniteOrState(models.stringWave(length, tension, density));
+for (const angle of [0, 90, 180]) for (const intensity of [.2, 1]) for (const background of [0, .2]) allFiniteOrState(models.malus(angle, intensity, background));
+
+// Reject non-finite/negative domains before they reach readings or SVG coordinates.
+for (const bad of [0, -1, NaN, Infinity]) {
+  assert.throws(() => models.buoyancy(bad, 100), RangeError);
+  assert.throws(() => models.resistivity(bad, 1, .5), RangeError);
+  assert.throws(() => models.resistivity(.5, bad, .5), RangeError);
+  assert.throws(() => models.resistivity(.5, 1, bad), RangeError);
+  assert.throws(() => models.joule(1, bad, 60, 200), RangeError);
+  assert.throws(() => models.joule(1, 10, 60, bad), RangeError);
+  assert.throws(() => models.joule(1, 10, 60, 200, bad), RangeError);
+  assert.throws(() => models.transformer(bad, 100, 6), RangeError);
+  assert.throws(() => models.transformer(100, bad, 6), RangeError);
+  assert.throws(() => models.grating(bad, 500), RangeError);
+  assert.throws(() => models.grating(200, bad), RangeError);
+  assert.throws(() => models.expansion(bad, 50, 20), RangeError);
+  assert.throws(() => models.expansion(12, bad, 20), RangeError);
+  assert.throws(() => models.stringWave(bad, 10, 1), RangeError);
+  assert.throws(() => models.stringWave(1, bad, 1), RangeError);
+  assert.throws(() => models.stringWave(1, 10, bad), RangeError);
+  assert.throws(() => models.malus(45, bad), RangeError);
+}
+for (const bad of [-1, NaN, Infinity]) {
+  assert.throws(() => models.buoyancy(1000, bad), RangeError);
+  assert.throws(() => models.joule(bad, 10, 60, 200), RangeError);
+  assert.throws(() => models.joule(1, 10, bad, 200), RangeError);
+  assert.throws(() => models.transformer(100, 200, bad), RangeError);
+  assert.throws(() => models.expansion(12, 50, bad), RangeError);
+  assert.throws(() => models.malus(45, 1, bad), RangeError);
+}
+assert.throws(() => models.transformer(100.5, 200, 6), RangeError);
+assert.throws(() => models.grating(200, 500, 1.5), RangeError);
+assert.throws(() => models.grating(200, 500, -1), RangeError);
+assert.throws(() => models.totalReflection(1, 1.5, 45), RangeError);
+assert.throws(() => models.totalReflection(1.5, 1.5, 45), RangeError);
+for (const angle of [-1, 90, NaN, Infinity]) assert.throws(() => models.totalReflection(1.5, 1, angle), RangeError);
+for (const angle of [-1, 181, NaN, Infinity]) assert.throws(() => models.malus(angle), RangeError);
+assert.throws(() => models.joule(1, 10, 60, 200, 1.1), RangeError);
+assert.throws(() => models.resistivity(.5, 1, Number.MIN_VALUE), RangeError);
+assert.throws(() => models.stringWave(1, Number.MAX_VALUE, Number.MIN_VALUE), RangeError);
+assert.throws(() => models.grating(Number.MAX_VALUE, Number.MAX_VALUE), RangeError);
+assert.throws(() => models.expansion(Number.MAX_VALUE, Number.MAX_VALUE, 80), RangeError);
+console.log("Academy physical models: eighteen lessons, unit conversions, proportions, finite endpoints and optical state boundaries passed.");

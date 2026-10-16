@@ -62,10 +62,16 @@ function catalogCaseLinks(topic,caseData) {
 }
 function catalogFilterRows(){
   const query=$("catalogQuery").value.trim().toLowerCase(),level=$("catalogLevel").value;
+  const interactiveIds=new Set((window.LabAcademyCourseList||[]).map(course=>course.experiment_id));
+  const interactiveOnly=new URLSearchParams(location.search).get("mode")==="interactive";
+  for(const button of document.querySelectorAll("[data-catalog-mode]")){
+    button.setAttribute("aria-pressed",String((button.dataset.catalogMode==="interactive")===interactiveOnly));
+    if(button.dataset.catalogMode==="interactive")button.textContent=`可调交互课（${interactiveIds.size}）`;
+  }
   const chosen=catalogBooks.find(b=>b.book_id===catalogBook),allowed=chosen?new Set(chosen.items.flatMap(i=>i.experiment_ids)):null,aliases=chosen?chosen.items:catalogBooks.flatMap(b=>b.items);
-  const topics=catalogTopics.filter(t=>(!allowed||allowed.has(t.experiment_id))&&(!catalogArea||t.area===catalogArea)&&(!query||JSON.stringify([t.title,t.summary,t.goal,t.relation,aliases.filter(i=>i.experiment_ids.includes(t.experiment_id)).map(i=>i.label),t.cases.map(c=>[c.description,c.questions.map(q=>q.prompt)])]).toLowerCase().includes(query)));
+  const topics=catalogTopics.filter(t=>(!interactiveOnly||interactiveIds.has(t.experiment_id))&&(!allowed||allowed.has(t.experiment_id))&&(!catalogArea||t.area===catalogArea)&&(!query||JSON.stringify([t.title,t.summary,t.goal,t.relation,aliases.filter(i=>i.experiment_ids.includes(t.experiment_id)).map(i=>i.label),t.cases.map(c=>[c.description,c.questions.map(q=>q.prompt)])]).toLowerCase().includes(query)));
   const count=topics.reduce((n,t)=>n+t.cases.filter(c=>!level||c.level===level).length,0);
-  $("catalogCount").textContent=`${topics.length} 个实验主题 · ${count} 组练习`;
+  $("catalogCount").textContent=interactiveOnly?`${topics.length} 门交互课 · 先预测，再调参，最后用实测与自检验证`:`${topics.length} 个实验主题 · ${count} 组练习`;
   const directory=$("catalogDirectory");directory.replaceChildren();
   for(const area of Object.keys(CATALOG_AREAS)){
     const group=topics.filter(t=>t.area===area);if(!group.length)continue;
@@ -78,6 +84,11 @@ function catalogFilterRows(){
       name.append(heading,node("p",topic.summary));
       const number=node("span",String(catalogTopics.indexOf(topic)+1).padStart(3,"0"),"catalog-topic-number");number.setAttribute("aria-hidden","true");
       const resources=node("div",null,"catalog-level-links");
+      if(interactiveIds.has(topic.experiment_id)){
+        name.append(node("small","预测 · 调参 · 实测 · 自检","catalog-interactive-tag"));
+        const enter=catalogButton("进入交互课 →",()=>window.startAcademyExperiment?.(topic.experiment_id),"catalog-interactive-link");
+        enter.setAttribute("aria-label",`进入${topic.title}交互课`);resources.append(enter);
+      }
       for(const [key,label] of Object.entries(CATALOG_LEVELS)){
         const cases=topic.cases.filter(c=>c.level===key);if(!cases.length||(level&&level!==key))continue;
         resources.append(catalogAnchor(`${label} · ${cases.length} 组 ↗`,`/experiments/${topic.experiment_id}?level=${key}`,`level-${key}`));
@@ -86,7 +97,7 @@ function catalogFilterRows(){
     }
     directory.append(section);
   }
-  if(!topics.length)directory.append(node("p","没有匹配的实验。可清空关键词或切换学科。","empty"));
+  if(!topics.length)directory.append(node("p","没有匹配的实验。可重置筛选，或切换学科与学习方式。","empty"));
   for(const button of $("catalogAreaFilters").querySelectorAll("button"))button.setAttribute("aria-pressed",String(button.dataset.area===catalogArea));
 }
 function renderTopic(topic){
@@ -296,8 +307,10 @@ async function buildCatalog(){
     const home=$("homeFeaturedTopics");catalogTopics.filter(t=>["archimedes","grating_diffraction","thermal_expansion"].includes(t.experiment_id)).forEach((topic,i)=>{const a=catalogAnchor("",`/experiments/${topic.experiment_id}`,"featured-topic-link"),visual=node("div",null,"featured-topic-visual");visual.append(catalogIllustration(topic.area),node("span",String(i+1).padStart(2,"0"),"featured-topic-number"));a.append(visual,node("small",`${CATALOG_AREA_TITLES[topic.area]} / ${CATALOG_AREAS[topic.area]}`),node("strong",topic.title),node("p",topic.summary,"featured-topic-summary"),node("span","原理 · 分级练习 · 示例数据 →","featured-topic-caption"));home.append(a);});
   }catch(error){$("catalogCount").textContent="实验资料暂时无法加载。";$("catalogDirectory").replaceChildren(catalogButton("重新载入实验资料",()=>location.reload()));}
 }
+for(const button of document.querySelectorAll("[data-catalog-mode]"))button.addEventListener("click",()=>{goPage(button.dataset.catalogMode==="interactive"?"/experiments?mode=interactive":"/experiments",{focus:false});});
 $("catalogSearchForm").addEventListener("submit",event=>{event.preventDefault();catalogFilterRows();});
 $("catalogLevel").addEventListener("change",catalogFilterRows);
 $("catalogResetButton").addEventListener("click",()=>{catalogArea="";$("catalogQuery").value="";$("catalogLevel").value="";goPage('/experiments',{focus:false});});
+window.addEventListener("lab-academy-ready",()=>{if(catalogBuilt&&document.body.dataset.page==="catalog")catalogFilterRows();});
 window.addEventListener("tutor-ready",()=>{if(catalogBuilt){restoreCatalogStartup();refreshCatalogInputs();saveDraft();}});
 buildCatalog();

@@ -1,5 +1,7 @@
 """Private low-stakes progress, server grading and revision scheduling; synthetic data only."""
 from datetime import datetime, timedelta, timezone
+import hashlib
+import json
 from pathlib import Path
 
 import pytest
@@ -12,7 +14,9 @@ from app.main import create_app
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "/api/v1/learning"
 TOPICS = ("simple_pendulum", "ohms_law", "rc_time_constant", "hookes_law",
-          "spring_oscillation", "thin_lens", "snell_refraction", "double_slit", "calorimetry")
+          "spring_oscillation", "thin_lens", "snell_refraction", "double_slit", "calorimetry",
+          "archimedes", "resistivity", "joule_heating", "transformer_ratio", "grating_diffraction",
+          "total_internal_reflection", "thermal_expansion", "string_waves", "malus_law")
 CORRECT = {"simple_pendulum": {"prediction": "b", "transfer": "a"},
            "ohms_law": {"prediction": "c", "transfer": "b"},
            "rc_time_constant": {"prediction": "d", "transfer": "a"},
@@ -21,13 +25,23 @@ CORRECT = {"simple_pendulum": {"prediction": "b", "transfer": "a"},
            "thin_lens": {"prediction": "c", "transfer": "b"},
            "snell_refraction": {"prediction": "a", "transfer": "d"},
            "double_slit": {"prediction": "b", "transfer": "c"},
-           "calorimetry": {"prediction": "d", "transfer": "a"}}
+           "calorimetry": {"prediction": "d", "transfer": "a"},
+           "archimedes": {"prediction": "c", "transfer": "a"},
+           "resistivity": {"prediction": "d", "transfer": "b"},
+           "joule_heating": {"prediction": "b", "transfer": "c"},
+           "transformer_ratio": {"prediction": "c", "transfer": "a"},
+           "grating_diffraction": {"prediction": "d", "transfer": "b"},
+           "total_internal_reflection": {"prediction": "b", "transfer": "d"},
+           "thermal_expansion": {"prediction": "a", "transfer": "c"},
+           "string_waves": {"prediction": "d", "transfer": "b"},
+           "malus_law": {"prediction": "a", "transfer": "d"}}
 
 
 @pytest.fixture
 def lab(tmp_path):
     settings = Settings(database_path=tmp_path / "learning.db",
-                        knowledge_base_path=ROOT / "app/data/knowledge_base.json", enable_llm=False)
+                        knowledge_base_path=ROOT / "app/data/knowledge_base.json", enable_llm=False,
+                        enable_tutor=False, openai_api_key=None)
     app = create_app(settings)
     assert hasattr(app.state, "learning"), "create_app must install the interactive learning routes"
     return app, TestClient(app)
@@ -37,9 +51,10 @@ def answer(client, topic="ohms_law", node="prediction", choice="a"):
     return client.post(f"{BASE}/courses/{topic}/answers", json={"node_id": node, "choice_id": choice})
 
 
-def test_catalog_contains_nine_courses_without_solutions(lab):
+def test_catalog_contains_eighteen_courses_without_solutions(lab):
     app, client = lab
     listing = client.get(BASE + "/courses").json()
+    assert len(listing["courses"]) == 18
     assert {course["experiment_id"] for course in listing["courses"]} == set(TOPICS)
     catalog = client.get("/api/v1/experiments").json()
     assert set(TOPICS) <= {topic["experiment_id"] for topic in catalog["topics"]}
@@ -54,6 +69,7 @@ def test_catalog_contains_nine_courses_without_solutions(lab):
         for node in course["nodes"]:
             assert len(node["choices"]) == 4 and node["tag"] and node["question"]
             assert {choice["id"] for choice in node["choices"]} == set("abcd")
+            assert len({choice["text"] for choice in node["choices"]}) == 4
             private = next(item for item in app.state.learning.by_id[topic]["nodes"] if item["id"] == node["id"])
             assert private["correct_choice_id"] == CORRECT[topic][node["id"]]
             assert len(private["hints"]) == len(set(private["hints"])) == 3
@@ -64,7 +80,7 @@ def test_catalog_contains_nine_courses_without_solutions(lab):
 
 @pytest.mark.parametrize("topic", TOPICS)
 @pytest.mark.parametrize("node", ("prediction", "transfer"))
-def test_all_eighteen_questions_grade_all_choices_and_explain_only_after_success(lab, topic, node):
+def test_all_thirty_six_questions_grade_all_choices_and_explain_only_after_success(lab, topic, node):
     app, client = lab
     right = CORRECT[topic][node]
     standard_explanation = next(n for n in app.state.learning.by_id[topic]["nodes"] if n["id"] == node)["explanation"]
@@ -88,6 +104,15 @@ def test_all_eighteen_questions_grade_all_choices_and_explain_only_after_success
         saved = con.execute("SELECT choice_id,correct,assisted FROM lab_learning_answers ORDER BY answer_id").fetchall()
         assert [tuple(row) for row in saved] == [(choice, 0, int(index > 0))
                                                 for index, choice in enumerate(wrong_choices)] + [(right, 1, 1)]
+
+
+def test_extension_preserves_original_nine_course_objects_and_progress_ids():
+    """The additive release must not silently change already-answered questions."""
+    courses = json.loads((ROOT / "app/data/learning_courses.json").read_text())["courses"]
+    original = courses[:9]
+    assert tuple(course["experiment_id"] for course in original) == TOPICS[:9]
+    serialized = json.dumps(original, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    assert hashlib.sha256(serialized.encode()).hexdigest() == "421c920f963283919f838291dc034683441dd3cd26aa19522b87349f794e54d5"
 
 
 def test_hint_levels_are_bounded_and_attempts_do_not_claim_mastery(lab):
