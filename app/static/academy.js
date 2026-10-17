@@ -21,6 +21,26 @@
       const period = 2 * Math.PI * Math.sqrt(massKg / stiffnessNPerM);
       return finiteResult({mass_kg: massKg, stiffness_N_m: stiffnessNPerM, period_s: period, period_squared_s2: period * period});
     },
+    springMotion(massKg, stiffnessNPerM, elapsedSeconds) {
+      if (!Number.isFinite(elapsedSeconds) || elapsedSeconds < 0) throw new RangeError("演示时间须为有限非负数。");
+      const {period_s} = models.spring(massKg, stiffnessNPerM);
+      if (!(period_s > 0)) throw new RangeError("周期超出数值范围。");
+      const phase = (elapsedSeconds % period_s) / period_s * 2 * Math.PI;
+      return finiteResult({period_s, displacement_fraction: Math.cos(phase), velocity_fraction_per_s: -2 * Math.PI / period_s * Math.sin(phase)});
+    },
+    kinematics(initialVelocityMps, accelerationMps2, elapsedSeconds) {
+      if (![initialVelocityMps, accelerationMps2, elapsedSeconds].every(Number.isFinite) || initialVelocityMps < 0 || accelerationMps2 < 0 || elapsedSeconds < 0) throw new RangeError("本课仅处理初速度、加速度和时间非负的运动段。");
+      return finiteResult({initial_velocity_m_s: initialVelocityMps, acceleration_m_s2: accelerationMps2, time_s: elapsedSeconds, position_m: initialVelocityMps * elapsedSeconds + .5 * accelerationMps2 * elapsedSeconds ** 2, velocity_m_s: initialVelocityMps + accelerationMps2 * elapsedSeconds});
+    },
+    newtons(massKg, netForceN, elapsedSeconds = 0) {
+      if (![massKg, netForceN].every(Number.isFinite) || !(massKg > 0) || netForceN < 0) throw new RangeError("质量须为正数，正向合外力须非负。");
+      return finiteResult({...models.kinematics(0, netForceN / massKg, elapsedSeconds), mass_kg: massKg, net_force_N: netForceN});
+    },
+    freeFall(gravityMps2, elapsedSeconds) {
+      if (!Number.isFinite(gravityMps2) || !(gravityMps2 > 0)) throw new RangeError("重力加速度须为有限正数。");
+      const motion = models.kinematics(0, gravityMps2, elapsedSeconds);
+      return {...motion, gravity_m_s2: gravityMps2, height_m: motion.position_m};
+    },
     lens(focalCm, objectCm) {
       if (![focalCm, objectCm].every(Number.isFinite) || !(focalCm > 0) || !(objectCm > focalCm)) throw new RangeError("本实像模型要求正焦距且物距大于焦距。");
       const image = focalCm / (1 - focalCm / objectCm);
@@ -132,6 +152,8 @@
     string_waves: {title: "弦驻波：怎样改变基频？", subtitle: "调节弦长、张力与线密度，观察一个波腹的基模。", goal: "理解基频与张力平方根、弦长和线密度的关系。", formula: "f₁ = (1/2L)√(F/μ)", tex: "f_1=\\frac{1}{2L}\\sqrt{\\frac{F}{\\mu}}", condition: "均匀细弦，两端固定；张力恒定，小振幅；只研究基频（一个波腹），λ₁ = 2L；忽略弦的弯曲刚度和阻尼。", initial: {length: 1, tension: 10, density: 1}, symbols: [["L", "两固定端间的有效弦长 L，单位 m。"], ["F", "张力 F，单位 N；不是振动频率。"], ["μ", "线密度 μ = 质量/长度，滑杆用 g/m；计算前乘 0.001 换为 kg/m。"], ["f₁", "基频 f₁，单位 Hz；两端为波节，中间为一个波腹。"]]},
     malus_law: {title: "马吕斯定律：转过 90° 就全黑吗？", subtitle: "转动检偏器，同时比较光信号与背景。", goal: "把 cos² 关系、透振方向和背景修正联系起来。", formula: "I测 = I₀ cos² θ + I背景", tex: "I=I_0\\cos^2\\theta+I_{bg}", condition: "入射光已线偏振；θ 为其偏振方向与检偏器透振轴的夹角；理想检偏器；背景视为与角度无关的常量。所有光强为相对单位。", initial: {angle: 45, intensity: 1, background: .05}, symbols: [["θ", "偏振方向与检偏器透振轴夹角，单位 °；180° 与 0° 透射情况相同。"], ["I₀", "沿检偏器轴方向对齐时的理想信号光强，相对单位。"], ["I背景", "角度无关的背景光或探测器零点；90° 时信号为零，测得值仍可能非零。"], ["cos²", "cos² θ 不是 cos(2θ)；无量纲，取值 0 至 1。"]]}
   });
+  // Additional motion lessons share the existing prediction/data/revision flow.
+  Object.assign(supported, {"uniform_acceleration":{"title":"匀加速运动：车越来越快了吗？","subtitle":"让小车运动，联系位置、速度与时间。","goal":"区分初速度与加速度，理解速度图的斜率和截距。","formula":"v = v₀ + at","tex":"v=v_0+at","condition":"一维正向匀加速；x₀ = 0；初速度和加速度非负。演示使用真实时间，轨道固定显示 0–8 m，每段 3 s。","initial":{"velocity":0.2,"acceleration":0.5},"symbols":[["v₀","t = 0 时的初速度，单位 m/s；对应速度图截距。"],["a","恒加速度，单位 m/s²；对应 v–t 图斜率。"],["t","从初始状态起计时，单位 s。"],["x","位置 x = v₀t + ½at²，单位 m；位置不与时间等比例增长。"]]},"newtons_second_law":{"title":"牛顿第二定律：推力和质量怎样改变运动？","subtitle":"控制同一系统的质量与合外力，观察小车加速。","goal":"区分合外力与驱动力，比较质量对加速度的影响。","formula":"F合 = ma","tex":"F_{\\mathrm{net}}=ma","condition":"固定质量的质点系统，正向恒合外力；从静止开始，忽略摩擦或已计入合力。轨道固定显示 0–10 m，每段 2 s。","initial":{"mass":0.5,"force":0.6},"symbols":[["F合","全部外力的合力，单位 N；不是未扣摩擦的单独拉力。"],["m","系统总惯性质量，单位 kg；一段演示内保持不变。"],["a","加速度 a = F合/m，单位 m/s²。"],["t","从静止起计时；v = at，x = ½at²。"]]},"free_fall":{"title":"自由落体：相同时间走相同距离吗？","subtitle":"释放小球，观察下落速度与距离。","goal":"联系静止释放、时间平方和重力加速度，核查高度与计时零点。","formula":"h = ½gt²","tex":"h=\\frac{1}{2}gt^2","condition":"只受重力、从静止释放；g 在下落范围恒定，向下为正，忽略空气阻力。小球到达设定高度后停止；空间按当前高度缩放，不模拟碰撞。","initial":{"gravity":9.8,"height":2},"symbols":[["h","从释放点起的下落距离，单位 m；与 t² 成正比。"],["g","重力加速度，单位 m/s²；演示范围 5–15。"],["t","从释放瞬间计时，单位 s；实测 ms 先除以 1000 再平方。"],["v","向下速度 v = gt，单位 m/s；初速度为 0。"]]}});
   window.LabAcademyCourseList = Object.entries(supported).map(([experiment_id, config]) => ({experiment_id, title: config.title, summary: config.goal}));
   window.dispatchEvent(new Event("lab-academy-ready"));
   const get = id => document.getElementById(id);
@@ -140,10 +162,12 @@
   const number = (value, precision = 3) => Number(value.toPrecision(precision)).toLocaleString("zh-CN", {maximumSignificantDigits: precision});
   const supportedPages = new Set(["experiment", "topic", "data", "review", "observations", "checks", "calculation", "diagnosis", "revision"]);
   const records = new Map();
-  let activeId = "", activePage = "", root = null, frame = null, generation = 0, observer, focusedLesson = "";
+  let activeId = "", activePage = "", root = null, frame = null, generation = 0, observer, focusedLesson = "", lastAnimationTime = null;
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const record = id => { if (!records.has(id)) records.set(id, {params: {...supported[id].initial}, course: null, loading: false, loadedAt: 0, lastLoadAttempt: 0, error: "", explored: false, transferOpen: false, results: {}, answers: {}, selected: null, symbol: 0, pause: false, busy: new Set()}); return records.get(id); };
-  function stopAnimation() { if (frame != null) cancelAnimationFrame(frame); frame = null; }
+  const record = id => { if (!records.has(id)) records.set(id, {params: {...supported[id].initial}, course: null, loading: false, loadedAt: 0, lastLoadAttempt: 0, error: "", explored: false, transferOpen: false, results: {}, answers: {}, selected: null, symbol: 0, pause: false, motion: {phase: 0, time: 0, speed: 1, completed: false, lastReadout: 0}, busy: new Set()}); return records.get(id); };
+  function stopAnimation() { if (frame != null) cancelAnimationFrame(frame); frame = null; lastAnimationTime = null; }
+  const transitIds = new Set(["uniform_acceleration", "newtons_second_law", "free_fall"]);
+  const animatedIds = new Set(["simple_pendulum", "spring_oscillation", ...transitIds]);
   function routeExperiment() { const match = location.pathname.match(/^\/experiments\/([a-z0-9_]+)$/); return match ? match[1] : get("experimentId")?.value; }
   function ask(question, selection) { window.dispatchEvent(new CustomEvent("lab-academy-question", {detail: {question, experiment_id: activeId, selection}})); }
   async function api(path, data) {
@@ -293,7 +317,9 @@
     control.id = `academy-${activeId}-${key}`; control.type = "range"; control.min = min; control.max = max; control.step = step; control.value = value;
     const l = make("label", label); l.htmlFor = control.id; output.htmlFor = control.id; output.value = format(value); caption.append(l, output);
     control.setAttribute("aria-valuetext", format(value));
-    control.addEventListener("input", () => { const n = Number(control.value); output.value = format(n); control.setAttribute("aria-valuetext", format(n)); onInput(n); updateVisual(); });
+    control.addEventListener("input", () => { const n = Number(control.value); output.value = format(n); control.setAttribute("aria-valuetext", format(n)); onInput(n);
+      if (transitIds.has(activeId)) { const motion = record(activeId).motion; motion.time = 0; motion.completed = false; }
+      updateVisual(); syncMotionControls(); if (frame == null) beginAnimation(); });
     holder.append(caption, control); parent.append(holder);
   }
   function buildControls(parent, state) {
@@ -301,8 +327,7 @@
     if (activeId === "simple_pendulum") {
       range(parent, "length", "摆长 L", .25, 1.5, .05, p.length, n => `${number(n)} m`, n => p.length = n);
       parent.append(make("p", "摆角固定为 8°。观察完整往返，区分周期与半周期。", "academy-muted"));
-      const pause = button(state.pause ? "继续摆动" : "暂停摆动", () => { state.pause = !state.pause; pause.textContent = state.pause ? "继续摆动" : "暂停摆动"; if (state.pause) stopAnimation(); else beginAnimation(); }, "academy-text-button");
-      parent.append(pause); if (reducedMotion.matches) parent.append(make("p", "已按减少动态效果设置，显示静态摆位与数值。", "academy-muted"));
+      buildMotionControls(parent, state);
     } else if (activeId === "ohms_law") {
       range(parent, "resistance", "电阻 R", 100, 1000, 50, p.resistance, n => `${number(n)} Ω`, n => p.resistance = n);
       range(parent, "voltage", "电压 U", .5, 5, .1, p.voltage, n => `${number(n)} V`, n => p.voltage = n);
@@ -320,7 +345,20 @@
     } else if (activeId === "spring_oscillation") {
       range(parent, "mass", "振子质量 m", .05, .5, .025, p.mass, n => `${number(n)} kg`, n => p.mass = n);
       range(parent, "stiffness", "劲度系数 k", 10, 50, 2, p.stiffness, n => `${number(n)} N/m`, n => p.stiffness = n);
-      parent.append(make("p", "图中质量沿平衡位置振动的示意为静态快照；周期由读数与 T²–m 图比较。", "academy-muted"));
+      parent.append(make("p", "物块围绕平衡位置往返，弹簧同步伸缩。振幅固定且仅作示意；质量越大越慢，弹簧越硬越快。", "academy-muted"));
+      buildMotionControls(parent, state);
+    } else if (activeId === "uniform_acceleration") {
+      range(parent, "velocity", "初速度 v₀", 0, 1, .1, p.velocity, n => `${number(n)} m/s`, n => p.velocity = n);
+      range(parent, "acceleration", "恒加速度 a", .1, 1, .1, p.acceleration, n => `${number(n)} m/s²`, n => p.acceleration = n);
+      parent.append(make("p", "每段演示 3 s，修改参数后从起点重播；图线蓝色游标对应当前时刻。", "academy-muted")); buildMotionControls(parent, state);
+    } else if (activeId === "newtons_second_law") {
+      range(parent, "mass", "系统总质量 m", .2, 1, .1, p.mass, n => `${number(n)} kg`, n => p.mass = n);
+      range(parent, "force", "恒合外力 F合", .1, 1, .1, p.force, n => `${number(n)} N`, n => p.force = n);
+      parent.append(make("p", "每段演示 2 s，从静止出发；红箭头表示合外力。修改参数后从起点重播。", "academy-muted")); buildMotionControls(parent, state);
+    } else if (activeId === "free_fall") {
+      range(parent, "gravity", "重力加速度 g", 5, 15, .1, p.gravity, n => `${number(n)} m/s²`, n => p.gravity = n);
+      range(parent, "height", "释放高度 H", .5, 5, .5, p.height, n => `${number(n)} m`, n => p.height = n);
+      parent.append(make("p", "到达设定高度时停止，可用慢放观察越落越快。修改参数后重新释放。", "academy-muted")); buildMotionControls(parent, state);
     } else if (activeId === "thin_lens") {
       range(parent, "focal", "焦距 f", 5, 20, 1, p.focal, n => `${number(n)} cm`, n => p.focal = n);
       range(parent, "distance", "物距 u", 25, 100, 1, p.distance, n => `${number(n)} cm`, n => p.distance = n);
@@ -361,6 +399,29 @@
     parent.append(make("p", notes[activeId] || "", "academy-muted"));
     if (activeId === "total_internal_reflection") parent.append(button("将入射角设为临界角", () => { p.angle = models.totalReflection(p.index, 1, 0).critical_deg; renderContent(); }, "academy-text-button"));
   }
+  function buildMotionControls(parent, state) {
+    const controls = make("div", null, "academy-motion-controls");
+    const actions = make("div", null, "academy-motion-actions");
+    const play = button("", () => {
+      if (state.motion.completed) { state.motion.time = 0; state.motion.phase = 0; state.motion.completed = false; state.pause = false; }
+      else state.pause = !state.pause;
+      paintMotion(true); syncMotionControls(); if (state.pause) stopAnimation(); else beginAnimation();
+    }, "academy-button"); play.id = "academyMotionToggle"; play.setAttribute("aria-controls", "academyMotionDrawing");
+    const reset = button("复位到起点", () => { stopAnimation(); state.motion.time = 0; state.motion.phase = 0; state.motion.completed = false; state.pause = true; paintMotion(true); syncMotionControls(); }, "academy-button");
+    reset.id = "academyMotionReset"; actions.append(play, reset);
+    const speedLabel = make("label", "播放速度"), speed = make("select"); speed.id = "academyMotionSpeed"; speedLabel.htmlFor = speed.id;
+    for (const [value, label] of [[1, "1× 实时"], [.5, "0.5× 慢放"], [.25, "0.25× 慢放"]]) { const option = make("option", label); option.value = value; option.selected = state.motion.speed === value; speed.append(option); }
+    speed.addEventListener("change", () => { state.motion.speed = Number(speed.value); syncMotionControls(); });
+    const status = make("p", "", "academy-motion-status"); status.id = "academyMotionStatus"; status.setAttribute("role", "status");
+    controls.append(actions, speedLabel, speed, status, make("small", "慢放只改变播放速度，不改变模型周期或计算结果；复位会暂停在起点。", "academy-motion-note")); parent.append(controls); syncMotionControls();
+  }
+  function syncMotionControls() {
+    const toggle = get("academyMotionToggle"), status = get("academyMotionStatus"); if (!toggle || !activeId) return;
+    const state = record(activeId), unavailable = reducedMotion.matches;
+    toggle.disabled = unavailable;
+    toggle.textContent = state.motion.completed ? "重新播放" : state.pause ? "继续动画" : "暂停动画";
+    status.textContent = unavailable ? "已按系统的减少动态效果设置停用自动播放，仍可调参和查看图线。" : state.motion.completed ? "本次演示完成，点击重新播放可再观察一次。" : `${state.pause ? "已暂停" : "播放中"} · ${state.motion.speed}× 速度`;
+  }
   function buildFormula(parent, state, config) {
     const panel = make("div", null, "academy-formula"), formula = button("", () => ask(`请解释教学仿真中的公式 ${config.formula}。当前模拟：${pointLabel(activeId, currentPoint(state))}。适用条件：${config.condition}`, {kind: "formula", label: config.formula, values: {...currentPoint(state), condition: config.condition}}), "academy-formula-button");
     if (window.katex) window.katex.render(config.tex, formula, {throwOnError: false, trust: false, displayMode: false}); else formula.textContent = config.formula;
@@ -397,6 +458,9 @@
     if (activeId === "rc_time_constant") return models.rc(p.resistance, p.capacitance, p.time * p.resistance * p.capacitance, p.discharge);
     if (activeId === "hookes_law") return models.hooke(p.stiffness, p.force);
     if (activeId === "spring_oscillation") return models.spring(p.mass, p.stiffness);
+    if (activeId === "uniform_acceleration") return models.kinematics(p.velocity, p.acceleration, 3);
+    if (activeId === "newtons_second_law") return models.newtons(p.mass, p.force, 2);
+    if (activeId === "free_fall") return models.freeFall(p.gravity, Math.sqrt(2 * p.height / p.gravity));
     if (activeId === "thin_lens") return models.lens(p.focal, p.distance);
     if (activeId === "snell_refraction") return models.refraction(p.index, p.angle);
     if (activeId === "double_slit") return models.doubleSlit(p.wavelength, p.distance, p.spacing);
@@ -425,6 +489,9 @@
     if (eid === "ohms_law") return `I = ${number(point.current_mA)} mA，U = ${number(point.voltage_V)} V，R = ${number(point.resistance_ohm)} Ω`;
     if (eid === "hookes_law") return `F = ${number(point.force_N)} N，x = ${number(point.extension_cm)} cm，k = ${number(point.stiffness_N_m)} N/m`;
     if (eid === "spring_oscillation") return `m = ${number(point.mass_kg)} kg，k = ${number(point.stiffness_N_m)} N/m，T = ${number(point.period_s)} s，T² = ${number(point.period_squared_s2)} s²`;
+    if (eid === "uniform_acceleration") return `v₀ = ${number(point.initial_velocity_m_s)} m/s，a = ${number(point.acceleration_m_s2)} m/s²，t = ${number(point.time_s)} s，x = ${number(point.position_m)} m，v = ${number(point.velocity_m_s)} m/s`;
+    if (eid === "newtons_second_law") return `m = ${number(point.mass_kg)} kg，F合 = ${number(point.net_force_N)} N，a = ${number(point.acceleration_m_s2)} m/s²（从静止开始）`;
+    if (eid === "free_fall") return `g = ${number(point.gravity_m_s2)} m/s²，t = ${number(point.time_s)} s，h = ${number(point.height_m)} m，v = ${number(point.velocity_m_s)} m/s（静止释放）`;
     if (eid === "thin_lens") return `f = ${number(point.focal_cm)} cm，u = ${number(point.object_cm)} cm，v = ${number(point.image_cm)} cm，M = ${number(point.magnification)}`;
     if (eid === "snell_refraction") return `n₂ = ${number(point.index_2)}，θ₁ = ${number(point.incidence_deg)}°，θ₂ = ${number(point.refraction_deg)}°，sin θ₁ = ${number(point.sine_incidence)}，sin θ₂ = ${number(point.sine_refraction)}`;
     if (eid === "double_slit") return `λ = ${number(point.wavelength_nm)} nm，D = ${number(point.distance_m)} m，d = ${number(point.slit_spacing_mm)} mm，Δx = ${number(point.fringe_spacing_mm)} mm`;
@@ -449,13 +516,13 @@
     let points, curve, chart;
     if (activeId === "simple_pendulum") {
       reading(readings, "单周期 T", `${number(current.period_s)} s`); reading(readings, "周期平方 T²", `${number(current.period_squared_s2)} s²`);
-      const drawing = newSvg("小角度单摆示意：摆长从悬点量至摆球质心。", 170); drawing.classList.add("academy-pendulum");
+      const drawing = newSvg("小角度单摆示意：摆长从悬点量至摆球质心。", 170); drawing.classList.add("academy-pendulum"); drawing.id = "academyMotionDrawing";
       drawing.append(svgEl("line", {x1: 190, x2: 410, y1: 14, y2: 14, class: "academy-support"}), svgEl("line", {x1: 300, x2: 300, y1: 14, y2: 157, class: "academy-rest-line"}), svgEl("line", {id: "academyPendulumString", x1: 300, y1: 14, x2: 300, y2: 130, class: "academy-string"}), svgEl("circle", {id: "academyPendulumBob", cx: 300, cy: 130, r: 11, class: "academy-bob"}), svgEl("text", {x: 400, y: 88, class: "academy-axis-label"}, `L = ${number(p.length)} m`)); graphic.append(drawing);
       points = [.25, .5, .75, 1, 1.25, 1.5].map(length => models.pendulum(length));
       if (!points.some(point => Math.abs(point.length_m - p.length) < 1e-6)) points.push(current);
       points.sort((a, b) => a.length_m - b.length_m);
       chart = plot({label: "单摆周期平方与摆长的教学模型", xLabel: "摆长 L / m", yLabel: "周期平方 T² / s²", maxX: 1.5, maxY: 7, line: [{x: 0, y: 0}, {x: 1.5, y: models.pendulum(1.5).period_squared_s2}], points: points.map(point => ({x: point.length_m, y: point.period_squared_s2, label: pointLabel(activeId, point)})), selected: points.findIndex(point => Math.abs(point.length_m - state.selected.length_m) < 1e-6), onSelect: index => choose(points[index], true)});
-      const theta = reducedMotion.matches || state.pause ? .1396 : 0; positionPendulum(theta, p.length);
+      positionPendulum(.139626 * Math.cos(state.motion.phase * 2 * Math.PI), p.length);
     } else if (activeId === "ohms_law") {
       reading(readings, "模拟电流 I", `${number(current.current_mA)} mA`); reading(readings, "U/I（I 换算为 A）", `${number(p.resistance)} Ω`);
       points = [0, 1, 2, 3, 4, 5].map(voltage => models.ohms(p.resistance, voltage)); if (!points.some(point => Math.abs(point.voltage_V - p.voltage) < 1e-6)) points.push(current); points.sort((a, b) => a.voltage_V - b.voltage_V);
@@ -468,7 +535,7 @@
       chart = plot({label: `RC ${p.discharge ? "放电" : "充电"}教学曲线，标出一个时间常数的电压比例`, xLabel: "时间 t / ms", yLabel: "电容电压 Vc / V", maxX: 5 * current.tau_ms, maxY: 5.5, threshold: {x: threshold.time_ms, y: threshold.voltage_V, label: `τ · ${p.discharge ? "36.8%" : "63.2%"}`}, line: curve.map(point => ({x: point.time_ms, y: point.voltage_V})), points: points.map(point => ({x: point.time_ms, y: point.voltage_V, label: pointLabel(activeId, point)})), selected: points.findIndex(point => Math.abs(point.time_ms - state.selected.time_ms) < 1e-8), onSelect: index => choose(points[index], true)});
     }
     if (!chart) ({points, chart} = extendedVisual(state, current, graphic, readings, choose));
-    graphic.append(chart); holder.replaceChildren();
+    graphic.append(chart); paintMotion(true); holder.replaceChildren();
     const pointChoice = make("select"), pointChoiceLabel = make("label", "选择模拟点"); pointChoice.id = `academy-point-${activeId}`; pointChoiceLabel.htmlFor = pointChoice.id;
     points.forEach((point, index) => { const option = make("option", `${index + 1}. ${pointLabel(activeId, point)}`); option.value = index; option.selected = pointLabel(activeId, point) === pointLabel(activeId, state.selected); pointChoice.append(option); });
     pointChoice.addEventListener("change", () => { const index = Number(pointChoice.value); choose(points[index]); get(`academy-point-${activeId}`)?.focus({preventScroll: true}); });
@@ -479,12 +546,14 @@
   function schematic(label, height = 205) {
     const drawing = newSvg(label, height); drawing.classList.add("academy-schematic"); return drawing;
   }
+  function springPath(endX) {
+    const start = 55, tail = endX - 15, steps = 20, d = [`M45,90L${start},90`];
+    for (let i = 0; i <= steps; i++) d.push(`L${start + (tail - start) * i / steps},${i === 0 || i === steps ? 90 : i % 2 ? 76 : 104}`);
+    d.push(`L${endX},90`); return d.join(" ");
+  }
   function springDrawing(drawing, endX, blockWidth = 45, note = "") {
     drawing.append(svgEl("line", {x1: 45, x2: 45, y1: 35, y2: 145, class: "academy-support"}));
-    const start = 55, tail = endX - 15, steps = 20;
-    const d = [`M45,90L${start},90`];
-    for (let i = 0; i <= steps; i++) d.push(`L${start + (tail - start) * i / steps},${i === 0 || i === steps ? 90 : i % 2 ? 76 : 104}`);
-    d.push(`L${endX},90`); drawing.append(svgEl("path", {d: d.join(" "), class: "academy-model-line"}), svgEl("rect", {x: endX, y: 64, width: blockWidth, height: 52, rx: 3, class: "academy-mass"}), svgEl("line", {x1: endX + blockWidth, x2: endX + blockWidth + 55, y1: 90, y2: 90, class: "academy-ray"}), svgEl("path", {d: `M${endX + blockWidth + 48},84l7,6l-7,6`, class: "academy-ray"}));
+    drawing.append(svgEl("path", {d: springPath(endX), class: "academy-model-line"}), svgEl("rect", {x: endX, y: 64, width: blockWidth, height: 52, rx: 3, class: "academy-mass"}), svgEl("line", {x1: endX + blockWidth, x2: endX + blockWidth + 55, y1: 90, y2: 90, class: "academy-ray"}), svgEl("path", {d: `M${endX + blockWidth + 48},84l7,6l-7,6`, class: "academy-ray"}));
     drawing.append(svgEl("text", {x: 55, y: 175, class: "academy-axis-label"}, note));
   }
   function extendedVisual(state, current, graphic, readings, choose) {
@@ -505,10 +574,31 @@
       drawPlot({label: "弹性限度内拉力与伸长的关系", xLabel: "伸长 x / cm", yLabel: "拉力 F / N", maxX: 20, maxY: 4.5, x: point => point.extension_cm, y: point => point.force_N}, [0, 1, 2, 3, 4].map(force => models.hooke(p.stiffness, force)), "force_N");
     } else if (activeId === "spring_oscillation") {
       reading(readings, "振动周期 T", `${number(current.period_s)} s`); reading(readings, "周期平方 T²", `${number(current.period_squared_s2)} s²`);
-      const drawing = schematic(`弹簧振子示意，质量 ${number(p.mass)} kg，劲度系数 ${number(p.stiffness)} N/m。`);
-      springDrawing(drawing, 280, 35 + p.mass * 90, `m = ${number(p.mass)} kg · k = ${number(p.stiffness)} N/m`);
-      drawing.append(svgEl("line", {x1: 250, x2: 410, y1: 137, y2: 137, class: "academy-rest-line"}), svgEl("text", {x: 325, y: 125, class: "academy-tick"}, "往返振动")); graphic.append(drawing);
+      const drawing = schematic(`弹簧与物块同步往返，质量 ${number(p.mass)} kg，劲度系数 ${number(p.stiffness)} N/m，周期 ${number(current.period_s)} s；振幅仅为示意。`, 225); drawing.id = "academyMotionDrawing";
+      const width = 35 + p.mass * 90;
+      drawing.append(svgEl("line", {x1: 45, x2: 45, y1: 35, y2: 145, class: "academy-support"}), svgEl("line", {x1: 280 + width / 2, x2: 280 + width / 2, y1: 25, y2: 143, class: "academy-rest-line"}), svgEl("path", {id: "academySpringCoil", d: springPath(316), class: "academy-model-line"}), svgEl("rect", {id: "academySpringMass", x: 316, y: 64, width, height: 52, rx: 3, class: "academy-mass"}), svgEl("path", {id: "academySpringVelocity", class: "academy-ray"}), svgEl("text", {x: 425, y: 36, class: "academy-tick"}, "箭头：运动方向"), svgEl("text", {x: 280 + width / 2, y: 155, "text-anchor": "middle", class: "academy-tick"}, "平衡位置"), svgEl("text", {x: 55, y: 190, class: "academy-axis-label"}, `m = ${number(p.mass)} kg · k = ${number(p.stiffness)} N/m`)); graphic.append(drawing, motionReadout());
       drawPlot({label: "理想弹簧振子的周期平方与质量关系", xLabel: "质量 m / kg", yLabel: "周期平方 T² / s²", maxX: .5, maxY: 2.1, x: point => point.mass_kg, y: point => point.period_squared_s2}, [.05, .1, .2, .3, .4, .5].map(mass => models.spring(mass, p.stiffness)), "mass_kg");
+    } else if (transitIds.has(activeId)) {
+      const duration = motionDuration(activeId, state);
+      if (activeId === "uniform_acceleration") { reading(readings, "恒加速度 a", `${number(p.acceleration)} m/s²`); reading(readings, "3 s 时的速度", `${number(current.velocity_m_s)} m/s`); }
+      else if (activeId === "newtons_second_law") { reading(readings, "恒合外力 F合", `${number(p.force)} N`); reading(readings, "加速度 a", `${number(current.acceleration_m_s2)} m/s²`); }
+      else { reading(readings, "到达设定高度的时间", `${number(duration)} s`); reading(readings, "到达时的向下速度", `${number(current.velocity_m_s)} m/s`); }
+      const drawing = schematic(activeId === "free_fall" ? "静止释放小球，到达设定高度后停止。" : "小车从左向右加速；轨道尺度固定，间距随时间增大。", activeId === "free_fall" ? 280 : 210); drawing.id = "academyMotionDrawing";
+      if (activeId === "free_fall") {
+        drawing.append(svgEl("line", {x1: 230, x2: 230, y1: 30, y2: 220, class: "academy-rest-line"}), svgEl("line", {x1: 150, x2: 370, y1: 232, y2: 232, class: "academy-support"}), svgEl("circle", {id: "academyMotionBody", cx: 280, cy: 30, r: 10, class: "academy-bob"}), svgEl("text", {x: 310, y: 40, class: "academy-axis-label"}, "静止释放"), svgEl("text", {x: 310, y: 222, class: "academy-axis-label"}, `H = ${number(p.height)} m`), svgEl("text", {x: 80, y: 265, class: "academy-tick"}, "向下为正 · 空间按当前高度缩放 · 不模拟碰撞"));
+      } else {
+        const max = activeId === "uniform_acceleration" ? 8 : 10;
+        drawing.append(svgEl("line", {x1: 60, x2: 550, y1: 120, y2: 120, class: "academy-support"}));
+        for (let i = 0; i <= 4; i++) drawing.append(svgEl("line", {x1: 70 + i * 110, x2: 70 + i * 110, y1: 125, y2: 135, class: "academy-axis"}), svgEl("text", {x: 70 + i * 110, y: 158, "text-anchor": "middle", class: "academy-tick"}, `${max * i / 4} m`));
+        const body = svgEl("g", {id: "academyMotionBody"}); body.append(svgEl("rect", {x: -20, y: 75, width: 40, height: 30, rx: 3, class: "academy-mass"}), svgEl("circle", {cx: -12, cy: 112, r: 7, class: "academy-bob"}), svgEl("circle", {cx: 12, cy: 112, r: 7, class: "academy-bob"}));
+        if (activeId === "newtons_second_law") body.append(svgEl("path", {d: `M0,60h${15 + p.force * 45}m-7,-5l7,5l-7,5`, class: "academy-ray"}));
+        drawing.append(body, svgEl("text", {x: 60, y: 193, class: "academy-tick"}, `固定轨道尺度 0–${max} m · 演示 ${duration} s 后停止`));
+      }
+      graphic.append(drawing, motionReadout());
+      if (activeId === "uniform_acceleration") drawPlot({label: "匀加速运动速度与时间；蓝色游标为当前演示时刻", xLabel: "时间 t / s", yLabel: "速度 v / m/s", maxX: 3, maxY: 5, x: point => point.time_s, y: point => point.velocity_m_s}, [0, .5, 1, 1.5, 2, 2.5, 3].map(t => models.kinematics(p.velocity, p.acceleration, t)), "time_s");
+      else if (activeId === "newtons_second_law") drawPlot({label: "固定质量系统的恒合外力与加速度关系", xLabel: "加速度 a / m/s²", yLabel: "合外力 F合 / N", maxX: 5, maxY: 1.1, x: point => point.acceleration_m_s2, y: point => point.net_force_N}, [.1, .2, .4, .6, .8, 1].map(force => models.newtons(p.mass, force)), "net_force_N");
+      else drawPlot({label: "自由落体下落距离与时间平方；蓝色游标对应当前小球位置", xLabel: "时间平方 t² / s²", yLabel: "下落距离 h / m", maxX: 2, maxY: 6, x: point => point.time_s ** 2, y: point => point.height_m}, [0, .25, .5, .75, 1].map(fraction => models.freeFall(p.gravity, duration * fraction)), "time_s");
+      if (activeId !== "newtons_second_law") chart.append(svgEl("circle", {id: "academyMotionCursor", r: 6, class: "academy-motion-cursor", "aria-hidden": "true", "pointer-events": "none"}));
     } else if (activeId === "thin_lens") {
       reading(readings, "实像像距 v", `${number(current.image_cm)} cm`); reading(readings, "放大率 M（负号表示倒立）", number(current.magnification));
       const drawing = schematic(`薄凸透镜近轴实像光路，物距 ${number(p.distance)} cm，像距 ${number(current.image_cm)} cm，焦距 ${number(p.focal)} cm。`, 265);
@@ -639,11 +729,50 @@
     return {points, chart};
   }
   function positionPendulum(theta, length) { const line = get("academyPendulumString"), bob = get("academyPendulumBob"); if (!line || !bob) return; const pixels = 55 + length / 1.5 * 80, x = 300 + pixels * Math.sin(theta), y = 14 + pixels * Math.cos(theta); line.setAttribute("x2", x); line.setAttribute("y2", y); bob.setAttribute("cx", x); bob.setAttribute("cy", y); }
+  function motionReadout() { const el = make("p", "", "academy-motion-readout"); el.id = "academyMotionReadout"; el.setAttribute("aria-live", "off"); return el; }
+  function motionDuration(id, state) { return id === "free_fall" ? Math.sqrt(2 * state.params.height / state.params.gravity) : id === "uniform_acceleration" ? 3 : 2; }
+  function paintMotion(forceReadout = false, timestamp = performance.now()) {
+    if (!animatedIds.has(activeId)) return;
+    const state = record(activeId), p = state.params, motion = state.motion;
+    let caption = "";
+    if (activeId === "simple_pendulum") positionPendulum(.139626 * Math.cos(motion.phase * 2 * Math.PI), p.length);
+    else if (activeId === "spring_oscillation") {
+      const mass = get("academySpringMass"), coil = get("academySpringCoil"), arrow = get("academySpringVelocity"); if (!mass || !coil) return;
+      const period = models.spring(p.mass, p.stiffness).period_s, point = models.springMotion(p.mass, p.stiffness, motion.phase * period), x = 280 + 36 * point.displacement_fraction;
+      mass.setAttribute("x", x); coil.setAttribute("d", springPath(x));
+      if (arrow) { const center = x + (35 + p.mass * 90) / 2, direction = Math.sign(point.velocity_fraction_per_s); arrow.setAttribute("d", `M${center},48h${direction * 42}m${-direction * 7},-5l${direction * 7},5l${-direction * 7},5`); arrow.setAttribute("visibility", Math.abs(point.velocity_fraction_per_s) < 1e-6 ? "hidden" : "visible"); }
+      caption = `已演示 ${motion.time.toFixed(2)} s · 示意位移 x/A = ${point.displacement_fraction.toFixed(2)}（A 为固定示意振幅）`;
+    } else if (transitIds.has(activeId)) {
+      const body = get("academyMotionBody"), time = Math.min(motion.time, motionDuration(activeId, state)); if (!body) return;
+      const point = activeId === "uniform_acceleration" ? models.kinematics(p.velocity, p.acceleration, time) : activeId === "newtons_second_law" ? models.newtons(p.mass, p.force, time) : models.freeFall(p.gravity, time);
+      if (activeId === "free_fall") body.setAttribute("cy", 30 + point.height_m / p.height * 190);
+      else body.setAttribute("transform", `translate(${70 + point.position_m / (activeId === "uniform_acceleration" ? 8 : 10) * 440},0)`);
+      const cursor = get("academyMotionCursor");
+      if (cursor) { cursor.setAttribute("cx", 68 + (activeId === "free_fall" ? time ** 2 / 2 : time / 3) * 507); cursor.setAttribute("cy", 243 - (activeId === "free_fall" ? point.height_m / 6 : point.velocity_m_s / 5) * 218); }
+      caption = `当前动画：t = ${time.toFixed(2)} s · ${activeId === "free_fall" ? "h" : "x"} = ${point.position_m.toFixed(2)} m · v = ${point.velocity_m_s.toFixed(2)} m/s`;
+    }
+    const output = get("academyMotionReadout");
+    if (output && (forceReadout || timestamp - motion.lastReadout >= 100)) { output.textContent = caption; motion.lastReadout = timestamp; }
+  }
+  function animationAllowed(id, state) {
+    return activeId === id && records.get(id) === state && root?.isConnected && !root.hidden && !document.hidden && !reducedMotion.matches && state.explored && !state.pause && !state.motion.completed && (activePage === "data" || !!root.querySelector("details.academy-revisit")?.open) && !!get(id === "simple_pendulum" ? "academyPendulumBob" : id === "spring_oscillation" ? "academySpringMass" : "academyMotionBody");
+  }
   function beginAnimation() {
-    stopAnimation(); if (activeId !== "simple_pendulum" || !root || root.hidden || document.hidden || reducedMotion.matches) return;
-    const state = record(activeId); if (!state.explored || state.pause || !get("academyPendulumBob") || (activePage !== "data" && !root.querySelector("details")?.open)) return;
-    const started = performance.now();
-    const animate = time => { const period = models.pendulum(state.params.length).period_s; positionPendulum(.139626 * Math.cos((time - started) / 1000 * 2 * Math.PI / period), state.params.length); frame = requestAnimationFrame(animate); };
+    stopAnimation(); if (!animatedIds.has(activeId)) return;
+    const id = activeId, state = record(id); if (!animationAllowed(id, state)) return;
+    const animate = time => {
+      frame = null; if (!animationAllowed(id, state)) { lastAnimationTime = null; return; }
+      const dt = lastAnimationTime == null ? 0 : Math.max(0, (time - lastAnimationTime) / 1000) * state.motion.speed; lastAnimationTime = time;
+      state.motion.time += dt;
+      if (transitIds.has(id)) {
+        const duration = motionDuration(id, state);
+        if (state.motion.time >= duration) { state.motion.time = duration; state.motion.completed = true; paintMotion(true, time); syncMotionControls(); lastAnimationTime = null; return; }
+      } else {
+        const period = id === "simple_pendulum" ? models.pendulum(state.params.length).period_s : models.spring(state.params.mass, state.params.stiffness).period_s;
+        state.motion.phase = (state.motion.phase + dt / period) % 1;
+      }
+      paintMotion(false, time); frame = requestAnimationFrame(animate);
+    };
     frame = requestAnimationFrame(animate);
   }
   window.refreshAcademy = function () {
@@ -698,7 +827,7 @@
   document.addEventListener("visibilitychange", () => { if (document.hidden) stopAnimation(); else beginAnimation(); });
   window.addEventListener("pagehide", stopAnimation);
   window.addEventListener("tutor-ready", () => window.refreshAcademy());
-  reducedMotion.addEventListener?.("change", () => { if (reducedMotion.matches) { stopAnimation(); if (activeId === "simple_pendulum" && record(activeId).explored) updateVisual(); } else beginAnimation(); });
+  reducedMotion.addEventListener?.("change", () => { if (reducedMotion.matches) { stopAnimation(); if (animatedIds.has(activeId) && record(activeId).explored) paintMotion(true); } else beginAnimation(); syncMotionControls(); });
   // Flow navigation is normally wired by refreshAcademy; this also handles direct loads.
   observer = new MutationObserver(() => { if (document.body.dataset.page !== activePage) window.refreshAcademy(); });
   observer.observe(document.body, {attributes: true, attributeFilter: ["data-page"]});

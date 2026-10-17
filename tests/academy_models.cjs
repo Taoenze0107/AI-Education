@@ -41,6 +41,62 @@ near(models.spring(.2, 20).period_s, 2 * Math.PI * Math.sqrt(.01));
 near(models.spring(.4, 20).period_s / models.spring(.1, 20).period_s, 2);
 near(models.spring(.2, 40).period_squared_s2 / models.spring(.2, 20).period_squared_s2, .5);
 
+// Released from maximum extension: x/A = cos(omega t), v/A = -omega sin(omega t).
+// At the equilibrium crossings speed is greatest; the turning points have zero speed.
+const motionMass = .375, motionStiffness = 18;
+const motionPeriod = models.spring(motionMass, motionStiffness).period_s;
+const motionOmega = 2 * Math.PI / motionPeriod;
+const motionPhases = [
+  [0, 1, 0],
+  [.25, 0, -motionOmega],
+  [.5, -1, 0],
+  [.75, 0, motionOmega],
+  [1, 1, 0]
+];
+for (const [fraction, displacement, velocity] of motionPhases) {
+  const value = models.springMotion(motionMass, motionStiffness, fraction * motionPeriod);
+  near(value.period_s, motionPeriod);
+  near(value.displacement_fraction, displacement);
+  near(value.velocity_fraction_per_s, velocity);
+}
+
+// All phases stay within the chosen amplitude, and the same physical state repeats after a period.
+for (const mass of [.05, .375, .5]) for (const stiffness of [10, 18, 50]) {
+  const period = models.spring(mass, stiffness).period_s;
+  for (let sample = 0; sample <= 128; sample++) {
+    const time = period * sample / 64;
+    const value = models.springMotion(mass, stiffness, time);
+    const repeated = models.springMotion(mass, stiffness, time + period);
+    assert.ok(Number.isFinite(value.displacement_fraction));
+    assert.ok(Number.isFinite(value.velocity_fraction_per_s));
+    assert.ok(Math.abs(value.displacement_fraction) <= 1 + 1e-12);
+    assert.ok(Math.abs(value.velocity_fraction_per_s) <= 2 * Math.PI / period + 1e-12);
+    near(repeated.displacement_fraction, value.displacement_fraction);
+    near(repeated.velocity_fraction_per_s, value.velocity_fraction_per_s);
+  }
+}
+
+// Heavier masses oscillate more slowly, while a stiffer spring speeds up the same phase.
+const motionBase = models.springMotion(.1, 20, 0);
+const motionHeavy = models.springMotion(.4, 20, 0);
+const motionStiff = models.springMotion(.1, 80, 0);
+near(motionHeavy.period_s / motionBase.period_s, 2);
+near(motionStiff.period_s / motionBase.period_s, .5);
+const quarterBase = models.springMotion(.1, 20, motionBase.period_s / 4);
+const quarterHeavy = models.springMotion(.4, 20, motionHeavy.period_s / 4);
+const quarterStiff = models.springMotion(.1, 80, motionStiff.period_s / 4);
+near(quarterHeavy.displacement_fraction, quarterBase.displacement_fraction);
+near(quarterStiff.displacement_fraction, quarterBase.displacement_fraction);
+near(quarterHeavy.velocity_fraction_per_s / quarterBase.velocity_fraction_per_s, .5);
+near(quarterStiff.velocity_fraction_per_s / quarterBase.velocity_fraction_per_s, 2);
+for (const bad of [0, -1, NaN, Infinity, -Infinity]) {
+  assert.throws(() => models.springMotion(bad, 20, 0), RangeError);
+  assert.throws(() => models.springMotion(.2, bad, 0), RangeError);
+}
+for (const bad of [-1, NaN, Infinity, -Infinity]) {
+  assert.throws(() => models.springMotion(.2, 20, bad), RangeError);
+}
+
 // Thin lens: real image branch only; equal object/image distances at twice focal length.
 near(models.lens(10, 20).image_cm, 20);
 near(models.lens(10, 20).magnification, -1);
@@ -245,4 +301,19 @@ assert.throws(() => models.resistivity(.5, 1, Number.MIN_VALUE), RangeError);
 assert.throws(() => models.stringWave(1, Number.MAX_VALUE, Number.MIN_VALUE), RangeError);
 assert.throws(() => models.grating(Number.MAX_VALUE, Number.MAX_VALUE), RangeError);
 assert.throws(() => models.expansion(Number.MAX_VALUE, Number.MAX_VALUE, 80), RangeError);
-console.log("Academy physical models: eighteen lessons, unit conversions, proportions, finite endpoints and optical state boundaries passed.");
+// Additional one-dimensional motion lessons: fixed reference frame, net force and static release.
+const uniform = models.kinematics(.2, .5, 2);
+near(uniform.position_m, 1.4); near(uniform.velocity_m_s, 1.2);
+near(models.kinematics(.7, .5, 2).velocity_m_s - uniform.velocity_m_s, .5);
+near(models.kinematics(0, .5, 2).position_m / models.kinematics(0, .5, 1).position_m, 4);
+const driven = models.newtons(.5, .6, 2);
+near(driven.acceleration_m_s2, 1.2); near(driven.velocity_m_s, 2.4); near(driven.position_m, 2.4);
+near(models.newtons(1, .6, 2).acceleration_m_s2 / driven.acceleration_m_s2, .5);
+near(models.freeFall(9.8, .5).height_m, 1.225); near(models.freeFall(9.8, .5).velocity_m_s, 4.9);
+near(models.freeFall(9.8, 1).height_m / models.freeFall(9.8, .5).height_m, 4);
+for (const v0 of [0, 1]) for (const a of [.1, 1]) for (const t of [0, 3]) { const p = models.kinematics(v0, a, t); allFiniteOrState(p); assert.ok(p.position_m <= 8); }
+for (const m of [.2, 1]) for (const f of [.1, 1]) { const p = models.newtons(m, f, 2); allFiniteOrState(p); assert.ok(p.position_m <= 10); }
+for (const g of [5, 15]) for (const h of [.5, 5]) near(models.freeFall(g, Math.sqrt(2 * h / g)).height_m, h);
+for (const bad of [-1, NaN, Infinity]) { assert.throws(() => models.kinematics(.2, .5, bad), RangeError); assert.throws(() => models.freeFall(9.8, bad), RangeError); }
+for (const bad of [0, -1, NaN, Infinity]) { assert.throws(() => models.newtons(bad, .6, 1), RangeError); assert.throws(() => models.freeFall(bad, .5), RangeError); }
+console.log("Academy physical models: twenty-one lessons, spring motion phases and speed, unit conversions, proportions, finite endpoints and optical state boundaries passed.");

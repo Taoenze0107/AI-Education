@@ -16,7 +16,7 @@ BASE = "/api/v1/learning"
 TOPICS = ("simple_pendulum", "ohms_law", "rc_time_constant", "hookes_law",
           "spring_oscillation", "thin_lens", "snell_refraction", "double_slit", "calorimetry",
           "archimedes", "resistivity", "joule_heating", "transformer_ratio", "grating_diffraction",
-          "total_internal_reflection", "thermal_expansion", "string_waves", "malus_law")
+          "total_internal_reflection", "thermal_expansion", "string_waves", "malus_law", "uniform_acceleration", "newtons_second_law", "free_fall")
 CORRECT = {"simple_pendulum": {"prediction": "b", "transfer": "a"},
            "ohms_law": {"prediction": "c", "transfer": "b"},
            "rc_time_constant": {"prediction": "d", "transfer": "a"},
@@ -34,7 +34,10 @@ CORRECT = {"simple_pendulum": {"prediction": "b", "transfer": "a"},
            "total_internal_reflection": {"prediction": "b", "transfer": "d"},
            "thermal_expansion": {"prediction": "a", "transfer": "c"},
            "string_waves": {"prediction": "d", "transfer": "b"},
-           "malus_law": {"prediction": "a", "transfer": "d"}}
+           "malus_law": {"prediction": "a", "transfer": "d"},
+           "uniform_acceleration": {"prediction": "b", "transfer": "d"},
+           "newtons_second_law": {"prediction": "c", "transfer": "a"},
+           "free_fall": {"prediction": "d", "transfer": "c"}}
 
 
 @pytest.fixture
@@ -51,10 +54,10 @@ def answer(client, topic="ohms_law", node="prediction", choice="a"):
     return client.post(f"{BASE}/courses/{topic}/answers", json={"node_id": node, "choice_id": choice})
 
 
-def test_catalog_contains_eighteen_courses_without_solutions(lab):
+def test_catalog_contains_twenty_one_courses_without_solutions(lab):
     app, client = lab
     listing = client.get(BASE + "/courses").json()
-    assert len(listing["courses"]) == 18
+    assert len(listing["courses"]) == 21
     assert {course["experiment_id"] for course in listing["courses"]} == set(TOPICS)
     catalog = client.get("/api/v1/experiments").json()
     assert set(TOPICS) <= {topic["experiment_id"] for topic in catalog["topics"]}
@@ -80,7 +83,7 @@ def test_catalog_contains_eighteen_courses_without_solutions(lab):
 
 @pytest.mark.parametrize("topic", TOPICS)
 @pytest.mark.parametrize("node", ("prediction", "transfer"))
-def test_all_thirty_six_questions_grade_all_choices_and_explain_only_after_success(lab, topic, node):
+def test_all_forty_two_questions_grade_all_choices_and_explain_only_after_success(lab, topic, node):
     app, client = lab
     right = CORRECT[topic][node]
     standard_explanation = next(n for n in app.state.learning.by_id[topic]["nodes"] if n["id"] == node)["explanation"]
@@ -113,6 +116,15 @@ def test_extension_preserves_original_nine_course_objects_and_progress_ids():
     assert tuple(course["experiment_id"] for course in original) == TOPICS[:9]
     serialized = json.dumps(original, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     assert hashlib.sha256(serialized.encode()).hexdigest() == "421c920f963283919f838291dc034683441dd3cd26aa19522b87349f794e54d5"
+
+
+def test_motion_extension_preserves_original_eighteen_course_objects_and_progress_ids():
+    """Adding animated motion lessons must preserve every existing answer and node ID."""
+    courses = json.loads((ROOT / "app/data/learning_courses.json").read_text())["courses"]
+    original = courses[:18]
+    assert tuple(course["experiment_id"] for course in original) == TOPICS[:18]
+    serialized = json.dumps(original, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    assert hashlib.sha256(serialized.encode()).hexdigest() == "af043cea6affce0a6bdc0c4eee7ee380b5f9c0f8178a3da090c091f95bd65f59"
 
 
 def test_hint_levels_are_bounded_and_attempts_do_not_claim_mastery(lab):
