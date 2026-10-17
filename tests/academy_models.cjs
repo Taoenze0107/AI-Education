@@ -316,4 +316,133 @@ for (const m of [.2, 1]) for (const f of [.1, 1]) { const p = models.newtons(m, 
 for (const g of [5, 15]) for (const h of [.5, 5]) near(models.freeFall(g, Math.sqrt(2 * h / g)).height_m, h);
 for (const bad of [-1, NaN, Infinity]) { assert.throws(() => models.kinematics(.2, .5, bad), RangeError); assert.throws(() => models.freeFall(9.8, bad), RangeError); }
 for (const bad of [0, -1, NaN, Infinity]) { assert.throws(() => models.newtons(bad, .6, 1), RangeError); assert.throws(() => models.freeFall(bad, .5), RangeError); }
-console.log("Academy physical models: twenty-one lessons, spring motion phases and speed, unit conversions, proportions, finite endpoints and optical state boundaries passed.");
+// Work-energy theorem: the work of the net force changes kinetic energy, not speed linearly.
+const energyRun = models.workEnergy(.5, 2, 3, 1);
+near(energyRun.work_J, 6); near(energyRun.kinetic_initial_J, .25); near(energyRun.kinetic_final_J, 6.25); near(energyRun.velocity_m_s, 5);
+near(energyRun.kinetic_final_J - energyRun.kinetic_initial_J, energyRun.net_force_N * energyRun.position_m);
+near(.5 * energyRun.mass_kg * energyRun.velocity_m_s ** 2, energyRun.kinetic_final_J);
+near(models.workEnergy(.5, 0, 5, 2).velocity_m_s, 2);
+near(models.workEnergy(.5, 3, 0, 2).kinetic_final_J, 1);
+near(models.workEnergy(.5, 2, 0).velocity_m_s, 0);
+near(models.workEnergy(.5, 2, 4).velocity_m_s / models.workEnergy(.5, 2, 1).velocity_m_s, 2);
+near(models.workEnergy(2, 2, 1).velocity_m_s / models.workEnergy(.5, 2, 1).velocity_m_s, .5);
+
+// Uniform circular motion: at fixed angular speed F is proportional to r and omega squared.
+const circular = models.centripetal(.2, .5, 4);
+near(circular.force_N, 1.6); near(circular.speed_m_s, 2); near(circular.period_s, Math.PI / 2);
+near(circular.force_N, circular.mass_kg * circular.speed_m_s ** 2 / circular.radius_m);
+near(circular.speed_m_s * circular.period_s, 2 * Math.PI * circular.radius_m);
+near(models.centripetal(.4, .5, 4).force_N / circular.force_N, 2);
+near(models.centripetal(.2, 1, 4).force_N / circular.force_N, 2);
+near(models.centripetal(.2, .5, 8).force_N / circular.force_N, 4);
+near(models.centripetal(.2, .5, 8).period_s / circular.period_s, .5);
+
+// Coulomb sliding friction on a level track: stop once, with no artificial backwards motion.
+const sliding = models.slidingFriction(2, .2, 4, 1, 10);
+near(sliding.friction_N, 4); near(sliding.deceleration_m_s2, 2); near(sliding.stop_time_s, 2); near(sliding.stop_distance_m, 4);
+near(sliding.velocity_m_s, 2); near(sliding.position_m, 3); near(sliding.kinetic_J, 4);
+near(.5 * sliding.mass_kg * sliding.initial_velocity_m_s ** 2 - sliding.kinetic_J, sliding.friction_N * sliding.position_m);
+const slidingStart = models.slidingFriction(2, .2, 4, 0, 10);
+near(slidingStart.time_s, 0); near(slidingStart.position_m, 0); near(slidingStart.velocity_m_s, 4);
+for (const t of [2, 3, 1e6]) {
+  const stopped = models.slidingFriction(2, .2, 4, t, 10);
+  near(stopped.time_s, 2); near(stopped.position_m, 4); near(stopped.velocity_m_s, 0); near(stopped.kinetic_J, 0);
+}
+near(models.slidingFriction(4, .2, 4, 1, 10).velocity_m_s, sliding.velocity_m_s);
+near(models.slidingFriction(4, .2, 4, 1, 10).friction_N / sliding.friction_N, 2);
+near(models.slidingFriction(2, .4, 4, 0, 10).stop_distance_m / sliding.stop_distance_m, .5);
+near(models.slidingFriction(2, .2, 8, 0, 10).stop_distance_m / sliding.stop_distance_m, 4);
+
+// The supplied period is the damped period. Velocity includes the exponential-envelope derivative.
+const damped = models.dampedMotion(10, .5, 2, 0);
+near(damped.envelope_mm, 10); near(damped.displacement_mm, 10); near(damped.velocity_mm_s, -5);
+const dampedQuarter = models.dampedMotion(10, .5, 2, .5);
+near(dampedQuarter.displacement_mm, 0); near(dampedQuarter.velocity_mm_s, -Math.PI * 10 * Math.exp(-.25));
+const dampedHalf = models.dampedMotion(10, .5, 2, 1);
+near(dampedHalf.displacement_mm, -10 * Math.exp(-.5)); near(dampedHalf.velocity_mm_s, 5 * Math.exp(-.5));
+near(models.dampedMotion(10, .5, 2, 2).displacement_mm / damped.displacement_mm, Math.exp(-1));
+near(models.dampedMotion(10, 0, 2, 0).velocity_mm_s, 0);
+near(models.dampedMotion(10, 0, 2, .5).velocity_mm_s, -10 * Math.PI);
+near(models.dampedMotion(10, 0, 2, 2).displacement_mm, 10);
+const derivativeStep = 1e-5, derivativeTime = .37;
+const derivative = (models.dampedMotion(12, .3, 1.7, derivativeTime + derivativeStep).displacement_mm - models.dampedMotion(12, .3, 1.7, derivativeTime - derivativeStep).displacement_mm) / (2 * derivativeStep);
+near(models.dampedMotion(12, .3, 1.7, derivativeTime).velocity_mm_s, derivative, 1e-7);
+near(models.dampedMotion(10, 1, 2, 1e6).envelope_mm, 0);
+near(models.dampedMotion(10, 1, 2, 1e6).velocity_mm_s, 0);
+
+// A tube closed at one end resonates at effective lengths lambda/4 and 3lambda/4.
+// The same open-end correction shifts both lengths but cancels from their separation.
+const resonance = models.soundResonance(340, 500, 1);
+near(resonance.wavelength_m, .68); near(resonance.first_length_cm, 16); near(resonance.second_length_cm, 50); near(resonance.spacing_cm, 34);
+near((resonance.first_length_cm + resonance.end_correction_cm) / 100, resonance.wavelength_m / 4);
+near((resonance.second_length_cm + resonance.end_correction_cm) / 100, 3 * resonance.wavelength_m / 4);
+near(resonance.second_length_cm - resonance.first_length_cm, resonance.spacing_cm);
+near(2 * resonance.frequency_Hz * resonance.spacing_cm / 100, resonance.speed_m_s);
+near(models.soundResonance(340, 500, 2).first_length_cm, resonance.first_length_cm - 1);
+near(models.soundResonance(340, 500, 2).second_length_cm, resonance.second_length_cm - 1);
+near(models.soundResonance(340, 500, 2).spacing_cm, resonance.spacing_cm);
+near(models.soundResonance(340, 1000).spacing_cm / models.soundResonance(340, 500).spacing_cm, .5);
+near(models.soundResonance(680, 500).spacing_cm / models.soundResonance(340, 500).spacing_cm, 2);
+assert.ok(models.soundResonance(340, 500, 16.999).first_length_cm > 0);
+assert.throws(() => models.soundResonance(340, 500, 17), RangeError);
+assert.throws(() => models.soundResonance(340, 500, 18), RangeError);
+
+// kOhm * microfarad is milliseconds; stored energy in microjoules falls as the square of voltage.
+const capacitorInitial = models.capacitorDischarge(10, 2, 6, 0);
+near(capacitorInitial.tau_ms, 20); near(capacitorInitial.voltage_V, 6); near(capacitorInitial.fraction, 1); near(capacitorInitial.energy_uJ, 36);
+const capacitorTau = models.capacitorDischarge(10, 2, 6, 20);
+near(capacitorTau.fraction, Math.exp(-1)); near(capacitorTau.voltage_V, 6 / Math.E);
+near(capacitorTau.energy_uJ / capacitorInitial.energy_uJ, Math.exp(-2));
+near(models.capacitorDischarge(20, 2, 6, 40).fraction, capacitorTau.fraction);
+near(models.capacitorDischarge(10, 4, 6, 40).fraction, capacitorTau.fraction);
+near(models.capacitorDischarge(10, 2, 12, 20).energy_uJ / capacitorTau.energy_uJ, 4);
+near(models.capacitorDischarge(10, 2, 6, 1e6).voltage_V, 0);
+near(models.capacitorDischarge(10, 2, 6, 1e6).energy_uJ, 0);
+
+// Bounded teaching parameters give finite values, obey energy balance, and never leave physical limits.
+for (const mass of [.2, 1]) for (const force of [0, 2]) for (const x of [0, 4]) for (const v0 of [0, 2]) {
+  const p = models.workEnergy(mass, force, x, v0); allFiniteOrState(p);
+  near(p.kinetic_final_J - p.kinetic_initial_J, p.work_J); assert.ok(p.velocity_m_s >= v0);
+}
+for (const mass of [.1, .5]) for (const radius of [.1, 1]) for (const omega of [1, 8]) allFiniteOrState(models.centripetal(mass, radius, omega));
+for (const mass of [.2, 2]) for (const mu of [.1, .5]) for (const v0 of [1, 4]) for (const t of [0, .5, 10]) {
+  const p = models.slidingFriction(mass, mu, v0, t); allFiniteOrState(p);
+  assert.ok(p.time_s <= p.stop_time_s && p.position_m >= 0 && p.position_m <= p.stop_distance_m && p.velocity_m_s >= 0 && p.velocity_m_s <= v0);
+  near(.5 * mass * v0 ** 2, p.kinetic_J + p.friction_N * p.position_m, 1e-8);
+}
+for (const amplitude of [5, 20]) for (const beta of [0, .5]) for (const period of [.5, 3]) for (const t of [0, .3, 1, 8]) {
+  const p = models.dampedMotion(amplitude, beta, period, t); allFiniteOrState(p);
+  assert.ok(p.envelope_mm >= 0 && p.envelope_mm <= amplitude); assert.ok(Math.abs(p.displacement_mm) <= p.envelope_mm + 1e-12);
+}
+for (const speed of [320, 360]) for (const frequency of [400, 1000]) for (const correction of [0, 2]) {
+  const p = models.soundResonance(speed, frequency, correction); allFiniteOrState(p);
+  assert.ok(p.first_length_cm > 0 && p.second_length_cm > p.first_length_cm); near(p.second_length_cm - p.first_length_cm, p.spacing_cm);
+}
+for (const resistance of [1, 100]) for (const capacitance of [.1, 10]) for (const voltage of [1, 10]) for (const t of [0, 1, 1000]) {
+  const p = models.capacitorDischarge(resistance, capacitance, voltage, t); allFiniteOrState(p);
+  assert.ok(p.fraction >= 0 && p.fraction <= 1 && p.voltage_V >= 0 && p.voltage_V <= voltage);
+  near(p.energy_uJ, .5 * capacitance * p.voltage_V ** 2);
+}
+for (const bad of [0, -1, NaN, Infinity, -Infinity]) {
+  assert.throws(() => models.workEnergy(bad, 1, 1), RangeError);
+  assert.throws(() => models.centripetal(bad, .5, 4), RangeError); assert.throws(() => models.centripetal(.2, bad, 4), RangeError); assert.throws(() => models.centripetal(.2, .5, bad), RangeError);
+  assert.throws(() => models.slidingFriction(bad, .2, 2, 1), RangeError); assert.throws(() => models.slidingFriction(1, bad, 2, 1), RangeError); assert.throws(() => models.slidingFriction(1, .2, bad, 1), RangeError); assert.throws(() => models.slidingFriction(1, .2, 2, 1, bad), RangeError);
+  assert.throws(() => models.dampedMotion(bad, .2, 1, 0), RangeError); assert.throws(() => models.dampedMotion(10, .2, bad, 0), RangeError);
+  assert.throws(() => models.soundResonance(bad, 500), RangeError); assert.throws(() => models.soundResonance(340, bad), RangeError);
+  assert.throws(() => models.capacitorDischarge(bad, 1, 5, 0), RangeError); assert.throws(() => models.capacitorDischarge(10, bad, 5, 0), RangeError); assert.throws(() => models.capacitorDischarge(10, 1, bad, 0), RangeError);
+}
+for (const bad of [-1, NaN, Infinity, -Infinity]) {
+  assert.throws(() => models.workEnergy(1, bad, 1), RangeError); assert.throws(() => models.workEnergy(1, 1, bad), RangeError); assert.throws(() => models.workEnergy(1, 1, 1, bad), RangeError);
+  assert.throws(() => models.slidingFriction(1, .2, 2, bad), RangeError);
+  assert.throws(() => models.dampedMotion(10, bad, 1, 0), RangeError); assert.throws(() => models.dampedMotion(10, .2, 1, bad), RangeError);
+  assert.throws(() => models.soundResonance(340, 500, bad), RangeError);
+  assert.throws(() => models.capacitorDischarge(10, 1, 5, bad), RangeError);
+}
+assert.throws(() => models.workEnergy(1, Number.MAX_VALUE, 2), RangeError);
+assert.throws(() => models.centripetal(1, 1, Number.MAX_VALUE), RangeError);
+assert.throws(() => models.slidingFriction(1, Number.MIN_VALUE, 2, 1, Number.MIN_VALUE), RangeError);
+assert.throws(() => models.dampedMotion(10, .2, Number.MIN_VALUE, 1), RangeError);
+assert.throws(() => models.soundResonance(Number.MAX_VALUE, Number.MIN_VALUE), RangeError);
+assert.throws(() => models.capacitorDischarge(Number.MIN_VALUE, Number.MIN_VALUE, 5, 0), RangeError);
+assert.throws(() => models.capacitorDischarge(Number.MAX_VALUE, 2, 5, 0), RangeError);
+console.log("Academy physical models: twenty-seven lessons, motion and energy invariants, damping derivatives, resonance correction, discharge units and invalid domains passed.");

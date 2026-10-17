@@ -16,7 +16,8 @@ BASE = "/api/v1/learning"
 TOPICS = ("simple_pendulum", "ohms_law", "rc_time_constant", "hookes_law",
           "spring_oscillation", "thin_lens", "snell_refraction", "double_slit", "calorimetry",
           "archimedes", "resistivity", "joule_heating", "transformer_ratio", "grating_diffraction",
-          "total_internal_reflection", "thermal_expansion", "string_waves", "malus_law", "uniform_acceleration", "newtons_second_law", "free_fall")
+          "total_internal_reflection", "thermal_expansion", "string_waves", "malus_law", "uniform_acceleration", "newtons_second_law", "free_fall",
+          "work_energy", "centripetal_force", "kinetic_friction", "damped_oscillation", "sound_resonance", "capacitor_discharge")
 CORRECT = {"simple_pendulum": {"prediction": "b", "transfer": "a"},
            "ohms_law": {"prediction": "c", "transfer": "b"},
            "rc_time_constant": {"prediction": "d", "transfer": "a"},
@@ -37,7 +38,13 @@ CORRECT = {"simple_pendulum": {"prediction": "b", "transfer": "a"},
            "malus_law": {"prediction": "a", "transfer": "d"},
            "uniform_acceleration": {"prediction": "b", "transfer": "d"},
            "newtons_second_law": {"prediction": "c", "transfer": "a"},
-           "free_fall": {"prediction": "d", "transfer": "c"}}
+           "free_fall": {"prediction": "d", "transfer": "c"},
+           "work_energy": {"prediction": "c", "transfer": "b"},
+           "centripetal_force": {"prediction": "a", "transfer": "d"},
+           "kinetic_friction": {"prediction": "b", "transfer": "c"},
+           "damped_oscillation": {"prediction": "d", "transfer": "a"},
+           "sound_resonance": {"prediction": "a", "transfer": "c"},
+           "capacitor_discharge": {"prediction": "b", "transfer": "d"}}
 
 
 @pytest.fixture
@@ -54,10 +61,10 @@ def answer(client, topic="ohms_law", node="prediction", choice="a"):
     return client.post(f"{BASE}/courses/{topic}/answers", json={"node_id": node, "choice_id": choice})
 
 
-def test_catalog_contains_twenty_one_courses_without_solutions(lab):
+def test_catalog_contains_twenty_seven_courses_without_solutions(lab):
     app, client = lab
     listing = client.get(BASE + "/courses").json()
-    assert len(listing["courses"]) == 21
+    assert len(listing["courses"]) == 27
     assert {course["experiment_id"] for course in listing["courses"]} == set(TOPICS)
     catalog = client.get("/api/v1/experiments").json()
     assert set(TOPICS) <= {topic["experiment_id"] for topic in catalog["topics"]}
@@ -83,7 +90,7 @@ def test_catalog_contains_twenty_one_courses_without_solutions(lab):
 
 @pytest.mark.parametrize("topic", TOPICS)
 @pytest.mark.parametrize("node", ("prediction", "transfer"))
-def test_all_forty_two_questions_grade_all_choices_and_explain_only_after_success(lab, topic, node):
+def test_all_fifty_four_questions_grade_all_choices_and_explain_only_after_success(lab, topic, node):
     app, client = lab
     right = CORRECT[topic][node]
     standard_explanation = next(n for n in app.state.learning.by_id[topic]["nodes"] if n["id"] == node)["explanation"]
@@ -125,6 +132,15 @@ def test_motion_extension_preserves_original_eighteen_course_objects_and_progres
     assert tuple(course["experiment_id"] for course in original) == TOPICS[:18]
     serialized = json.dumps(original, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     assert hashlib.sha256(serialized.encode()).hexdigest() == "af043cea6affce0a6bdc0c4eee7ee380b5f9c0f8178a3da090c091f95bd65f59"
+
+
+def test_six_lesson_extension_preserves_original_twenty_one_course_objects_and_progress_ids():
+    """Existing prediction and transfer answers remain valid after the additive release."""
+    courses = json.loads((ROOT / "app/data/learning_courses.json").read_text())["courses"]
+    original = courses[:21]
+    assert tuple(course["experiment_id"] for course in original) == TOPICS[:21]
+    serialized = json.dumps(original, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    assert hashlib.sha256(serialized.encode()).hexdigest() == "40db79e900c303bef70c226c6b6c77443f3b478568bda9bb2aa17183211bf4d5"
 
 
 def test_hint_levels_are_bounded_and_attempts_do_not_claim_mastery(lab):

@@ -176,3 +176,10 @@
 .academy-motion-note{display:block;font-size:11px;color:var(--muted);line-height:1.8}
 .academy-motion-readout{margin:10px 0 3px;font-size:12px;line-height:1.8;font-variant-numeric:tabular-nums;color:#183c58}
 .academy-motion-cursor{fill:#4b8297;stroke:#fff;stroke-width:2}
+
+/* Dynamic classroom models use direction and envelope markings with distinct shapes. */
+.academy-orbit{fill:none;stroke:#78909b;stroke-width:1.5;stroke-dasharray:5 4}
+.academy-velocity-vector{fill:none;stroke:#245f85;stroke-width:2.5}
+.academy-envelope{stroke:#9a6441;stroke-width:1.5;stroke-dasharray:4 4}
+.academy-air-particle{fill:#245f85}
+.academy-voltage-empty{fill:#dce3e6;stroke:#426c85;stroke-width:1}

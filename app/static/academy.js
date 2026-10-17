@@ -41,6 +41,47 @@
       const motion = models.kinematics(0, gravityMps2, elapsedSeconds);
       return {...motion, gravity_m_s2: gravityMps2, height_m: motion.position_m};
     },
+    workEnergy(massKg, netForceN, displacementM, initialVelocity = 0) {
+      if (![massKg, netForceN, displacementM, initialVelocity].every(Number.isFinite) || !(massKg > 0 && netForceN >= 0 && displacementM >= 0 && initialVelocity >= 0)) throw new RangeError("质量须为正，正向合力、位移和初速度须为有限非负数。");
+      const work = netForceN * displacementM, initialKinetic = .5 * massKg * initialVelocity ** 2, finalKinetic = initialKinetic + work;
+      const velocity = Math.sqrt(initialVelocity ** 2 + 2 * work / massKg);
+      return finiteResult({mass_kg: massKg, net_force_N: netForceN, position_m: displacementM, initial_velocity_m_s: initialVelocity, work_J: work, kinetic_initial_J: initialKinetic, kinetic_final_J: finalKinetic, velocity_m_s: velocity});
+    },
+    centripetal(massKg, radiusM, angularSpeedRadS) {
+      if (![massKg, radiusM, angularSpeedRadS].every(Number.isFinite) || !(massKg > 0 && radiusM > 0 && angularSpeedRadS > 0)) throw new RangeError("质量、半径和角速度须为有限正数。");
+      const speed = angularSpeedRadS * radiusM;
+      return finiteResult({mass_kg: massKg, radius_m: radiusM, angular_speed_rad_s: angularSpeedRadS, force_N: massKg * angularSpeedRadS ** 2 * radiusM, speed_m_s: speed, period_s: 2 * Math.PI / angularSpeedRadS});
+    },
+    slidingFriction(massKg, coefficient, initialVelocityMps, elapsedS, gravity = 9.81) {
+      if (![massKg, coefficient, initialVelocityMps, elapsedS, gravity].every(Number.isFinite) || !(massKg > 0 && coefficient > 0 && initialVelocityMps > 0 && elapsedS >= 0 && gravity > 0)) throw new RangeError("质量、动摩擦因数、初速度和重力加速度须为正数，时间不能为负。");
+      const deceleration = coefficient * gravity;
+      if (!(deceleration > 0 && Number.isFinite(deceleration))) throw new RangeError("减速度超出本教学模型的数值范围。");
+      const stopTime = initialVelocityMps / deceleration, stopDistance = .5 * initialVelocityMps * stopTime;
+      const time = Math.min(elapsedS, stopTime), velocity = elapsedS >= stopTime ? 0 : Math.max(0, initialVelocityMps - deceleration * time);
+      const position = elapsedS >= stopTime ? stopDistance : .5 * (initialVelocityMps + velocity) * time;
+      return finiteResult({friction_N: massKg * deceleration, deceleration_m_s2: deceleration, stop_time_s: stopTime, stop_distance_m: stopDistance, time_s: time, position_m: position, velocity_m_s: velocity, kinetic_J: .5 * massKg * velocity ** 2, mass_kg: massKg, coefficient, initial_velocity_m_s: initialVelocityMps});
+    },
+    dampedMotion(amplitudeMm, betaPerS, periodS, elapsedS) {
+      if (![amplitudeMm, betaPerS, periodS, elapsedS].every(Number.isFinite) || !(amplitudeMm > 0 && betaPerS >= 0 && periodS > 0 && elapsedS >= 0)) throw new RangeError("初振幅与阻尼后的周期须为正数，衰减率和时间须为有限非负数。");
+      const omega = 2 * Math.PI / periodS;
+      if (!Number.isFinite(omega)) throw new RangeError("角频率超出本教学模型的数值范围。");
+      const phase = (elapsedS % periodS) / periodS * 2 * Math.PI, envelope = amplitudeMm * Math.exp(-betaPerS * elapsedS);
+      const displacement = envelope * Math.cos(phase), velocity = envelope * (-betaPerS * Math.cos(phase) - omega * Math.sin(phase));
+      return finiteResult({amplitude_initial_mm: amplitudeMm, beta_per_s: betaPerS, period_s: periodS, time_s: elapsedS, envelope_mm: envelope, displacement_mm: displacement, velocity_mm_s: velocity});
+    },
+    soundResonance(speedMps, frequencyHz, endCorrectionCm = 0) {
+      if (![speedMps, frequencyHz, endCorrectionCm].every(Number.isFinite) || !(speedMps > 0 && frequencyHz > 0 && endCorrectionCm >= 0)) throw new RangeError("声速和频率须为正数，管口修正不能为负。");
+      const wavelength = speedMps / frequencyHz, correctionM = endCorrectionCm / 100;
+      if (!(wavelength > 0 && Number.isFinite(wavelength) && correctionM < wavelength / 4)) throw new RangeError("管口修正必须小于四分之一波长，并保证第一共振管长为正。");
+      return finiteResult({speed_m_s: speedMps, frequency_Hz: frequencyHz, end_correction_cm: endCorrectionCm, wavelength_m: wavelength, first_length_cm: (wavelength / 4 - correctionM) * 100, second_length_cm: (.75 * wavelength - correctionM) * 100, spacing_cm: .5 * wavelength * 100});
+    },
+    capacitorDischarge(resistanceKohm, capacitanceUf, initialV, timeMs) {
+      if (![resistanceKohm, capacitanceUf, initialV, timeMs].every(Number.isFinite) || !(resistanceKohm > 0 && capacitanceUf > 0 && initialV > 0 && timeMs >= 0)) throw new RangeError("电阻、电容和初始电压须为正数，放电时间不能为负。");
+      const tau = resistanceKohm * capacitanceUf;
+      if (!(tau > 0 && Number.isFinite(tau))) throw new RangeError("时间常数超出本教学模型的数值范围。");
+      const fraction = Math.exp(-timeMs / tau), voltage = initialV * fraction;
+      return finiteResult({resistance_kohm: resistanceKohm, capacitance_uF: capacitanceUf, initial_V: initialV, time_ms: timeMs, tau_ms: tau, voltage_V: voltage, fraction, energy_uJ: .5 * capacitanceUf * voltage ** 2});
+    },
     lens(focalCm, objectCm) {
       if (![focalCm, objectCm].every(Number.isFinite) || !(focalCm > 0) || !(objectCm > focalCm)) throw new RangeError("本实像模型要求正焦距且物距大于焦距。");
       const image = focalCm / (1 - focalCm / objectCm);
@@ -154,6 +195,8 @@
   });
   // Additional motion lessons share the existing prediction/data/revision flow.
   Object.assign(supported, {"uniform_acceleration":{"title":"匀加速运动：车越来越快了吗？","subtitle":"让小车运动，联系位置、速度与时间。","goal":"区分初速度与加速度，理解速度图的斜率和截距。","formula":"v = v₀ + at","tex":"v=v_0+at","condition":"一维正向匀加速；x₀ = 0；初速度和加速度非负。演示使用真实时间，轨道固定显示 0–8 m，每段 3 s。","initial":{"velocity":0.2,"acceleration":0.5},"symbols":[["v₀","t = 0 时的初速度，单位 m/s；对应速度图截距。"],["a","恒加速度，单位 m/s²；对应 v–t 图斜率。"],["t","从初始状态起计时，单位 s。"],["x","位置 x = v₀t + ½at²，单位 m；位置不与时间等比例增长。"]]},"newtons_second_law":{"title":"牛顿第二定律：推力和质量怎样改变运动？","subtitle":"控制同一系统的质量与合外力，观察小车加速。","goal":"区分合外力与驱动力，比较质量对加速度的影响。","formula":"F合 = ma","tex":"F_{\\mathrm{net}}=ma","condition":"固定质量的质点系统，正向恒合外力；从静止开始，忽略摩擦或已计入合力。轨道固定显示 0–10 m，每段 2 s。","initial":{"mass":0.5,"force":0.6},"symbols":[["F合","全部外力的合力，单位 N；不是未扣摩擦的单独拉力。"],["m","系统总惯性质量，单位 kg；一段演示内保持不变。"],["a","加速度 a = F合/m，单位 m/s²。"],["t","从静止起计时；v = at，x = ½at²。"]]},"free_fall":{"title":"自由落体：相同时间走相同距离吗？","subtitle":"释放小球，观察下落速度与距离。","goal":"联系静止释放、时间平方和重力加速度，核查高度与计时零点。","formula":"h = ½gt²","tex":"h=\\frac{1}{2}gt^2","condition":"只受重力、从静止释放；g 在下落范围恒定，向下为正，忽略空气阻力。小球到达设定高度后停止；空间按当前高度缩放，不模拟碰撞。","initial":{"gravity":9.8,"height":2},"symbols":[["h","从释放点起的下落距离，单位 m；与 t² 成正比。"],["g","重力加速度，单位 m/s²；演示范围 5–15。"],["t","从释放瞬间计时，单位 s；实测 ms 先除以 1000 再平方。"],["v","向下速度 v = gt，单位 m/s；初速度为 0。"]]}});
+  // Six additional lessons reuse the private progress and measured-data boundary.
+  Object.assign(supported, {"work_energy":{"title":"功与动能：做功去了哪里？","subtitle":"让小车通过一段距离，比较净功与动能增量。","goal":"保留初始动能，区分净功与单个力做功。","formula":"W合 = ΔK = ½m(v²−v₀²)","tex":"W_{\\mathrm{net}}=\\Delta K=\\frac{m}{2}(v^2-v_0^2)","condition":"一维平动、恒正向合外力；质量恒定；忽略转动能。净功包含全部外力的功。固定显示0–4m轨道，达到目标距离后停止。","initial":{"mass":0.5,"force":0.5,"distance":2,"velocity":0.5},"symbols":[["W合","全部外力做功的总和，单位J；恒净力同向时W合=F合x。"],["ΔK","动能增量K末−K初，不能把末动能直接当增量。"],["v₀","初速度，单位m/s；不为零时必须保留½mv₀²。"],["m","平动系统总质量，单位kg；公式暂不包含转动动能。"]]},"centripetal_force":{"title":"向心力：速度方向一直在变","subtitle":"观察圆周运动的切向速度与指向圆心的合力。","goal":"理解径向合力与角速度平方的关系。","formula":"F径 = mrω²","tex":"F_r=mr\\omega^2","condition":"水平匀速圆周运动；r固定为0.10m，与资料页处理相同；质量恒定。图中箭头只表示方向，蓝色为速度，红色为径向合力。","initial":{"mass":0.1,"radius":0.1,"omega":4},"symbols":[["F径","向心力是径向合力的作用，不是已有外力之外额外添加的力。"],["ω","角速度用rad/s，不能把每分钟转数直接代入。"],["r","旋转轴到物体质心距离，本课固定为0.10m。"],["v","速率v=rω保持不变，但速度方向沿切线持续改变。"]]},"kinetic_friction":{"title":"滑动摩擦：撤去拉力后会怎样？","subtitle":"给物块初速度，观察它减速直到停止。","goal":"联系动摩擦、支持力与减速，并返回匀速牵引实测。","formula":"fₖ = μₖN，N = mg","tex":"f_k=\\mu_kN,\\quad N=mg","condition":"水平面、仅重力与支持力作用于竖直方向；先给初速度再撤去拉力，仅滑动摩擦使其减速；μₖ近似恒定，g=9.81m/s²。停止后不继续套滑动模型。","initial":{"mass":0.5,"coefficient":0.2,"velocity":3},"symbols":[["μₖ","动摩擦系数，无量纲；这是滑动阶段的经验近似。"],["N","无其他竖直力时N=mg；斜拉时不能直接照用。"],["fₖ","方向与相对滑动方向相反；停止后本演示置零，不模拟静摩擦。"],["实测","资料页采用匀速水平牵引，此时拉力与摩擦平衡。不要把本演示的减速度当作拉力读数。"]]},"damped_oscillation":{"title":"阻尼振动：振幅怎样慢慢变小？","subtitle":"看弹簧继续往返，同时观察包络收缩。","goal":"区分瞬时位移、包络振幅和阻尼周期。","formula":"A(t) = A₀e^(−βt)","tex":"A(t)=A_0e^{-\\beta t}","condition":"线性欠阻尼模型；x=A₀e^(−βt)cos(2πt/Td)，Td为阻尼周期。相位取0，x(0)=A₀且v(0)=−βA₀，非静止释放。演示10s后停止；图线为正包络，并非瞬时位移。","initial":{"amplitude":25,"beta":0.15,"period":1.2},"symbols":[["A(t)","正包络，单位mm；图线用于比较振幅衰减，不等于每一时刻的位移。"],["β","振幅衰减系数，单位s⁻¹；不要与能量衰减率混用。"],["Td","阻尼后的周期，单位s；不是无阻尼自然周期。"],["x","位移在正负包络之间往返；相位为0时初速度并非零。"]]},"sound_resonance":{"title":"共鸣管：为什么相邻共鸣差半波长？","subtitle":"切换第一次和第二次共鸣，观察空气沿管轴振动。","goal":"区分位移波节、波腹与相邻共鸣长度差。","formula":"c = 2f(L₂−L₁)","tex":"c=2f(L_2-L_1)","condition":"一端封闭一端开放；同一管径、同一频率的相邻共鸣。有效长度L+e，固定端修正e=0.70cm。粒子纵向位移放大；每2s展示一个示意周期，不表示实际频率、不发声。","initial":{"speed":343,"frequency":500,"correction":0.7,"mode":1},"symbols":[["L₁、L₂","物理管长；L₁+e=λ/4，L₂+e=3λ/4。同频相减可抵消共同端修正。"],["f","声源实际频率，单位Hz；粒子示意不按数百Hz闪动。"],["c","声速，单位m/s；同一空气条件下并不随频率任意改变。"],["位移","封闭端是空气位移波节，有效开端是位移波腹；压强的节点关系相反。"]]},"capacitor_discharge":{"title":"电容放电：电压为何越降越慢？","subtitle":"观察剩余电压、储能和指数曲线同步下降。","goal":"理解时间常数、剩余比例与毫秒换算。","formula":"U(t) = U₀e^(−t/RC)","tex":"U(t)=U_0e^{-t/(RC)}","condition":"理想一阶RC，初始电压U₀、终值为0；忽略探头负载。电阻kΩ×电容μF得到τ(ms)。教学进度每1s走过1τ，5τ后停图，电压仍约0.67%初值；非实时放电。","initial":{"resistance":10,"capacitance":1,"voltage":5},"symbols":[["τ","时间常数RC；本课以ms显示，公式使用同一时间单位。"],["U₀","t=0时电容电压；经过1τ剩U₀/e，充电63.2%不能混用。"],["E","电容储能E=½CU²；能量随电压平方下降。"],["对数图","正电压取ln(U/1V)对时间作图，斜率为−1/τ；零点和噪声底需先核查。"]]}});
   window.LabAcademyCourseList = Object.entries(supported).map(([experiment_id, config]) => ({experiment_id, title: config.title, summary: config.goal}));
   window.dispatchEvent(new Event("lab-academy-ready"));
   const get = id => document.getElementById(id);
@@ -167,7 +210,10 @@
   const record = id => { if (!records.has(id)) records.set(id, {params: {...supported[id].initial}, course: null, loading: false, loadedAt: 0, lastLoadAttempt: 0, error: "", explored: false, transferOpen: false, results: {}, answers: {}, selected: null, symbol: 0, pause: false, motion: {phase: 0, time: 0, speed: 1, completed: false, lastReadout: 0}, busy: new Set()}); return records.get(id); };
   function stopAnimation() { if (frame != null) cancelAnimationFrame(frame); frame = null; lastAnimationTime = null; }
   const transitIds = new Set(["uniform_acceleration", "newtons_second_law", "free_fall"]);
-  const animatedIds = new Set(["simple_pendulum", "spring_oscillation", ...transitIds]);
+  const additionalMotionIds = new Set(["work_energy", "centripetal_force", "kinetic_friction", "damped_oscillation", "sound_resonance", "capacitor_discharge"]);
+  const finiteMotionIds = new Set([...transitIds, "work_energy", "kinetic_friction", "damped_oscillation", "capacitor_discharge"]);
+  const animatedIds = new Set(["simple_pendulum", "spring_oscillation", ...transitIds, ...additionalMotionIds]);
+  const teachingTimeIds = new Set(["sound_resonance", "capacitor_discharge"]);
   function routeExperiment() { const match = location.pathname.match(/^\/experiments\/([a-z0-9_]+)$/); return match ? match[1] : get("experimentId")?.value; }
   function ask(question, selection) { window.dispatchEvent(new CustomEvent("lab-academy-question", {detail: {question, experiment_id: activeId, selection}})); }
   async function api(path, data) {
@@ -318,7 +364,7 @@
     const l = make("label", label); l.htmlFor = control.id; output.htmlFor = control.id; output.value = format(value); caption.append(l, output);
     control.setAttribute("aria-valuetext", format(value));
     control.addEventListener("input", () => { const n = Number(control.value); output.value = format(n); control.setAttribute("aria-valuetext", format(n)); onInput(n);
-      if (transitIds.has(activeId)) { const motion = record(activeId).motion; motion.time = 0; motion.completed = false; }
+      if (transitIds.has(activeId) || additionalMotionIds.has(activeId)) { const motion = record(activeId).motion; motion.time = 0; motion.phase = 0; motion.completed = false; }
       updateVisual(); syncMotionControls(); if (frame == null) beginAnimation(); });
     holder.append(caption, control); parent.append(holder);
   }
@@ -379,7 +425,8 @@
       range(parent, "metalTemp", "金属初温 T热", 50, 95, 1, p.metalTemp, n => `${number(n)} ℃`, n => p.metalTemp = n);
       range(parent, "specific", "金属比热容 c金", 200, 1000, 50, p.specific, n => `${number(n)} J/(kg·K)`, n => p.specific = n);
       parent.append(make("p", "温度范围始终保持金属比水热。改变质量或比热容，观察平衡温度靠近哪一侧。", "academy-muted"));
-    } else buildExtendedControls(parent, state);
+    } else if (additionalMotionIds.has(activeId)) buildAdditionalMotionControls(parent, state);
+    else buildExtendedControls(parent, state);
   }
   function buildExtendedControls(parent, state) {
     const p = state.params;
@@ -399,6 +446,37 @@
     parent.append(make("p", notes[activeId] || "", "academy-muted"));
     if (activeId === "total_internal_reflection") parent.append(button("将入射角设为临界角", () => { p.angle = models.totalReflection(p.index, 1, 0).critical_deg; renderContent(); }, "academy-text-button"));
   }
+  function buildAdditionalMotionControls(parent, state) {
+    const p = state.params;
+    const definitions = {
+      work_energy: [["mass", "系统质量 m", .2, 1, .1, "kg"], ["force", "恒合外力 F合", .2, 1, .1, "N"], ["distance", "目标距离 x", 1, 4, .5, "m"], ["velocity", "初速度 v₀", 0, 1, .1, "m/s"]],
+      centripetal_force: [["mass", "旋转质量 m", .05, .25, .025, "kg"], ["omega", "角速度 ω", 1, 8, .5, "rad/s"]],
+      kinetic_friction: [["mass", "物块质量 m", .2, 1, .1, "kg"], ["coefficient", "动摩擦系数 μₖ", .1, .5, .05, ""], ["velocity", "初速度 v₀", 1, 4, .25, "m/s"]],
+      damped_oscillation: [["amplitude", "包络初值 A₀", 10, 30, 1, "mm"], ["beta", "振幅衰减系数 β", .05, .4, .025, "s⁻¹"], ["period", "阻尼周期 Td", .6, 2, .1, "s"]],
+      sound_resonance: [["frequency", "声源频率 f", 300, 800, 25, "Hz"], ["speed", "给定空气条件下的声速 c", 320, 360, 5, "m/s"]],
+      capacitor_discharge: [["resistance", "放电电阻 R", 1, 50, 1, "kΩ"], ["capacitance", "电容 C", .5, 10, .5, "μF"], ["voltage", "初始电压 U₀", 1, 6, .5, "V"]]
+    };
+    for (const [key, label, min, max, step, unit] of definitions[activeId]) range(parent, key, label, min, max, step, p[key], n => `${number(n)}${unit ? " " + unit : ""}`, n => p[key] = n);
+    if (activeId === "sound_resonance") {
+      const modes = make("div", null, "academy-modes"); modes.setAttribute("role", "group"); modes.setAttribute("aria-label", "共鸣模式");
+      for (const mode of [1, 2]) {
+        const b = button(mode === 1 ? "第一次共鸣" : "相邻第二次共鸣", () => {
+          p.mode = mode; state.motion.time = 0; state.motion.phase = 0; state.motion.completed = false;
+          [...modes.children].forEach(el => el.setAttribute("aria-pressed", String(el === b))); updateVisual(); syncMotionControls(); if (frame == null) beginAnimation();
+        }, "academy-mode"); b.setAttribute("aria-pressed", String(p.mode === mode)); modes.append(b);
+      }
+      parent.append(modes);
+    }
+    const notes = {
+      work_energy: "先比较净功与动能增量两条能量条，再把初速度设为非零。到达目标距离后停止，调参从起点重播。",
+      centripetal_force: "半径固定0.10m。比较红色径向合力与蓝色切向速度：速率不变，方向持续改变。调参从同一方位重新观察。",
+      kinetic_friction: "先看撤去拉力后的减速。本课实测仍采用匀速水平牵引，以拉力读数测摩擦；两种受力情形须分别记录。",
+      damped_oscillation: "比较瞬时位移与正包络。10s后只停止演示，振子不因此变为严格静止；调参从同一初始相位重播。",
+      sound_resonance: "圆点表示空气沿管轴的纵向位移（已放大）。每2s为一个示意周期，与实际数百Hz不按实时比例播放；模式决定节点分布。",
+      capacitor_discharge: "教学进度每1s走过1τ，5s展示到5τ后停图。调节R或C会改变读数中的物理毫秒时间，不改变教学进度总时长。"
+    };
+    parent.append(make("p", notes[activeId], "academy-muted")); buildMotionControls(parent, state);
+  }
   function buildMotionControls(parent, state) {
     const controls = make("div", null, "academy-motion-controls");
     const actions = make("div", null, "academy-motion-actions");
@@ -410,17 +488,17 @@
     const reset = button("复位到起点", () => { stopAnimation(); state.motion.time = 0; state.motion.phase = 0; state.motion.completed = false; state.pause = true; paintMotion(true); syncMotionControls(); }, "academy-button");
     reset.id = "academyMotionReset"; actions.append(play, reset);
     const speedLabel = make("label", "播放速度"), speed = make("select"); speed.id = "academyMotionSpeed"; speedLabel.htmlFor = speed.id;
-    for (const [value, label] of [[1, "1× 实时"], [.5, "0.5× 慢放"], [.25, "0.25× 慢放"]]) { const option = make("option", label); option.value = value; option.selected = state.motion.speed === value; speed.append(option); }
+    for (const [value, label] of [[1, teachingTimeIds.has(activeId) ? "1× 教学进度" : "1× 实时"], [.5, "0.5× 慢放"], [.25, "0.25× 慢放"]]) { const option = make("option", label); option.value = value; option.selected = state.motion.speed === value; speed.append(option); }
     speed.addEventListener("change", () => { state.motion.speed = Number(speed.value); syncMotionControls(); });
     const status = make("p", "", "academy-motion-status"); status.id = "academyMotionStatus"; status.setAttribute("role", "status");
-    controls.append(actions, speedLabel, speed, status, make("small", "慢放只改变播放速度，不改变模型周期或计算结果；复位会暂停在起点。", "academy-motion-note")); parent.append(controls); syncMotionControls();
+    controls.append(actions, speedLabel, speed, status, make("small", teachingTimeIds.has(activeId) ? "这是教学进度，非物理实时播放。慢放只延长观察时间；复位会暂停在起点。" : "慢放只改变播放速度，不改变模型周期或计算结果；复位会暂停在起点。", "academy-motion-note")); parent.append(controls); syncMotionControls();
   }
   function syncMotionControls() {
     const toggle = get("academyMotionToggle"), status = get("academyMotionStatus"); if (!toggle || !activeId) return;
     const state = record(activeId), unavailable = reducedMotion.matches;
     toggle.disabled = unavailable;
     toggle.textContent = state.motion.completed ? "重新播放" : state.pause ? "继续动画" : "暂停动画";
-    status.textContent = unavailable ? "已按系统的减少动态效果设置停用自动播放，仍可调参和查看图线。" : state.motion.completed ? "本次演示完成，点击重新播放可再观察一次。" : `${state.pause ? "已暂停" : "播放中"} · ${state.motion.speed}× 速度`;
+    status.textContent = unavailable ? "已按系统的减少动态效果设置停用自动播放，仍可调参和查看图线。" : state.motion.completed ? "本次演示完成，点击重新播放可再观察一次。" : `${state.pause ? "已暂停" : "播放中"} · ${state.motion.speed}× ${teachingTimeIds.has(activeId) ? "教学进度" : "速度"}`;
   }
   function buildFormula(parent, state, config) {
     const panel = make("div", null, "academy-formula"), formula = button("", () => ask(`请解释教学仿真中的公式 ${config.formula}。当前模拟：${pointLabel(activeId, currentPoint(state))}。适用条件：${config.condition}`, {kind: "formula", label: config.formula, values: {...currentPoint(state), condition: config.condition}}), "academy-formula-button");
@@ -474,6 +552,12 @@
     if (activeId === "thermal_expansion") return models.expansion(p.alpha, p.length, p.temperature);
     if (activeId === "string_waves") return models.stringWave(p.length, p.tension, p.density);
     if (activeId === "malus_law") return models.malus(p.angle, p.intensity, p.background);
+    if (activeId === "work_energy") return models.workEnergy(p.mass, p.force, p.distance, p.velocity);
+    if (activeId === "centripetal_force") return models.centripetal(p.mass, p.radius, p.omega);
+    if (activeId === "kinetic_friction") return models.slidingFriction(p.mass, p.coefficient, p.velocity, 0);
+    if (activeId === "damped_oscillation") return models.dampedMotion(p.amplitude, p.beta, p.period, 10);
+    if (activeId === "sound_resonance") return models.soundResonance(p.speed, p.frequency, p.correction);
+    if (activeId === "capacitor_discharge") return models.capacitorDischarge(p.resistance, p.capacitance, p.voltage, p.resistance * p.capacitance);
     throw new RangeError("未配置的教学模型。");
   }
   function buildVisual(parent, state) {
@@ -505,6 +589,12 @@
     if (eid === "thermal_expansion") return `α = ${number(point.alpha_micro_K)}×10⁻⁶/K，L₀ = ${number(point.initial_cm)} cm，ΔT = ${number(point.temperature_rise_C)} ℃，ΔL = ${number(point.extension_mm)} mm`;
     if (eid === "string_waves") return `L = ${number(point.length_m)} m，F = ${number(point.tension_N)} N，μ = ${number(point.linear_density_g_m)} g/m，v = ${number(point.speed_m_s)} m/s，f₁ = ${number(point.fundamental_Hz)} Hz，λ₁ = ${number(point.wavelength_m)} m`;
     if (eid === "malus_law") return `θ = ${number(point.angle_deg)}°，I₀ = ${number(point.input_intensity)}，背景 = ${number(point.background)}，信号 = ${number(point.signal_intensity)}，测得光强 = ${number(point.measured_intensity)}（相对单位）`;
+    if (eid === "work_energy") return `x=${number(point.position_m)}m，v₀=${number(point.initial_velocity_m_s)}m/s，v=${number(point.velocity_m_s)}m/s，W合=${number(point.work_J)}J，ΔK=${number(point.kinetic_final_J - point.kinetic_initial_J)}J`;
+    if (eid === "centripetal_force") return `m=${number(point.mass_kg)}kg，r=${number(point.radius_m)}m，ω=${number(point.angular_speed_rad_s)}rad/s，F径=${number(point.force_N)}N，v=${number(point.speed_m_s)}m/s`;
+    if (eid === "kinetic_friction") return `m=${number(point.mass_kg)}kg，μₖ=${number(point.coefficient)}，fₖ=${number(point.friction_N)}N，t=${number(point.time_s)}s，v=${number(point.velocity_m_s)}m/s，x=${number(point.position_m)}m`;
+    if (eid === "damped_oscillation") return `t=${number(point.time_s)}s，正包络A=${number(point.envelope_mm)}mm，瞬时位移x=${number(point.displacement_mm)}mm，β=${number(point.beta_per_s)}s⁻¹`;
+    if (eid === "sound_resonance") return `c=${number(point.speed_m_s)}m/s，f=${number(point.frequency_Hz)}Hz，L₁=${number(point.first_length_cm, 5)}cm，L₂=${number(point.second_length_cm, 5)}cm，ΔL=${number(point.spacing_cm, 5)}cm`;
+    if (eid === "capacitor_discharge") return `t=${number(point.time_ms)}ms，U=${number(point.voltage_V)}V，τ=${number(point.tau_ms)}ms，剩余储能=${number(point.energy_uJ)}μJ`;
     return `t = ${number(point.time_ms)} ms，Vc = ${number(point.voltage_V)} V，τ = ${number(point.tau_ms)} ms（${point.discharge ? "放电" : "充电"}）`;
   }
   function updateVisual(preserveSelected = false) {
@@ -725,12 +815,129 @@
       drawing.append(svgEl("text", {x: 70, y: 179, class: "academy-axis-label"}, "入射偏振方向"), svgEl("text", {x: 240, y: 179, class: "academy-axis-label"}, `检偏轴 ${number(p.angle)}°`), svgEl("rect", {x: 415, y: 143 - current.signal_intensity * 80, width: 45, height: current.signal_intensity * 80, class: "academy-heat-absorb"}), svgEl("rect", {x: 415, y: 143, width: 45, height: p.background * 80, class: "academy-heat-release"}), svgEl("text", {x: 390, y: 188, class: "academy-tick"}, "蓝：信号 / 红：背景")); graphic.append(drawing);
       const curve = Array.from({length: 91}, (_, i) => models.malus(i * 2, p.intensity, p.background));
       drawPlot({label: "已线偏振入射光的测得强度随检偏器夹角关系；含恒定背景", xLabel: "偏振方向夹角 θ / °", yLabel: "测得光强 / 相对单位", maxX: 180, maxY: 1.3, x: point => point.angle_deg, y: point => point.measured_intensity}, [0, 30, 45, 60, 90, 120, 150, 180].map(angle => models.malus(angle, p.intensity, p.background)), "angle_deg", curve);
-    } else throw new RangeError("未配置的模型视图。");
+    } else return additionalMotionVisual(state, current, graphic, readings, choose);
     return {points, chart};
+  }
+  function additionalPlotScale(state) {
+    const p = state.params;
+    if (activeId === "work_energy") return [Math.max(1, 2 * p.force * p.distance / p.mass) * 1.1, Math.max(.5, p.force * p.distance) * 1.1];
+    if (activeId === "centripetal_force") return [64, 1.8];
+    if (activeId === "kinetic_friction") return [models.slidingFriction(p.mass, p.coefficient, p.velocity, 0).stop_time_s * 1.1, p.velocity * 1.1];
+    if (activeId === "damped_oscillation") return [10, 35];
+    if (activeId === "sound_resonance") return [3.5, 35];
+    return [5 * p.resistance * p.capacitance, 6.5];
+  }
+  function moveAdditionalCursor(state, x, y) {
+    const cursor = get("academyMotionCursor"), [maxX, maxY] = additionalPlotScale(state);
+    if (cursor) { cursor.setAttribute("cx", 68 + x / maxX * 507); cursor.setAttribute("cy", 243 - y / maxY * 218); }
+  }
+  function vectorPath(x, y, dx, dy) {
+    const size = Math.hypot(dx, dy); if (size < 1e-8) return "";
+    const ux = dx / size, uy = dy / size, ex = x + dx, ey = y + dy;
+    return `M${x},${y}L${ex},${ey}M${ex - ux * 7 - uy * 4},${ey - uy * 7 + ux * 4}L${ex},${ey}L${ex - ux * 7 + uy * 4},${ey - uy * 7 - ux * 4}`;
+  }
+  function additionalMotionVisual(state, current, graphic, readings, choose) {
+    const p = state.params, [maxX, maxY] = additionalPlotScale(state); let points, chart;
+    function draw(config, samples, key, dense = samples) {
+      points = samples.slice(); if (!points.some(point => Math.abs(point[key] - current[key]) < 1e-8)) points.push(current);
+      points.sort((a, b) => a[key] - b[key]);
+      chart = plot({...config, maxX, maxY, line: dense.map(point => ({x: config.x(point), y: config.y(point)})), points: points.map(point => ({x: config.x(point), y: config.y(point), label: pointLabel(activeId, point)})), selected: points.findIndex(point => Math.abs(point[key] - state.selected[key]) < 1e-8), onSelect: i => choose(points[i], true)});
+    }
+    const drawing = schematic(supported[activeId].title + "；" + supported[activeId].condition, activeId === "centripetal_force" ? 300 : activeId === "work_energy" ? 285 : 230); drawing.id = "academyMotionDrawing";
+    if (activeId === "work_energy" || activeId === "kinetic_friction") {
+      const friction = activeId === "kinetic_friction", trackMax = friction ? 9 : 4;
+      if (friction) { reading(readings, "滑动阶段摩擦力 fₖ", `${number(current.friction_N)} N`); reading(readings, "停止距离", `${number(current.stop_distance_m)} m`); }
+      else { reading(readings, "目标位置的净功", `${number(current.work_J)} J`); reading(readings, "目标位置的末速度", `${number(current.velocity_m_s)} m/s`); }
+      drawing.append(svgEl("line", {x1: 50, x2: 550, y1: 110, y2: 110, class: "academy-support"}));
+      for (let i = 0; i <= 3; i++) drawing.append(svgEl("text", {x: 70 + i * 440 / 3, y: 138, "text-anchor": "middle", class: "academy-tick"}, `${number(trackMax * i / 3)} m`));
+      const body = svgEl("g", {id: "academyMotionBody"});
+      body.append(svgEl("rect", {x: -22, y: 70, width: 44, height: 38, rx: 3, class: "academy-mass"}), svgEl("path", {id: "academyAdditionalForce", class: "academy-ray"})); drawing.append(body);
+      if (friction) drawing.append(svgEl("text", {x: 35, y: 178, class: "academy-axis-label"}, "撤去拉力 · 红箭头为滑动摩擦"), svgEl("text", {x: 35, y: 208, class: "academy-tick"}, "停止后不再使用滑动模型，不继续倒滑"));
+      else {
+        drawing.append(svgEl("line", {x1: 70 + p.distance / 4 * 440, x2: 70 + p.distance / 4 * 440, y1: 30, y2: 110, class: "academy-rest-line"}), svgEl("text", {x: 35, y: 174, class: "academy-axis-label"}, "到达观察位置时停图；末速度并非零"));
+        for (const [label, y, id, cls] of [["净功 W合", 200, "academyWorkBar", "academy-heat-release"], ["动能增量 ΔK", 240, "academyKineticBar", "academy-heat-absorb"]]) drawing.append(svgEl("text", {x: 30, y: y + 17, class: "academy-tick"}, label), svgEl("rect", {id, x: 155, y, width: 0, height: 22, class: cls}));
+      }
+      if (friction) {
+        const total = current.stop_time_s;
+        draw({label: "撤去拉力后速度随时间下降，到停止时刻截止", xLabel: "滑动时间 t / s", yLabel: "速度 v / m/s", x: a => a.time_s, y: a => a.velocity_m_s}, [0, .25, .5, .75, 1].map(q => models.slidingFriction(p.mass, p.coefficient, p.velocity, total * q)), "time_s");
+      } else {
+        draw({label: "净功与速度平方增量关系；蓝游标对应当前运动状态", xLabel: "速度平方增量 v²−v₀² / m²s⁻²", yLabel: "净功 W合 / J", x: a => 2 * a.work_J / p.mass, y: a => a.work_J}, [0, .25, .5, .75, 1].map(q => models.workEnergy(p.mass, p.force, p.distance * q, p.velocity)), "position_m");
+      }
+    } else if (activeId === "centripetal_force") {
+      reading(readings, "径向合力 F径", `${number(current.force_N)} N`); reading(readings, "速率 v = rω", `${number(current.speed_m_s)} m/s`);
+      drawing.append(svgEl("circle", {cx: 300, cy: 132, r: 86, class: "academy-orbit"}), svgEl("circle", {cx: 300, cy: 132, r: 3, class: "academy-bob"}), svgEl("line", {id: "academyRadius", x1: 300, y1: 132, x2: 386, y2: 132, class: "academy-rest-line"}), svgEl("circle", {id: "academyMotionBody", cx: 386, cy: 132, r: 10, class: "academy-bob"}), svgEl("path", {id: "academyRadialForce", class: "academy-ray"}), svgEl("path", {id: "academyTangentVelocity", class: "academy-velocity-vector"}), svgEl("text", {x: 30, y: 258, class: "academy-axis-label"}, "蓝：切向速度　红：径向合力"), svgEl("text", {x: 30, y: 286, class: "academy-tick"}, "r = 0.10 m · 箭头只表示方向，长度不作量值比较"));
+      draw({label: "固定半径和质量时，径向合力与角速度平方成正比", xLabel: "角速度平方 ω² / rad²s⁻²", yLabel: "径向合力 F径 / N", x: a => a.angular_speed_rad_s ** 2, y: a => a.force_N}, [1, 2, 3, 4, 6, 8].map(w => models.centripetal(p.mass, p.radius, w)), "angular_speed_rad_s");
+    } else if (activeId === "damped_oscillation") {
+      reading(readings, "振幅衰减系数 β", `${number(p.beta)} s⁻¹`); reading(readings, "10 s 的正包络", `${number(current.envelope_mm)} mm`);
+      drawing.append(svgEl("line", {x1: 45, x2: 45, y1: 30, y2: 145, class: "academy-support"}), svgEl("line", {x1: 280, x2: 280, y1: 25, y2: 145, class: "academy-rest-line"}), svgEl("line", {id: "academyEnvelopeLeft", y1: 25, y2: 145, class: "academy-envelope"}), svgEl("line", {id: "academyEnvelopeRight", y1: 25, y2: 145, class: "academy-envelope"}), svgEl("path", {id: "academyDampedCoil", class: "academy-model-line"}), svgEl("rect", {id: "academyMotionBody", x: 255, y: 64, width: 50, height: 52, rx: 3, class: "academy-mass"}), svgEl("circle", {id: "academyDampedCenter", cx: 280, cy: 90, r: 3, fill: "#9a3444"}), svgEl("text", {x: 35, y: 180, class: "academy-axis-label"}, "红点为质心 · 虚线夹出质心位移 ±A(t)"), svgEl("text", {x: 35, y: 211, class: "academy-tick"}, "图线为包络，不把瞬时位移当作振幅"));
+      draw({label: "阻尼振动正包络的指数衰减，蓝色游标为当前包络而非位移", xLabel: "时间 t / s", yLabel: "正包络 A(t) / mm", x: a => a.time_s, y: a => a.envelope_mm}, [0, 2, 4, 6, 8, 10].map(t => models.dampedMotion(p.amplitude, p.beta, p.period, t)), "time_s", Array.from({length: 101}, (_, i) => models.dampedMotion(p.amplitude, p.beta, p.period, i / 10)));
+    } else if (activeId === "sound_resonance") {
+      reading(readings, "第一次共鸣 L₁", `${number(current.first_length_cm, 5)} cm`); reading(readings, "相邻第二次共鸣 L₂", `${number(current.second_length_cm, 5)} cm`);
+      const lengthCm = p.mode === 1 ? current.first_length_cm : current.second_length_cm, width = lengthCm * 5, effective = width + p.correction * 5;
+      drawing.append(svgEl("path", {d: `M${60 + width},65H60V125H${60 + width}`, class: "academy-model-line"}), svgEl("line", {x1: 60 + effective, x2: 60 + effective, y1: 50, y2: 140, class: "academy-envelope"}));
+      const particles = svgEl("g", {id: "academyMotionBody"});
+      for (let i = 0; i <= 12; i++) particles.append(svgEl("circle", {cx: 60 + width * i / 12, cy: 95, r: 3.2, class: "academy-air-particle", "data-fraction": i / 12}));
+      drawing.append(particles, svgEl("text", {x: 30, y: 30, class: "academy-tick"}, `${p.mode === 1 ? "第一次" : "相邻第二次"}共鸣 · 物理管长 ${number(lengthCm, 5)} cm`), svgEl("text", {x: 30, y: 163, class: "academy-axis-label"}, "空气沿管轴左右振动（位移放大）"), svgEl("text", {x: 30, y: 193, class: "academy-tick"}, "闭端：位移波节 · 有效开端：位移波腹"), svgEl("text", {x: 30, y: 220, class: "academy-tick"}, "e = 0.70 cm · 虚线为有效开端 L+e · 非实时动画"));
+      draw({label: "固定声速，第一次共鸣物理长度随频率倒数的关系，含端修正", xLabel: "频率倒数 1/f / ms", yLabel: "第一次共鸣管长 L₁ / cm", x: a => 1000 / a.frequency_Hz, y: a => a.first_length_cm}, [800, 700, 600, 500, 400, 300].map(f => models.soundResonance(p.speed, f, p.correction)), "frequency_Hz");
+    } else if (activeId === "capacitor_discharge") {
+      reading(readings, "时间常数 τ = RC", `${number(current.tau_ms)} ms`); reading(readings, "1τ 时的剩余电压", `${number(current.voltage_V)} V`);
+      drawing.append(svgEl("path", {d: "M170,70V40H350V60M170,90V130H350V100", class: "academy-model-line"}), svgEl("line", {x1: 145, x2: 195, y1: 70, y2: 70, class: "academy-support"}), svgEl("line", {x1: 145, x2: 195, y1: 90, y2: 90, class: "academy-support"}), svgEl("rect", {x: 340, y: 60, width: 20, height: 40, class: "academy-wire"}), svgEl("text", {x: 115, y: 113, class: "academy-tick"}, "C"), svgEl("text", {x: 375, y: 88, class: "academy-tick"}, "R"), svgEl("rect", {x: 470, y: 30, width: 35, height: 115, class: "academy-voltage-empty"}), svgEl("rect", {id: "academyMotionBody", x: 470, y: 30, width: 35, height: 115, class: "academy-heat-absorb"}), svgEl("text", {x: 450, y: 168, class: "academy-tick"}, "U/U₀"), svgEl("text", {x: 30, y: 195, class: "academy-axis-label"}, "教学进度 1 s 对应 1τ · 不按实际毫秒播放"), svgEl("text", {x: 30, y: 223, class: "academy-tick"}, "5τ 时仅停止画面，电压仍非严格为零"));
+      const tau = current.tau_ms;
+      draw({label: "电容放电电压指数下降，蓝色游标对应读数中的物理毫秒时间", xLabel: "物理放电时间 t / ms", yLabel: "电容电压 U / V", threshold: {x: tau, y: p.voltage / Math.E, label: "1τ · 剩36.8%"}, x: a => a.time_ms, y: a => a.voltage_V}, [0, .5, 1, 2, 3, 4, 5].map(q => models.capacitorDischarge(p.resistance, p.capacitance, p.voltage, tau * q)), "time_ms", Array.from({length: 101}, (_, i) => models.capacitorDischarge(p.resistance, p.capacitance, p.voltage, tau * i / 20)));
+    } else throw new RangeError("未配置的动态模型视图。");
+    graphic.append(drawing, motionReadout());
+    if (!["centripetal_force", "sound_resonance"].includes(activeId)) chart.append(svgEl("circle", {id: "academyMotionCursor", r: 6, class: "academy-motion-cursor", "aria-hidden": "true", "pointer-events": "none"}));
+    return {points, chart};
+  }
+  function paintAdditionalMotion(state) {
+    const p = state.params, body = get("academyMotionBody"), t = state.motion.time; if (!body) return "";
+    if (activeId === "work_energy") {
+      const motion = models.kinematics(p.velocity, p.force / p.mass, Math.min(t, motionDuration(activeId, state))), position = Math.min(p.distance, motion.position_m), value = models.workEnergy(p.mass, p.force, position, p.velocity);
+      body.setAttribute("transform", `translate(${70 + position / 4 * 440},0)`); get("academyAdditionalForce")?.setAttribute("d", vectorPath(0, 52, 40, 0));
+      for (const id of ["academyWorkBar", "academyKineticBar"]) get(id)?.setAttribute("width", value.work_J / 4 * 350);
+      moveAdditionalCursor(state, 2 * value.work_J / p.mass, value.work_J);
+      return `t=${t.toFixed(2)} s · x=${position.toFixed(2)} m · v=${value.velocity_m_s.toFixed(2)} m/s · W合=ΔK=${value.work_J.toFixed(2)} J（初动能${value.kinetic_initial_J.toFixed(2)} J）`;
+    }
+    if (activeId === "kinetic_friction") {
+      const v = models.slidingFriction(p.mass, p.coefficient, p.velocity, t);
+      body.setAttribute("transform", `translate(${70 + v.position_m / 9 * 440},0)`); get("academyAdditionalForce")?.setAttribute("d", v.velocity_m_s > 0 ? vectorPath(0, 52, -40, 0) : "");
+      moveAdditionalCursor(state, v.time_s, v.velocity_m_s);
+      return `t=${v.time_s.toFixed(2)} s · x=${v.position_m.toFixed(2)} m · v=${v.velocity_m_s.toFixed(2)} m/s${v.velocity_m_s === 0 ? " · 滑动结束" : " · 摩擦方向向左"}`;
+    }
+    if (activeId === "centripetal_force") {
+      const phase = state.motion.phase * 2 * Math.PI, c = Math.cos(phase), z = Math.sin(phase), x = 300 + 86 * c, y = 132 - 86 * z;
+      body.setAttribute("cx", x); body.setAttribute("cy", y); get("academyRadius")?.setAttribute("x2", x); get("academyRadius")?.setAttribute("y2", y);
+      get("academyRadialForce")?.setAttribute("d", vectorPath(x, y, -40 * c, 40 * z)); get("academyTangentVelocity")?.setAttribute("d", vectorPath(x, y, -40 * z, -40 * c));
+      return `模型时间 t=${t.toFixed(2)} s · 周期T=${models.centripetal(p.mass, p.radius, p.omega).period_s.toFixed(2)} s · 速率不变，速度方向改变`;
+    }
+    if (activeId === "damped_oscillation") {
+      const v = models.dampedMotion(p.amplitude, p.beta, p.period, Math.min(t, 10)), left = 255 + v.displacement_mm * 2;
+      body.setAttribute("x", left); get("academyDampedCoil")?.setAttribute("d", springPath(left)); get("academyDampedCenter")?.setAttribute("cx", left + 25);
+      for (const [id, direction] of [["academyEnvelopeLeft", -1], ["academyEnvelopeRight", 1]]) { const line = get(id), x = 280 + direction * v.envelope_mm * 2; line?.setAttribute("x1", x); line?.setAttribute("x2", x); }
+      moveAdditionalCursor(state, v.time_s, v.envelope_mm);
+      return `t=${v.time_s.toFixed(2)} s · 正包络A=${v.envelope_mm.toFixed(2)} mm · 位移x=${v.displacement_mm.toFixed(2)} mm`;
+    }
+    if (activeId === "sound_resonance") {
+      const v = models.soundResonance(p.speed, p.frequency, p.correction), length = p.mode === 1 ? v.first_length_cm : v.second_length_cm, waveNumber = 2 * Math.PI / (v.wavelength_m * 100), oscillation = Math.cos(state.motion.phase * 2 * Math.PI);
+      body.querySelectorAll("circle").forEach(particle => { const distance = length * Number(particle.dataset.fraction); particle.setAttribute("cx", 60 + distance * 5 + 11 * Math.sin(waveNumber * distance) * oscillation); });
+      return `相邻长度差ΔL=${v.spacing_cm.toFixed(2)} cm · 2fΔL=${v.speed_m_s.toFixed(1)} m/s · 粒子为纵向慢放示意，非实际频率`;
+    }
+    const tau = p.resistance * p.capacitance, value = models.capacitorDischarge(p.resistance, p.capacitance, p.voltage, Math.min(t, 5) * tau);
+    body.setAttribute("y", 145 - value.fraction * 115); body.setAttribute("height", value.fraction * 115); moveAdditionalCursor(state, value.time_ms, value.voltage_V);
+    return `物理时间t=${value.time_ms.toFixed(2)} ms（${Math.min(t, 5).toFixed(2)}τ）· U=${value.voltage_V.toFixed(3)} V · 剩余储能=${value.energy_uJ.toFixed(3)} μJ`;
   }
   function positionPendulum(theta, length) { const line = get("academyPendulumString"), bob = get("academyPendulumBob"); if (!line || !bob) return; const pixels = 55 + length / 1.5 * 80, x = 300 + pixels * Math.sin(theta), y = 14 + pixels * Math.cos(theta); line.setAttribute("x2", x); line.setAttribute("y2", y); bob.setAttribute("cx", x); bob.setAttribute("cy", y); }
   function motionReadout() { const el = make("p", "", "academy-motion-readout"); el.id = "academyMotionReadout"; el.setAttribute("aria-live", "off"); return el; }
-  function motionDuration(id, state) { return id === "free_fall" ? Math.sqrt(2 * state.params.height / state.params.gravity) : id === "uniform_acceleration" ? 3 : 2; }
+  function motionDuration(id, state) {
+    const p = state.params;
+    if (id === "free_fall") return Math.sqrt(2 * p.height / p.gravity);
+    if (id === "uniform_acceleration") return 3;
+    if (id === "work_energy") return 2 * p.distance / (models.workEnergy(p.mass, p.force, p.distance, p.velocity).velocity_m_s + p.velocity);
+    if (id === "kinetic_friction") return models.slidingFriction(p.mass, p.coefficient, p.velocity, 0).stop_time_s;
+    if (id === "damped_oscillation") return 10;
+    if (id === "capacitor_discharge") return 5;
+    return 2;
+  }
   function paintMotion(forceReadout = false, timestamp = performance.now()) {
     if (!animatedIds.has(activeId)) return;
     const state = record(activeId), p = state.params, motion = state.motion;
@@ -742,7 +949,8 @@
       mass.setAttribute("x", x); coil.setAttribute("d", springPath(x));
       if (arrow) { const center = x + (35 + p.mass * 90) / 2, direction = Math.sign(point.velocity_fraction_per_s); arrow.setAttribute("d", `M${center},48h${direction * 42}m${-direction * 7},-5l${direction * 7},5l${-direction * 7},5`); arrow.setAttribute("visibility", Math.abs(point.velocity_fraction_per_s) < 1e-6 ? "hidden" : "visible"); }
       caption = `已演示 ${motion.time.toFixed(2)} s · 示意位移 x/A = ${point.displacement_fraction.toFixed(2)}（A 为固定示意振幅）`;
-    } else if (transitIds.has(activeId)) {
+    } else if (additionalMotionIds.has(activeId)) caption = paintAdditionalMotion(state);
+    else if (transitIds.has(activeId)) {
       const body = get("academyMotionBody"), time = Math.min(motion.time, motionDuration(activeId, state)); if (!body) return;
       const point = activeId === "uniform_acceleration" ? models.kinematics(p.velocity, p.acceleration, time) : activeId === "newtons_second_law" ? models.newtons(p.mass, p.force, time) : models.freeFall(p.gravity, time);
       if (activeId === "free_fall") body.setAttribute("cy", 30 + point.height_m / p.height * 190);
@@ -764,11 +972,11 @@
       frame = null; if (!animationAllowed(id, state)) { lastAnimationTime = null; return; }
       const dt = lastAnimationTime == null ? 0 : Math.max(0, (time - lastAnimationTime) / 1000) * state.motion.speed; lastAnimationTime = time;
       state.motion.time += dt;
-      if (transitIds.has(id)) {
+      if (finiteMotionIds.has(id)) {
         const duration = motionDuration(id, state);
         if (state.motion.time >= duration) { state.motion.time = duration; state.motion.completed = true; paintMotion(true, time); syncMotionControls(); lastAnimationTime = null; return; }
       } else {
-        const period = id === "simple_pendulum" ? models.pendulum(state.params.length).period_s : models.spring(state.params.mass, state.params.stiffness).period_s;
+        const period = id === "simple_pendulum" ? models.pendulum(state.params.length).period_s : id === "centripetal_force" ? models.centripetal(state.params.mass, state.params.radius, state.params.omega).period_s : id === "sound_resonance" ? 2 : models.spring(state.params.mass, state.params.stiffness).period_s;
         state.motion.phase = (state.motion.phase + dt / period) % 1;
       }
       paintMotion(false, time); frame = requestAnimationFrame(animate);

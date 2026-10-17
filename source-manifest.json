@@ -60,6 +60,11 @@
     "sha256": "39617ead990218f3b62188b09470a03080e029ac7c00222b8f747d6fac68ea2c"
   },
   {
+    "path": "INTERACTIVE_LESSONS_UPDATE_20261017.md",
+    "bytes": 8299,
+    "sha256": "f3fcb86d5147bc46d22dc23cc09a6b4b8bb5295b91392d5a0c261f18388eb5d4"
+  },
+  {
     "path": "KNOWLEDGE_SOURCES.md",
     "bytes": 11347,
     "sha256": "9531b2cddd40592676ed9f8df5eb8da5d4244fa0f6fae593ca5159240d615c40"
@@ -196,8 +201,8 @@
   },
   {
     "path": "app/data/learning_courses.json",
-    "bytes": 66519,
-    "sha256": "27fd226446b8b60f07c513a3c365f2ac9fbe8fd71ac89af2ee64c0e7fb748231"
+    "bytes": 87240,
+    "sha256": "732f9bea8d3436bfb670046234e5232770fed279bed3ab451368541377a1435e"
   },
   {
     "path": "app/data/textbook_coverage.json",
@@ -276,13 +281,13 @@
   },
   {
     "path": "app/static/academy.css",
-    "bytes": 14547,
-    "sha256": "200d5d866bebf1d87cd4edfa0bc7a8124ebed16103b8fce690c525b3f2956065"
+    "bytes": 14959,
+    "sha256": "6981051aa7853b8f499a83c61de561898e3f9651d21c6546b18e2a3a815bab3c"
   },
   {
     "path": "app/static/academy.js",
-    "bytes": 118206,
-    "sha256": "776cfa86bf99f9a157e01f62860c28389f0116461faab383c5ba6286e0497ae9"
+    "bytes": 150859,
+    "sha256": "b5c8fc3dd94dd936a915af636bf0a5784c935e88dd4bfd8db4200c66195e3a0c"
   },
   {
     "path": "app/static/account-sync.js",
@@ -357,7 +362,7 @@
   {
     "path": "app/static/index.html",
     "bytes": 42019,
-    "sha256": "50b02fc3771ceb9918118316b01f185a45b278474aeb62d49de332d3ada5f052"
+    "sha256": "a9c6f080c0b7ee35a8f20876672840000ccfa6f3a301c31e968d36fe4d0b6b78"
   },
   {
     "path": "app/static/learning-math.js",
@@ -856,8 +861,8 @@
   },
   {
     "path": "tests/academy_models.cjs",
-    "bytes": 21813,
-    "sha256": "7466d8cd94f8da39374ab57934c6ceb190cd32421f73fe978418af01199326b4"
+    "bytes": 32484,
+    "sha256": "d215892fafe2528310e8a09f5aa5fefbd15299de00846d8c69929986caef4934"
   },
   {
     "path": "tests/browser/README.md",
@@ -946,8 +951,8 @@
   },
   {
     "path": "tests/test_learning.py",
-    "bytes": 15750,
-    "sha256": "d3d21c574995088e7aee017429ebcf41247ed34b169362024953e60cf99650a8"
+    "bytes": 16911,
+    "sha256": "0e94294c83a927409842a67181a6ee2ebf8d2ca739c80fdf20f117d94e25d9ac"
   },
   {
     "path": "tests/test_llm.py",
