@@ -16,6 +16,14 @@
       if (![stiffnessNPerM, forceN].every(Number.isFinite) || !(stiffnessNPerM > 0) || !(forceN >= 0)) throw new RangeError("劲度系数须为正数，载荷不能为负。");
       return finiteResult({stiffness_N_m: stiffnessNPerM, force_N: forceN, extension_m: forceN / stiffnessNPerM, extension_cm: forceN / stiffnessNPerM * 100});
     },
+    hookeMotion(stiffnessNPerM, externalForceN, elapsedSeconds, massKg = 1, amplitudeM = .02) {
+      if (!Number.isFinite(amplitudeM) || amplitudeM < 0) throw new RangeError("微扰振幅须为有限非负数。");
+      const equilibrium = models.hooke(stiffnessNPerM, externalForceN);
+      const motion = models.springMotion(massKg, stiffnessNPerM, elapsedSeconds);
+      const displacement = amplitudeM * motion.displacement_fraction, extension = equilibrium.extension_m + displacement;
+      const restoring = -stiffnessNPerM * extension;
+      return finiteResult({stiffness_N_m: stiffnessNPerM, external_force_N: externalForceN, equilibrium_extension_m: equilibrium.extension_m, equilibrium_extension_cm: equilibrium.extension_cm, instant_extension_m: extension, instant_extension_cm: extension * 100, displacement_from_equilibrium_m: displacement, velocity_m_s: amplitudeM * motion.velocity_fraction_per_s, restoring_force_N: restoring, net_force_N: externalForceN + restoring, mass_kg: massKg, amplitude_m: amplitudeM, period_s: motion.period_s});
+    },
     spring(massKg, stiffnessNPerM) {
       if (![massKg, stiffnessNPerM].every(Number.isFinite) || !(massKg > 0) || !(stiffnessNPerM > 0)) throw new RangeError("质量与劲度系数必须为正数。");
       const period = 2 * Math.PI * Math.sqrt(massKg / stiffnessNPerM);
@@ -174,7 +182,7 @@
   const supported = {
     simple_pendulum: {title: "单摆：摆长如何改变周期？", subtitle: "先作一个预测，再用摆动和图线检验。", goal: "理解小角度条件下的周期、摆长与重力加速度。", formula: "T = 2π√(L/g)", tex: "T = 2\\pi\\sqrt{\\frac{L}{g}}", condition: "理想单摆；小角度、无阻尼；g = 9.81 m/s²。", initial: {length: 1}, symbols: [["T", "周期 T：完成一次完整往返所需的时间，单位 s。"], ["L", "摆长 L：从悬点到摆球质心的距离，单位 m。"], ["g", "重力加速度 g：本仿真固定为 9.81 m/s²。"]]},
     ohms_law: {title: "伏安法：图线的斜率意味着什么？", subtitle: "改变电阻与电压，观察同一个欧姆元件的读数。", goal: "联系电压、电流、电阻，辨别坐标轴和单位。", formula: "U = IR", tex: "U = IR", condition: "恒温欧姆元件；电表理想化；忽略导线电阻。", initial: {resistance: 250, voltage: 3}, symbols: [["U", "电压 U：电阻两端的电势差，单位 V。"], ["I", "电流 I：公式使用 A；图中使用 mA。1 mA = 0.001 A。"], ["R", "电阻 R：U–I 图纵轴为 U、横轴为 I 时，斜率对应电阻。若横轴用 mA，斜率还要乘 1000 才得到 Ω。"]]},
-    hookes_law: {title: "胡克定律：弹簧伸长与载荷", subtitle: "改变载荷和弹簧，比较 F–x 图的斜率。", goal: "理解弹性限度内的线性关系与劲度系数。", formula: "F = kx", tex: "F = kx", condition: "理想轻弹簧；处于弹性限度内；F 为外加拉力，x 为相对原长的伸长。", initial: {stiffness: 50, force: 2}, symbols: [["F", "外加拉力 F，单位 N；静力平衡时与弹簧恢复力大小相等。"], ["k", "劲度系数 k，单位 N/m；F–x 图中横轴若用 cm，斜率需乘 100 才得到 N/m。"], ["x", "伸长 x = F/k，公式使用 m，读数和图横轴显示 cm。"]]},
+    hookes_law: {"title":"胡克定律：弹簧怎样往返运动？","subtitle":"保持拉力不变，让弹簧和物块自动往返，再比较平衡伸长。","goal":"区分平衡伸长、瞬时位置与恢复运动。","formula":"F = kx_eq","tex":"F=kx_{\\mathrm{eq}}","condition":"水平无摩擦、理想双向线性弹簧，始终处于弹性限度内。恒拉力F下，平衡伸长x_eq=F/k；固定物块质量1kg、位移振幅2cm，绕加载平衡位置自动振动。瞬时伸长可为负（压缩）。","initial":{"stiffness":50,"force":2,"mass":1},"symbols":[["F","图线中的F是恒外加拉力；仅在加载平衡时有F=kx_eq。振动中水平合力为F−kx(t)。"],["k","劲度系数，单位N/m；越硬则同质量的振动越快。静态F–x_eq图横轴用cm，斜率需乘100才得到N/m。"],["x_eq","加载后的平衡伸长F/k；上方数值和下方静态图线使用这个量，不随振动时刻变化。"],["x(t)","从原长位置量的瞬时伸长；x(t)=x_eq+Acos(2πt/T)，弹簧力为−kx(t)，压缩时为负伸长。"]]},
     spring_oscillation: {title: "弹簧振子：质量怎样改变周期？", subtitle: "保持弹簧不变，比较不同质量的周期平方。", goal: "区分质量与劲度系数对简谐振动周期的影响。", formula: "T = 2π√(m/k)", tex: "T = 2\\pi\\sqrt{\\frac{m}{k}}", condition: "理想轻弹簧和质点；无阻尼；在弹性限度内作简谐振动。", initial: {mass: .2, stiffness: 20}, symbols: [["T", "振动周期 T，单位 s；振幅在理想线性模型中不改变周期。"], ["m", "振子质量 m，单位 kg；本模型忽略弹簧自身质量。"], ["k", "劲度系数 k，单位 N/m；T²–m 图的斜率为 4π²/k。"]]},
     thin_lens: {title: "薄透镜：物体移动，像在哪里？", subtitle: "调整焦距和物距，观察倒立实像及光路。", goal: "理解实像位置、放大率与物距的非线性关系。", formula: "1/f = 1/u + 1/v", tex: "\\frac{1}{f}=\\frac{1}{u}+\\frac{1}{v}", condition: "薄凸透镜；近轴光线；本课只研究 u > f 的实像。光路按几何关系绘制，坐标使用 cm。", initial: {focal: 10, distance: 30}, symbols: [["f", "焦距 f，单位 cm；本模型取正值。"], ["u", "物距 u，单位 cm；滑杆范围保证 u > f，避免在焦点处无有限像距。"], ["v", "像距 v，单位 cm；本课实像位于透镜另一侧，v 为正。"], ["M", "横向放大率 M = −v/u；负号表示实像倒立。"]]},
     snell_refraction: {title: "折射：光线为什么向法线偏折？", subtitle: "改变入射角和介质，比较角度与正弦关系。", goal: "把斯涅尔定律与光路、折射率联系起来。", formula: "n₁ sin θ₁ = n₂ sin θ₂", tex: "n_1\\sin\\theta_1=n_2\\sin\\theta_2", condition: "单色光由空气 n₁ = 1 入射均匀介质 n₂ ≥ 1；角度从法线量起。此方向不会发生全反射。", initial: {index: 1.5, angle: 45}, symbols: [["n₁", "入射介质为空气，折射率 n₁ 固定为 1。"], ["n₂", "下方介质折射率 n₂，无量纲；本课范围 1.1–2.0。"], ["θ₁", "入射角 θ₁：入射光与界面法线的夹角，读数使用 °。"], ["θ₂", "折射角 θ₂：折射光与法线的夹角。sin θ₂–sin θ₁ 图的斜率为 1/n₂。"]]},
@@ -212,7 +220,7 @@
   const transitIds = new Set(["uniform_acceleration", "newtons_second_law", "free_fall"]);
   const additionalMotionIds = new Set(["work_energy", "centripetal_force", "kinetic_friction", "damped_oscillation", "sound_resonance", "capacitor_discharge"]);
   const finiteMotionIds = new Set([...transitIds, "work_energy", "kinetic_friction", "damped_oscillation", "capacitor_discharge"]);
-  const animatedIds = new Set(["simple_pendulum", "spring_oscillation", ...transitIds, ...additionalMotionIds]);
+  const animatedIds = new Set(["simple_pendulum", "hookes_law", "spring_oscillation", ...transitIds, ...additionalMotionIds]);
   const teachingTimeIds = new Set(["sound_resonance", "capacitor_discharge"]);
   function routeExperiment() { const match = location.pathname.match(/^\/experiments\/([a-z0-9_]+)$/); return match ? match[1] : get("experimentId")?.value; }
   function ask(question, selection) { window.dispatchEvent(new CustomEvent("lab-academy-question", {detail: {question, experiment_id: activeId, selection}})); }
@@ -364,7 +372,7 @@
     const l = make("label", label); l.htmlFor = control.id; output.htmlFor = control.id; output.value = format(value); caption.append(l, output);
     control.setAttribute("aria-valuetext", format(value));
     control.addEventListener("input", () => { const n = Number(control.value); output.value = format(n); control.setAttribute("aria-valuetext", format(n)); onInput(n);
-      if (transitIds.has(activeId) || additionalMotionIds.has(activeId)) { const motion = record(activeId).motion; motion.time = 0; motion.phase = 0; motion.completed = false; }
+      if (transitIds.has(activeId) || additionalMotionIds.has(activeId) || activeId === "hookes_law") { const motion = record(activeId).motion; motion.time = 0; motion.phase = 0; motion.completed = false; }
       updateVisual(); syncMotionControls(); if (frame == null) beginAnimation(); });
     holder.append(caption, control); parent.append(holder);
   }
@@ -387,7 +395,8 @@
     } else if (activeId === "hookes_law") {
       range(parent, "stiffness", "劲度系数 k", 20, 100, 5, p.stiffness, n => `${number(n)} N/m`, n => p.stiffness = n);
       range(parent, "force", "外加拉力 F", 0, 4, .1, p.force, n => `${number(n)} N`, n => p.force = n);
-      parent.append(make("p", "观察伸长 x，而不是弹簧总长。只在弹性限度内使用本关系。", "academy-muted"));
+      parent.append(make("p", "不用拖动滑杆，物块会围绕加载后的平衡位置持续往返，弹簧同步伸缩。F改变平衡位置，k改变平衡位置和振动快慢；修改参数后从新初始状态观察。", "academy-muted"));
+      buildMotionControls(parent, state);
     } else if (activeId === "spring_oscillation") {
       range(parent, "mass", "振子质量 m", .05, .5, .025, p.mass, n => `${number(n)} kg`, n => p.mass = n);
       range(parent, "stiffness", "劲度系数 k", 10, 50, 2, p.stiffness, n => `${number(n)} N/m`, n => p.stiffness = n);
@@ -571,7 +580,7 @@
   function pointLabel(eid, point) {
     if (eid === "simple_pendulum") return `L = ${number(point.length_m)} m，T = ${number(point.period_s)} s，T² = ${number(point.period_squared_s2)} s²`;
     if (eid === "ohms_law") return `I = ${number(point.current_mA)} mA，U = ${number(point.voltage_V)} V，R = ${number(point.resistance_ohm)} Ω`;
-    if (eid === "hookes_law") return `F = ${number(point.force_N)} N，x = ${number(point.extension_cm)} cm，k = ${number(point.stiffness_N_m)} N/m`;
+    if (eid === "hookes_law") return `F = ${number(point.force_N)} N，平衡伸长 x_eq = ${number(point.extension_cm)} cm，k = ${number(point.stiffness_N_m)} N/m`;
     if (eid === "spring_oscillation") return `m = ${number(point.mass_kg)} kg，k = ${number(point.stiffness_N_m)} N/m，T = ${number(point.period_s)} s，T² = ${number(point.period_squared_s2)} s²`;
     if (eid === "uniform_acceleration") return `v₀ = ${number(point.initial_velocity_m_s)} m/s，a = ${number(point.acceleration_m_s2)} m/s²，t = ${number(point.time_s)} s，x = ${number(point.position_m)} m，v = ${number(point.velocity_m_s)} m/s`;
     if (eid === "newtons_second_law") return `m = ${number(point.mass_kg)} kg，F合 = ${number(point.net_force_N)} N，a = ${number(point.acceleration_m_s2)} m/s²（从静止开始）`;
@@ -657,11 +666,24 @@
       chart = plot({...config, line: (curve || points).map(point => ({x: x(point), y: y(point)})), points: points.map(point => ({x: x(point), y: y(point), label: pointLabel(activeId, point)})), selected: points.findIndex(point => Math.abs(point[key] - state.selected[key]) < 1e-8), onSelect: index => choose(points[index], true)});
     }
     if (activeId === "hookes_law") {
-      reading(readings, "伸长 x（相对原长）", `${number(current.extension_cm)} cm`); reading(readings, "劲度系数 k", `${number(current.stiffness_N_m)} N/m`);
-      const drawing = schematic(`弹簧伸长示意，外加拉力 ${number(current.force_N)} N，伸长 ${number(current.extension_cm)} cm。`);
-      springDrawing(drawing, 165 + current.extension_cm * 12, 45, `F = ${number(p.force)} N · 伸长 x = ${number(current.extension_cm)} cm`);
-      drawing.append(svgEl("line", {x1: 165, x2: 165, y1: 35, y2: 145, class: "academy-rest-line"}), svgEl("text", {x: 125, y: 28, class: "academy-tick"}, "零载荷位置")); graphic.append(drawing);
-      drawPlot({label: "弹性限度内拉力与伸长的关系", xLabel: "伸长 x / cm", yLabel: "拉力 F / N", maxX: 20, maxY: 4.5, x: point => point.extension_cm, y: point => point.force_N}, [0, 1, 2, 3, 4].map(force => models.hooke(p.stiffness, force)), "force_N");
+      reading(readings, "平衡伸长 x_eq（相对原长）", `${number(current.extension_cm)} cm`); reading(readings, "劲度系数 k", `${number(current.stiffness_N_m)} N/m`);
+      const equilibriumCenter = 187.5 + current.extension_cm * 12;
+      const drawing = schematic("胡克定律弹簧在恒拉力下绕加载平衡位置持续振动；红箭头表示水平合力。", 240); drawing.id = "academyMotionDrawing";
+      drawing.append(
+        svgEl("line", {x1: 45, x2: 45, y1: 35, y2: 145, class: "academy-support"}),
+        svgEl("line", {x1: 187.5, x2: 187.5, y1: 30, y2: 145, class: "academy-rest-line"}),
+        svgEl("text", {x: 187.5, y: 23, "text-anchor": "middle", class: "academy-tick"}, "原长位置"),
+        svgEl("line", {x1: equilibriumCenter, x2: equilibriumCenter, y1: 35, y2: 145, class: "academy-envelope"}),
+        svgEl("text", {x: equilibriumCenter, y: 165, "text-anchor": "middle", class: "academy-tick"}, "加载平衡"),
+        svgEl("path", {id: "academyHookeCoil", class: "academy-model-line"}),
+        svgEl("rect", {id: "academyMotionBody", x: 165, y: 64, width: 45, height: 52, rx: 3, class: "academy-mass"}),
+        svgEl("circle", {id: "academyHookeCenter", cx: 187.5, cy: 90, r: 3, fill: "#9a3444"}),
+        svgEl("path", {id: "academyHookeNetForce", class: "academy-ray"}),
+        svgEl("text", {x: 350, y: 29, class: "academy-tick"}, "红箭头：水平合力"),
+        svgEl("text", {x: 35, y: 197, class: "academy-axis-label"}, `F = ${number(p.force)} N · 平衡伸长 ${number(current.extension_cm)} cm`),
+        svgEl("text", {x: 35, y: 227, class: "academy-tick"}, "固定 m = 1 kg、振幅 2 cm · 红点为质心 · 压缩为负")
+      ); graphic.append(drawing, motionReadout());
+      drawPlot({label: "静态加载平衡时拉力与平衡伸长的关系，不随振动时刻变化", xLabel: "平衡伸长 x_eq / cm", yLabel: "外加拉力 F / N", maxX: 20, maxY: 4.5, x: point => point.extension_cm, y: point => point.force_N}, [0, 1, 2, 3, 4].map(force => models.hooke(p.stiffness, force)), "force_N");
     } else if (activeId === "spring_oscillation") {
       reading(readings, "振动周期 T", `${number(current.period_s)} s`); reading(readings, "周期平方 T²", `${number(current.period_squared_s2)} s²`);
       const drawing = schematic(`弹簧与物块同步往返，质量 ${number(p.mass)} kg，劲度系数 ${number(p.stiffness)} N/m，周期 ${number(current.period_s)} s；振幅仅为示意。`, 225); drawing.id = "academyMotionDrawing";
@@ -943,6 +965,14 @@
     const state = record(activeId), p = state.params, motion = state.motion;
     let caption = "";
     if (activeId === "simple_pendulum") positionPendulum(.139626 * Math.cos(motion.phase * 2 * Math.PI), p.length);
+    else if (activeId === "hookes_law") {
+      const body = get("academyMotionBody"), coil = get("academyHookeCoil"); if (!body || !coil) return;
+      const period = models.spring(p.mass, p.stiffness).period_s;
+      const point = models.hookeMotion(p.stiffness, p.force, motion.phase * period, p.mass, .02), left = 165 + point.instant_extension_cm * 12, center = left + 22.5;
+      body.setAttribute("x", left); coil.setAttribute("d", springPath(left)); get("academyHookeCenter")?.setAttribute("cx", center);
+      const force = get("academyHookeNetForce"); if (force) force.setAttribute("d", Math.abs(point.net_force_N) < 1e-7 ? "" : vectorPath(center, 48, Math.sign(point.net_force_N) * 42, 0));
+      caption = `模型时间 t=${motion.time.toFixed(2)} s · 瞬时伸长 x(t)=${point.instant_extension_cm.toFixed(2)} cm · T=${period.toFixed(3)} s · 平衡值 x_eq=${point.equilibrium_extension_cm.toFixed(2)} cm`;
+    }
     else if (activeId === "spring_oscillation") {
       const mass = get("academySpringMass"), coil = get("academySpringCoil"), arrow = get("academySpringVelocity"); if (!mass || !coil) return;
       const period = models.spring(p.mass, p.stiffness).period_s, point = models.springMotion(p.mass, p.stiffness, motion.phase * period), x = 280 + 36 * point.displacement_fraction;

@@ -45,6 +45,11 @@
     "sha256": "3cd41e25793068013c251f15a88be291a4b31d809ce7900e4b38d45c9037edf6"
   },
   {
+    "path": "HOOKE_ANIMATION_FIX_20261017.md",
+    "bytes": 5556,
+    "sha256": "c944c0454082a0ef832f68de10342db0e78edf0600449dea040e09ac7c3fa8be"
+  },
+  {
     "path": "INTERACTIVE_LESSONS_UPDATE_20261016.md",
     "bytes": 2867,
     "sha256": "61f89847c9b65a73e246b0de52aba38289dd454f58b089314a19837921e3210d"
@@ -286,8 +291,8 @@
   },
   {
     "path": "app/static/academy.js",
-    "bytes": 150859,
-    "sha256": "b5c8fc3dd94dd936a915af636bf0a5784c935e88dd4bfd8db4200c66195e3a0c"
+    "bytes": 154625,
+    "sha256": "2d48475af52df3ac8b73cbdf84629d96e7c3aad164bab6e3a3b4adac918b4ec2"
   },
   {
     "path": "app/static/account-sync.js",
@@ -362,7 +367,7 @@
   {
     "path": "app/static/index.html",
     "bytes": 42019,
-    "sha256": "a9c6f080c0b7ee35a8f20876672840000ccfa6f3a301c31e968d36fe4d0b6b78"
+    "sha256": "83bb80d71c2bce479e008e391b740e0cb43454d2197a63f40aa1a5882fd0c821"
   },
   {
     "path": "app/static/learning-math.js",
@@ -861,8 +866,8 @@
   },
   {
     "path": "tests/academy_models.cjs",
-    "bytes": 32484,
-    "sha256": "d215892fafe2528310e8a09f5aa5fefbd15299de00846d8c69929986caef4934"
+    "bytes": 36055,
+    "sha256": "3cb8bc597a2e5a2d48abc685e8d8a9fd84a062c89f17a09a15b19d8862557a58"
   },
   {
     "path": "tests/browser/README.md",

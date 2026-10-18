@@ -445,4 +445,58 @@ assert.throws(() => models.dampedMotion(10, .2, Number.MIN_VALUE, 1), RangeError
 assert.throws(() => models.soundResonance(Number.MAX_VALUE, Number.MIN_VALUE), RangeError);
 assert.throws(() => models.capacitorDischarge(Number.MIN_VALUE, Number.MIN_VALUE, 5, 0), RangeError);
 assert.throws(() => models.capacitorDischarge(Number.MAX_VALUE, 2, 5, 0), RangeError);
-console.log("Academy physical models: twenty-seven lessons, motion and energy invariants, damping derivatives, resonance correction, discharge units and invalid domains passed.");
+// A constant applied force shifts the Hooke equilibrium; the oscillation is a perturbation about F/k.
+const hookeMotionPeriod = models.spring(1, 50).period_s, hookeMotionOmega = 2 * Math.PI / hookeMotionPeriod;
+const hookeMotionPhases = [
+  [0, .06, 0, -3, -1],
+  [.25, .04, -.02 * hookeMotionOmega, -2, 0],
+  [.5, .02, 0, -1, 1],
+  [.75, .04, .02 * hookeMotionOmega, -2, 0],
+  [1, .06, 0, -3, -1]
+];
+for (const [phase, extension, velocity, restoring, net] of hookeMotionPhases) {
+  const p = models.hookeMotion(50, 2, phase * hookeMotionPeriod);
+  near(p.period_s, hookeMotionPeriod); near(p.mass_kg, 1); near(p.amplitude_m, .02);
+  near(p.equilibrium_extension_m, .04); near(p.equilibrium_extension_cm, 4);
+  near(p.instant_extension_m, extension); near(p.instant_extension_cm, extension * 100);
+  near(p.velocity_m_s, velocity); near(p.restoring_force_N, restoring); near(p.net_force_N, net);
+  near(p.net_force_N, p.external_force_N + p.restoring_force_N);
+  near(p.net_force_N, -p.stiffness_N_m * p.displacement_from_equilibrium_m);
+}
+const compressedSpring = models.hookeMotion(50, 0, hookeMotionPeriod / 2);
+near(compressedSpring.equilibrium_extension_m, 0); near(compressedSpring.instant_extension_m, -.02);
+near(compressedSpring.restoring_force_N, 1); near(compressedSpring.net_force_N, 1);
+for (const time of [0, .1, .5, 1, 10]) {
+  const staticSpring = models.hookeMotion(50, 2, time, 1, 0);
+  near(staticSpring.instant_extension_m, .04); near(staticSpring.displacement_from_equilibrium_m, 0);
+  near(staticSpring.velocity_m_s, 0); near(staticSpring.net_force_N, 0);
+}
+const hookeMotionStiffPeriod = models.hookeMotion(200, 2, 0).period_s;
+const hookeMotionHeavyPeriod = models.hookeMotion(50, 2, 0, 4).period_s;
+near(hookeMotionStiffPeriod / hookeMotionPeriod, .5); near(hookeMotionHeavyPeriod / hookeMotionPeriod, 2);
+const hookeSpeedBase = models.hookeMotion(50, 2, hookeMotionPeriod / 4).velocity_m_s;
+near(models.hookeMotion(200, 2, hookeMotionStiffPeriod / 4).velocity_m_s / hookeSpeedBase, 2);
+near(models.hookeMotion(50, 2, hookeMotionHeavyPeriod / 4, 4).velocity_m_s / hookeSpeedBase, .5);
+near(models.hookeMotion(50, 0, 0).period_s, models.hookeMotion(50, 4, 0).period_s);
+// The sum of perturbation kinetic energy and effective spring energy stays fixed.
+for (const stiffness of [20, 100]) for (const force of [0, 4]) for (const mass of [.5, 2]) for (const amplitude of [0, .02]) {
+  const period = models.spring(mass, stiffness).period_s;
+  for (let sample = 0; sample <= 32; sample++) {
+    const p = models.hookeMotion(stiffness, force, period * sample / 16, mass, amplitude); allFiniteOrState(p);
+    near(p.net_force_N, p.external_force_N + p.restoring_force_N);
+    near(p.net_force_N, -stiffness * p.displacement_from_equilibrium_m);
+    near(p.instant_extension_m - p.equilibrium_extension_m, p.displacement_from_equilibrium_m);
+    near(.5 * mass * p.velocity_m_s ** 2 + .5 * stiffness * p.displacement_from_equilibrium_m ** 2, .5 * stiffness * amplitude ** 2);
+  }
+}
+for (const bad of [0, -1, NaN, Infinity, -Infinity]) {
+  assert.throws(() => models.hookeMotion(bad, 2, 0), RangeError);
+  assert.throws(() => models.hookeMotion(50, 2, 0, bad), RangeError);
+}
+for (const bad of [-1, NaN, Infinity, -Infinity]) {
+  assert.throws(() => models.hookeMotion(50, bad, 0), RangeError);
+  assert.throws(() => models.hookeMotion(50, 2, bad), RangeError);
+  assert.throws(() => models.hookeMotion(50, 2, 0, 1, bad), RangeError);
+}
+assert.throws(() => models.hookeMotion(50, 2, 0, 1, Number.MAX_VALUE), RangeError);
+console.log("Academy physical models: twenty-seven lessons, Hooke equilibrium perturbations, motion and energy invariants, damping derivatives, resonance correction, discharge units and invalid domains passed.");

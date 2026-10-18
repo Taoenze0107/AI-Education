@@ -14,9 +14,14 @@ def test_direct_links_refresh_and_assets(tmp_path: Path):
         assert response.status_code == 200
         assert 'text/html' in response.headers['content-type']
         assert '/static/flow.js' in response.text
-    for asset in ['flow.js', 'pages.css', 'images/chalkboard-books.jpg', 'images/book-lightbulb.jpg', 'images/lab-desk.webp']:
+    for asset in ['flow.js', 'pages.css', 'academy.js', 'academy.css', 'academy-motion-electric.js', 'academy-motion-optics.js', 'academy-motion-matter.js', 'images/chalkboard-books.jpg', 'images/book-lightbulb.jpg', 'images/lab-desk.webp']:
         response = client.get('/static/' + asset)
         assert response.status_code == 200 and len(response.content) > 0
+    # Deferred process modules must register before the shared animation controller executes.
+    html = client.get('/data').text
+    controller = html.index('/static/academy.js?')
+    for module in ['electric', 'optics', 'matter']:
+        assert html.index(f'/static/academy-motion-{module}.js?') < controller
     # Page routing must not turn unknown API paths into successful HTML responses.
     assert client.get('/api/v1/unknown').status_code == 404
     assert client.get('/unknown-page').status_code == 404
