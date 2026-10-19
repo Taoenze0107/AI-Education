@@ -220,7 +220,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def create_attempt(session_id: str, payload: AttemptCreate, request: Request) -> AttemptResponse:
         try:
             classroom.own_session(request, session_id)
-            return service.process_attempt(session_id, payload)
+            return service.process_attempt(session_id, payload,
+                model_guard=lambda: tutor.legacy_model_guard(request, session_id))
         except NotFoundError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
 

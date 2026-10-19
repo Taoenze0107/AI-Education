@@ -6,8 +6,8 @@
   },
   {
     "path": ".env.example",
-    "bytes": 1170,
-    "sha256": "38873877b1244c2083dc66a79c80cae3e98a71f11db26221e121f4725fe59166"
+    "bytes": 895,
+    "sha256": "9b6dca4b3f81b201732cb3a99938a2d07334a46529703a5c07f09052754644a7"
   },
   {
     "path": ".gitignore",
@@ -53,6 +53,11 @@
     "path": "EXPERIMENT_CATALOG.md",
     "bytes": 726,
     "sha256": "3cd41e25793068013c251f15a88be291a4b31d809ce7900e4b38d45c9037edf6"
+  },
+  {
+    "path": "FOUR_CRITICAL_FIXES_20261019.md",
+    "bytes": 6433,
+    "sha256": "4dfbd533199086f4d7d35dfd99ca966ec733aedf7fb4ce6a55a294c91f6633d4"
   },
   {
     "path": "HOOKE_ANIMATION_FIX_20261017.md",
@@ -160,6 +165,11 @@
     "sha256": "f042c01e9a90b61a0d30b777386e69fdc08beb10ba41d9d48511dec069219628"
   },
   {
+    "path": "app/ai_budget.py",
+    "bytes": 3477,
+    "sha256": "d94a2b0984370a172572a7b2d67d812a34327640207cbf7f5e12694cd3b07785"
+  },
+  {
     "path": "app/anomaly.py",
     "bytes": 26210,
     "sha256": "5099853ac2c870e113e2f3d7820e2c10baeb5da383f197b03defa3a22ce5aa41"
@@ -171,8 +181,8 @@
   },
   {
     "path": "app/anomaly_import.py",
-    "bytes": 6863,
-    "sha256": "bf399ad03a1959c4f404435bc7babdc4ad24e445b298cb7cc911342de4833a12"
+    "bytes": 13606,
+    "sha256": "15cd17966dec7b05570eb1e6f8f246a43e2c93725dc8df2368827914d1ee895e"
   },
   {
     "path": "app/catalog_extension.py",
@@ -251,13 +261,13 @@
   },
   {
     "path": "app/llm.py",
-    "bytes": 10737,
-    "sha256": "a4a38bd94b03c8617918c3432daf095f2157edbfa02f037738473ee099e11979"
+    "bytes": 13374,
+    "sha256": "ad6de3221722b5795b8bb641e017246fd926d74b203b230832580c358ef79c6b"
   },
   {
     "path": "app/main.py",
-    "bytes": 11478,
-    "sha256": "c175806fa80e6bfe28c104c30eaa36f72706d892b7cbcb4e0a76d1d601329d8f"
+    "bytes": 11561,
+    "sha256": "f2327089de3f39f89c1f0f1a800b4ab29450466ae47f6c378c1e777d843d693d"
   },
   {
     "path": "app/material_parser.py",
@@ -286,8 +296,8 @@
   },
   {
     "path": "app/service.py",
-    "bytes": 3561,
-    "sha256": "6dfd6d2c1efec1bbbd758d719256c2d80b5a8294771876eec41b5e0a45c200f9"
+    "bytes": 4441,
+    "sha256": "1aa3b3f0167264e17d121a3f928328982acb44d8f0bbd7a3dcf51b0dba45706b"
   },
   {
     "path": "app/standards.py",
@@ -326,8 +336,8 @@
   },
   {
     "path": "app/static/app.js",
-    "bytes": 78066,
-    "sha256": "b2fb3225cd5fdf7d58b9d3b906aa8023ecfb7e42528492e96e0df21cc4c18c59"
+    "bytes": 79806,
+    "sha256": "55d2532c63754a8ba24c42f3dc92d7fe2d85d1b6379596088303856d6770430f"
   },
   {
     "path": "app/static/catalog.css",
@@ -391,8 +401,8 @@
   },
   {
     "path": "app/static/index.html",
-    "bytes": 41321,
-    "sha256": "37c7b11be01cac9a544d3c5530c4983a256d00b191d663ebae429992f0800c2a"
+    "bytes": 41389,
+    "sha256": "981fe8a5619a9415db6b6038b9d0501c53ab91caff3f5e1949f9a46c5572184b"
   },
   {
     "path": "app/static/learning-math.js",
@@ -806,8 +816,8 @@
   },
   {
     "path": "app/tutor.py",
-    "bytes": 24601,
-    "sha256": "5ce32c27be03f19793ec1613fe54c5612749dfddf40c40d866774bfaa089be2c"
+    "bytes": 25082,
+    "sha256": "0d7087958aa9fcf99c46a408b1290533450965935ae43d1b3a52360983a89b6a"
   },
   {
     "path": "eval_data/make_normal_cases.py",
@@ -955,6 +965,11 @@
     "sha256": "eb92d259bd4a5d70f2990ed770aa236370ba6c3e207e797279e7ee9af487cbfd"
   },
   {
+    "path": "tests/session_input_state.cjs",
+    "bytes": 15429,
+    "sha256": "3c7df7805f148fe7ec50fecac4776c1b98596363b5ae5fdf7ea7cf737815cebe"
+  },
+  {
     "path": "tests/test_anomaly.py",
     "bytes": 6373,
     "sha256": "dbd6fe340d018cd59a26fff85814975e8882097c6fdbb6d91e7297824d0442c7"
@@ -983,6 +998,16 @@
     "path": "tests/test_config.py",
     "bytes": 1261,
     "sha256": "44bffe8e9d09ab9c8d9ba1638773b618834a17ccf7ec46798ab534a37d12b0bf"
+  },
+  {
+    "path": "tests/test_diagnosis_budget.py",
+    "bytes": 10665,
+    "sha256": "43f50529f6936684cf4d42ddb34ac05260ca84f4d4197e4cfb03afb1eda42274"
+  },
+  {
+    "path": "tests/test_diagnosis_rules.py",
+    "bytes": 5789,
+    "sha256": "13f7b4f0f079f4cf5e21d904b7e865db300b6f9dcb282e456d86ce0d1f44721f"
   },
   {
     "path": "tests/test_doubled_catalog.py",
@@ -1045,6 +1070,11 @@
     "sha256": "d3c2f419898efb0ce1990329aabce43e415d8a62edc3b1b569b2e7cfdc893a21"
   },
   {
+    "path": "tests/test_upload_bounds.py",
+    "bytes": 12476,
+    "sha256": "de6af4ee2586f762bf42ee232308d5e953ca9e11a84a695db28599c149f4e8c5"
+  },
+  {
     "path": "tests/validation_state.cjs",
     "bytes": 6177,
     "sha256": "e1b19ca1e7de9e8be1e3e7baca3cbb9e8c9a389a0db48687dc74b4beb3a9c2c8"
@@ -1088,6 +1118,61 @@
     "path": "tools/vendor_katex.py",
     "bytes": 2154,
     "sha256": "ad073ff9249eaf249b58ef9b1a7aeb699c479dfbaab975a81903412d6c46603b"
+  },
+  {
+    "path": "verification/expansion_20261011.json",
+    "bytes": 35330,
+    "sha256": "0942811a64aafba48f47f947a05467ce331a6829bc21c121569ce1b1c9d86fba"
+  },
+  {
+    "path": "verification/millikan-textbook-basic.csv",
+    "bytes": 759,
+    "sha256": "ac398085358d81c3c1d46d74f54358251896b8144dd8ba029e6a66968bb15db9"
+  },
+  {
+    "path": "verification/package_manifest_20261011.json",
+    "bytes": 642,
+    "sha256": "60a3e664cdde5736eecaddd975001ca27ff84335c6d716ed656e79612abc71ee"
+  },
+  {
+    "path": "verification/pytest_20261011.xml",
+    "bytes": 32056,
+    "sha256": "1e394386e6d8bae102a57653d334d4716175c489b3a7697ca32aff3c10b6ee3a"
+  },
+  {
+    "path": "verification/pytest_20261012.xml",
+    "bytes": 47190,
+    "sha256": "501f8340796a71629aaed566f429dec6b1845459066b6f4a648d2b49d49a6ce6"
+  },
+  {
+    "path": "verification/pytest_classroom_20261013.xml",
+    "bytes": 48922,
+    "sha256": "9ba0cb7ecc09000fce0f9ce9da0aaff6e23b34b260287351cbbe380c6fcaa1d6"
+  },
+  {
+    "path": "verification/pytest_render_20261012.xml",
+    "bytes": 47191,
+    "sha256": "d9a2ec1372bcb0c40267cd23819b506722773469966cc7ef6afd81349a4afe4a"
+  },
+  {
+    "path": "verification/textbook_expansion_20261012.json",
+    "bytes": 31671,
+    "sha256": "cd4671a96573044e607e950277a7207aeaec81ced79875dfe975992fef0c23e5"
+  },
+  {
+    "path": "verification/教师班级版验证_20261013.md",
+    "bytes": 1432,
+    "sha256": "4a24fdca3f73f37b5aafd46d15b0a88e0bcd9e0cd78302934e1848ae5c3ebd5c"
+  },
+  {
+    "path": "verification/教材资料版验证_20261012.md",
+    "bytes": 1684,
+    "sha256": "9c1cd2ded98c5b137e51f5479bc665b45110bcb0cfc39ac538c1500a489b73ff"
+  },
+  {
+    "path": "verification/页面与公式修正_20261012.md",
+    "bytes": 1924,
+    "sha256": "77cebf8c7ba1c8c10967a23dcc7cfa688c86a2298c147e467b5e57d4c52ab160"
   },
   {
     "path": "交互课程升级说明_20261015.md",

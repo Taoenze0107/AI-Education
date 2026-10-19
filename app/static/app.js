@@ -735,15 +735,44 @@ function numberList(text, field, errors) {
     errors.push({ field, message: "只能填写有限数值，例如 1, 2, 3。" });
   return values;
 }
+function clearMaterialAnalysis() {
+  // A chart/result belongs to the readings that produced it, not the next loaded record.
+  $("materialCharts").replaceChildren();
+  $("materialCharts").hidden = true;
+  $("materialAnalysisStatus").textContent = "";
+  if (typeof lastCharts !== "undefined") lastCharts = null;
+  if ($("catalogAnalysisCache")) $("catalogAnalysisCache").value = "";
+}
+function resetImportedMaterial() {
+  importedMaterialFile = null;
+  importedCsvRuns.clear();
+  $("csvFile").value = "";
+  $("csvRunSelect").replaceChildren();
+  $("csvRunFields").hidden = true;
+  $("csvImportStatus").textContent = "";
+  clearMaterialAnalysis();
+}
+function hydrateQuickMeasurements(payload) {
+  const raw = payload.raw_measurements || {};
+  const isOhms = $("experimentId").value === "ohms_law";
+  // These controls show original V/mA readings. Conversion to A belongs to calculation.
+  $("quickVoltage").value = isOhms && Array.isArray(raw.voltage_V) ? raw.voltage_V.join(", ") : "";
+  $("quickCurrent").value = isOhms && Array.isArray(raw.current_mA) ? raw.current_mA.map(value => value ?? "").join(", ") : "";
+  $("quickResistance").value = isOhms ? payload.metadata?.expected_resistance_ohm ?? "" : "";
+}
 function writeMeasurements(voltage, current, resistance = null, source = "") {
+  clearMaterialAnalysis();
   $("measurementRows").replaceChildren();
   addKeyValue("measurementRows", "voltage_V", voltage);
   addKeyValue("measurementRows", "current_mA", current);
   if (resistance != null) setKeyValue("metadataRows", "expected_resistance_ohm", resistance);
+  else [...$("metadataRows").children]
+    .filter(row => fieldValue(row, "key")?.value.trim() === "expected_resistance_ohm")
+    .forEach(row => row.remove());
   $("quickVoltage").value = voltage.join(", ");
   $("quickCurrent").value = current.map((value) => value ?? "").join(", ");
-  if (resistance != null) $("quickResistance").value = resistance;
-  if (source) $("csvImportStatus").textContent = source;
+  $("quickResistance").value = resistance ?? "";
+  $("csvImportStatus").textContent = source;
 }
 function fillQuickMeasurements() {
   const errors = [];
@@ -756,6 +785,8 @@ function fillQuickMeasurements() {
   if (voltage.length !== current.length)
     errors.push({ field: "quickCurrent", message: "电压与电流的数据个数必须相同。" });
   if (errors.length) invalid(errors);
+  // A manually edited table must never retain an older upload as its analysis source.
+  resetImportedMaterial();
   writeMeasurements(voltage, current, resistance, `已写入 ${voltage.length} 组电压、电流数据。`);
 }
 function parseCsv(text) {
@@ -868,6 +899,10 @@ function sourceVisibility() {
 }
 function fillPayload(payload) {
   const p = clone(payload);
+  // The payload is authoritative when restoring history, loading a sample or clearing evidence.
+  // Original upload bytes are not stored with an attempt, so require a fresh import for file analysis.
+  resetImportedMaterial();
+  hydrateQuickMeasurements(p);
   $("includeAnomaly").checked = p.anomaly != null;
   const a = p.anomaly || {};
   $("anomalyStatus").value = a.status || "uncertain";

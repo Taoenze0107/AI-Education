@@ -6,6 +6,7 @@ import json
 import math
 import threading
 import time
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from typing import Annotated, Literal
 from uuid import uuid4
@@ -18,6 +19,7 @@ from app.experiment_catalog import ReadingRequest, analyze_readings
 from app.knowledge import format_knowledge_context
 from app.math_engine import evaluate_formula, relative_error_percent
 from app.models import StrictModel
+from app.ai_budget import AIBudgetDenied, finish_model_call, reserve_model_call
 
 Text = Annotated[str, Field(max_length=1500)]
 Readings = Annotated[list[float | None], Field(max_length=500)]
@@ -275,23 +277,37 @@ class TutorService:
                 for r in reversed(rows)]
 
     def reserve(self, owner, payload, model_call):
+        if model_call:
+            try:
+                return reserve_model_call(self.db, self.settings, owner=owner,
+                    thread_id=payload.thread_id, experiment_id=payload.context.experiment_id,
+                    session_id=payload.context.session_id, message=payload.message)
+            except AIBudgetDenied as exc:
+                raise HTTPException(429, str(exc), headers={"Retry-After": "3"}) from None
         turn_id, stamp = str(uuid4()), datetime.now(timezone.utc).isoformat()
-        with self.lock, self.db.connect() as con:
-            if model_call:
-                # Persist reservations before contacting the model, including failed calls.
-                # The free Render service runs one process; no API call holds a DB transaction.
-                day = stamp[:10]
-                total = con.execute("SELECT COUNT(*) AS n FROM lab_tutor_turns WHERE model_call=1 AND created_at>=?", (day,)).fetchone()["n"]
-                own = con.execute("SELECT COUNT(*) AS n FROM lab_tutor_turns WHERE model_call=1 AND owner_id=? AND created_at>=?", (owner, day)).fetchone()["n"]
-                if total >= self.settings.tutor_global_daily_limit or own >= self.settings.tutor_daily_limit:
-                    raise HTTPException(429, "今天的 AI 提问额度已用完；实时数据检查和实验资料仍可使用。")
-                pending = con.execute("SELECT created_at,status FROM lab_tutor_turns WHERE owner_id=? AND model_call=1 ORDER BY created_at DESC LIMIT 1", (owner,)).fetchone()
-                if pending and time.time()-datetime.fromisoformat(pending["created_at"]).timestamp() < (45 if pending["status"] == "pending" else 3):
-                    raise HTTPException(429, "上一条问题正在处理，或刚刚完成，请稍后继续。", headers={"Retry-After": "3"})
+        with self.db.connect() as con:
             con.execute("INSERT INTO lab_tutor_turns VALUES (?,?,?,?,?,?,NULL,?,?,?)",
                 (turn_id, owner, payload.thread_id, payload.context.experiment_id,
                  payload.context.session_id, payload.message, "pending", int(model_call), stamp))
         return turn_id
+
+    @contextmanager
+    def legacy_model_guard(self, req, session_id):
+        """Legacy diagnoses consume exactly the same quota and pending lease."""
+        actor = req.state.lab_actor
+        if not actor.get("user_id"):
+            raise AIBudgetDenied("AI 诊断需要先登录班级账号；当前已使用规则检查，原始数据和实验资料仍可使用。")
+        session = self.classroom.repository.get_session(session_id)
+        turn_id = reserve_model_call(self.db, self.settings,
+            owner=actor["owner_id"], thread_id="legacy-diagnosis",
+            experiment_id=session.experiment_id, session_id=session_id,
+            message="")
+        failed = True
+        try:
+            yield
+            failed = False
+        finally:
+            finish_model_call(self.db, turn_id, actor["owner_id"], failed=failed)
 
     def ask(self, payload, req):
         topic = self.validate_context(payload.context, req)
@@ -304,68 +320,72 @@ class TutorService:
                                         payload.context.experiment_id, top_k=3)
         prior = self.history(owner, payload.thread_id, payload.context.experiment_id)[-5:]
         turn_id = self.reserve(owner, payload, bool(self.client))
-        mode, notice = "reference", "AI 尚未启用；以下来自课程资料与数据检查，不是模型回答。"
-        answer = TutorAnswer(answer="可先结合课程资料核实这个问题。" + ("\n" + "\n".join(matches[0].principles[:2]) if matches else "请补充实验名称、原始读数和当前卡住的步骤。"),
-            next_question=checks["next_question"],
-            suggestions=[v["detail"] for v in checks["items"][:3]],
-            knowledge_ids=[m.document_id for m in matches[:1]])
-        if self.client:
-            context = payload.context.model_dump(mode="json")
-            context.pop("session_id")  # Internal identifiers and account details are not sent.
-            # Full readings stay in the independent calculation. Large columns are
-            # explicitly sampled for model context instead of silently truncated.
-            samples = {}
-            for key, values in list(context["columns"].items()):
-                if len(values) <= 60:
-                    continue
-                present = [(i, v) for i, v in enumerate(values) if v is not None]
-                indices = set(range(12)) | set(range(len(values)-12, len(values)))
-                if present:
-                    indices.update((min(present, key=lambda p:p[1])[0], max(present, key=lambda p:p[1])[0]))
-                samples[key] = dict(total_count=len(values), missing_count=len(values)-len(present),
-                    sampled=True, points=[dict(index=i+1, value=values[i]) for i in sorted(indices)])
-                del context["columns"][key]
-            context["sampled_columns"] = samples
-            latest = None
-            if payload.context.session_id:
-                with self.db.connect() as con:
-                    row = con.execute("SELECT response_json FROM attempts WHERE session_id=? ORDER BY attempt_number DESC LIMIT 1", (payload.context.session_id,)).fetchone()
-                if row:
-                    diagnosis = json.loads(row["response_json"])
-                    latest = {k: diagnosis.get(k) for k in ("status", "diagnosis", "intervention")}
-            practice = self.catalog.cases.get(payload.context.practice_id)
-            materials = dict(current_step=context, server_checks=checks,
-                experiment=(dict(title=topic.title, relation=topic.relation, conditions=topic.conditions,
-                                 steps=topic.steps, checks=topic.checks) if topic else None),
-                practice_questions=[q.prompt for q in practice[1].questions] if practice else [],
-                recent_diagnosis=latest, retrieved_knowledge=format_knowledge_context(matches),
-                explain_more=payload.explain_more, question=payload.message)
-            messages = [{"role": "system", "content": PROMPT}]
-            for turn in prior:
-                messages.extend([{"role": "user", "content": turn["message"]},
-                    {"role": "assistant", "content": json.dumps(turn["response"]["reply"], ensure_ascii=False)}])
-            messages.append({"role": "user", "content": json.dumps(materials, ensure_ascii=False)})
-            try:
-                options = {"reasoning": {"effort": "low"}} if self.settings.openai_model.startswith("gpt-5") else {}
-                response = self.client.responses.parse(model=self.settings.openai_model,
-                    input=messages, text_format=TutorAnswer, max_output_tokens=3000, store=False, **options)
-                if response.output_parsed is None:
-                    raise ValueError("No structured reply")
-                answer = TutorAnswer.model_validate(response.output_parsed)
-                allowed = {m.document_id for m in matches}
-                answer.knowledge_ids = [i for i in answer.knowledge_ids if i in allowed]
-                mode, notice = "openai", "AI 已结合当前实验回答。建议仍需用原始记录和实验条件验证。"
-            except Exception:
-                mode, notice = "reference", "AI 暂时没有连接成功；以下为课程资料与数据检查。你可以稍后重试。"
-        citations = [dict(document_id=m.document_id, title=m.title,
-                          sources=[s.model_dump(mode="json") for s in m.sources])
-                     for m in matches if m.document_id in answer.knowledge_ids]
-        result = dict(turn_id=turn_id, reply=answer.model_dump(mode="json"),
-                      mode=mode, notice=notice, citations=citations)
-        with self.db.connect() as con:
-            con.execute("UPDATE lab_tutor_turns SET response_json=?,status='done' WHERE turn_id=? AND owner_id=?",
-                        (json.dumps(result, ensure_ascii=False), turn_id, owner))
-        return result
+        result = None
+        try:
+            mode, notice = "reference", "AI 尚未启用；以下来自课程资料与数据检查，不是模型回答。"
+            answer = TutorAnswer(answer="可先结合课程资料核实这个问题。" + ("\n" + "\n".join(matches[0].principles[:2]) if matches else "请补充实验名称、原始读数和当前卡住的步骤。"),
+                next_question=checks["next_question"],
+                suggestions=[v["detail"] for v in checks["items"][:3]],
+                knowledge_ids=[m.document_id for m in matches[:1]])
+            if self.client:
+                context = payload.context.model_dump(mode="json")
+                context.pop("session_id")  # Internal identifiers and account details are not sent.
+                # Full readings stay in the independent calculation. Large columns are
+                # explicitly sampled for model context instead of silently truncated.
+                samples = {}
+                for key, values in list(context["columns"].items()):
+                    if len(values) <= 60:
+                        continue
+                    present = [(i, v) for i, v in enumerate(values) if v is not None]
+                    indices = set(range(12)) | set(range(len(values)-12, len(values)))
+                    if present:
+                        indices.update((min(present, key=lambda p:p[1])[0], max(present, key=lambda p:p[1])[0]))
+                    samples[key] = dict(total_count=len(values), missing_count=len(values)-len(present),
+                        sampled=True, points=[dict(index=i+1, value=values[i]) for i in sorted(indices)])
+                    del context["columns"][key]
+                context["sampled_columns"] = samples
+                latest = None
+                if payload.context.session_id:
+                    with self.db.connect() as con:
+                        row = con.execute("SELECT response_json FROM attempts WHERE session_id=? ORDER BY attempt_number DESC LIMIT 1", (payload.context.session_id,)).fetchone()
+                    if row:
+                        diagnosis = json.loads(row["response_json"])
+                        latest = {k: diagnosis.get(k) for k in ("status", "diagnosis", "intervention")}
+                practice = self.catalog.cases.get(payload.context.practice_id)
+                materials = dict(current_step=context, server_checks=checks,
+                    experiment=(dict(title=topic.title, relation=topic.relation, conditions=topic.conditions,
+                                     steps=topic.steps, checks=topic.checks) if topic else None),
+                    practice_questions=[q.prompt for q in practice[1].questions] if practice else [],
+                    recent_diagnosis=latest, retrieved_knowledge=format_knowledge_context(matches),
+                    explain_more=payload.explain_more, question=payload.message)
+                messages = [{"role": "system", "content": PROMPT}]
+                for turn in prior:
+                    messages.extend([{"role": "user", "content": turn["message"]},
+                        {"role": "assistant", "content": json.dumps(turn["response"]["reply"], ensure_ascii=False)}])
+                messages.append({"role": "user", "content": json.dumps(materials, ensure_ascii=False)})
+                try:
+                    options = {"reasoning": {"effort": "low"}} if self.settings.openai_model.startswith("gpt-5") else {}
+                    response = self.client.responses.parse(model=self.settings.openai_model,
+                        input=messages, text_format=TutorAnswer, max_output_tokens=3000, store=False, **options)
+                    if response.output_parsed is None:
+                        raise ValueError("No structured reply")
+                    answer = TutorAnswer.model_validate(response.output_parsed)
+                    allowed = {m.document_id for m in matches}
+                    answer.knowledge_ids = [i for i in answer.knowledge_ids if i in allowed]
+                    mode, notice = "openai", "AI 已结合当前实验回答。建议仍需用原始记录和实验条件验证。"
+                except Exception:
+                    mode, notice = "reference", "AI 暂时没有连接成功；以下为课程资料与数据检查。你可以稍后重试。"
+            citations = [dict(document_id=m.document_id, title=m.title,
+                              sources=[s.model_dump(mode="json") for s in m.sources])
+                         for m in matches if m.document_id in answer.knowledge_ids]
+            result = dict(turn_id=turn_id, reply=answer.model_dump(mode="json"),
+                          mode=mode, notice=notice, citations=citations)
+            with self.db.connect() as con:
+                con.execute("UPDATE lab_tutor_turns SET response_json=? WHERE turn_id=? AND owner_id=?",
+                            (json.dumps(result, ensure_ascii=False), turn_id, owner))
+            return result
+        finally:
+            finish_model_call(self.db, turn_id, owner, failed=result is None)
 
 
 def create_tutor_router(service):

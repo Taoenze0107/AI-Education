@@ -14,6 +14,7 @@ from app.models import (
     IssueType,
     KnowledgeMatch,
     TeachingPlan,
+    Severity,
 )
 
 
@@ -45,7 +46,7 @@ class LLMClient:
             client_kwargs: dict[str, object] = {
                 "api_key": settings.openai_api_key,
                 "timeout": settings.llm_timeout_seconds,
-                "max_retries": 2,
+                "max_retries": 0,
             }
             if settings.openai_base_url:
                 client_kwargs["base_url"] = settings.openai_base_url
@@ -92,21 +93,71 @@ class LLMClient:
                     },
                 ],
                 text_format=Diagnosis,
+                max_output_tokens=3000,
+                store=False,
             )
             parsed = response.output_parsed
             if parsed is None:
                 raise RuntimeError("模型没有返回可解析的结构化诊断")
-            return DiagnosisResult(
+            return enforce_rule_constraints(DiagnosisResult(
                 diagnosis=parsed,
                 mode="openai",
                 message=f"已使用 {self.settings.openai_model} 完成结构化诊断。",
-            )
+            ), attempt, assessment, knowledge_matches)
         except Exception as exc:  # API/network failures must not break the lesson flow.
             return DiagnosisResult(
                 diagnosis=_fallback_diagnosis(attempt, assessment, knowledge_matches),
                 mode="rules_fallback",
                 message=f"模型调用失败，已安全回退到规则引擎：{type(exc).__name__}",
             )
+
+    def rules_result(self, attempt, assessment, knowledge_matches, *, message,
+                     mode="rules_fallback") -> DiagnosisResult:
+        """No-network diagnosis when model permission or budget is unavailable."""
+        return enforce_rule_constraints(DiagnosisResult(
+            diagnosis=_fallback_diagnosis(attempt, assessment, knowledge_matches),
+            mode=mode, message=message,
+        ), attempt, assessment, knowledge_matches)
+
+
+def _hard_rule_issues(assessment: EvidenceAssessment) -> set[IssueType]:
+    # Probabilistic anomaly predictions alone are not a deterministic constraint.
+    issues = set()
+    for finding in assessment.findings:
+        if finding.severity != Severity.ERROR:
+            continue
+        if finding.code == "MATH_RESULT_MISMATCH":
+            issues.add(IssueType.CALCULATION_ERROR)
+        elif finding.code.startswith("CONSISTENCY_CHECK_FAILED_"):
+            issues.add(IssueType.DATA_ERROR)
+    return issues
+
+
+def enforce_rule_constraints(result: DiagnosisResult, attempt: AttemptCreate,
+                             assessment: EvidenceAssessment,
+                             knowledge_matches: list[KnowledgeMatch]) -> DiagnosisResult:
+    """The server, rather than an untrusted model classification, decides completion."""
+    required = _hard_rule_issues(assessment)
+    if not required:
+        return result
+    covered = ({IssueType.CALCULATION_ERROR, IssueType.DATA_ERROR}
+               if result.diagnosis.issue_type == IssueType.MIXED
+               else {result.diagnosis.issue_type})
+    if required <= covered:
+        return result
+    deterministic = _fallback_diagnosis(attempt, assessment, knowledge_matches)
+    covered_fallback = ({IssueType.CALCULATION_ERROR, IssueType.DATA_ERROR}
+                        if deterministic.issue_type == IssueType.MIXED
+                        else {deterministic.issue_type})
+    if not required <= covered_fallback:
+        # Preserve every confirmed error when another signal dominates the vote.
+        deterministic = _fallback_diagnosis(attempt, assessment, knowledge_matches,
+                                           required_issue=IssueType.MIXED)
+    return DiagnosisResult(
+        diagnosis=deterministic,
+        mode="rules_fallback",
+        message="模型判断与已确认的规则检查不一致，已保留规则诊断；请先核对列出的计算或实验条件问题。",
+    )
 
 
 def _dominant_issue(assessment: EvidenceAssessment) -> IssueType:
@@ -129,8 +180,9 @@ def _fallback_diagnosis(
     attempt: AttemptCreate,
     assessment: EvidenceAssessment,
     knowledge_matches: list[KnowledgeMatch],
+    required_issue: IssueType | None = None,
 ) -> Diagnosis:
-    issue = _dominant_issue(assessment)
+    issue = required_issue or _dominant_issue(assessment)
     bases = [finding.message for finding in assessment.findings]
     if not bases:
         bases = ["异常模型、一致性检查与数学判断中至少两路未发现明显矛盾。"]

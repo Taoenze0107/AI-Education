@@ -4,7 +4,8 @@ from uuid import uuid4
 
 from app.evidence import EvidenceAnalyzer, build_follow_up_questions
 from app.knowledge import KnowledgeBase, build_retrieval_query
-from app.llm import LLMClient
+from app.llm import LLMClient, enforce_rule_constraints
+from app.ai_budget import AIBudgetDenied
 from app.models import (
     AttemptCreate,
     AttemptResponse,
@@ -32,7 +33,7 @@ class DiagnosticService:
         self.teaching_policy = teaching_policy
 
     def process_attempt(
-        self, session_id: str, payload: AttemptCreate
+        self, session_id: str, payload: AttemptCreate, *, model_guard=None
     ) -> AttemptResponse:
         session = self.repository.get_session(session_id)
         previous_attempts = self.repository.count_attempts(session_id)
@@ -69,12 +70,25 @@ class DiagnosticService:
             )
             return self.repository.save_attempt(payload, response)
 
-        llm_result = self.llm_client.diagnose(
-            experiment_id=session.experiment_id,
-            attempt=payload,
-            assessment=assessment,
-            knowledge_matches=matches,
-        )
+        if self.llm_client.settings.enable_llm and self.llm_client.configured:
+            try:
+                if model_guard is None:
+                    raise AIBudgetDenied("此诊断未取得 AI 调用授权，已使用规则诊断。")
+                with model_guard():
+                    llm_result = self.llm_client.diagnose(
+                        experiment_id=session.experiment_id, attempt=payload,
+                        assessment=assessment, knowledge_matches=matches,
+                    )
+            except AIBudgetDenied as exc:
+                llm_result = self.llm_client.rules_result(
+                    payload, assessment, matches, message=str(exc),
+                )
+        else:
+            llm_result = self.llm_client.diagnose(
+                experiment_id=session.experiment_id, attempt=payload,
+                assessment=assessment, knowledge_matches=matches,
+            )
+        llm_result = enforce_rule_constraints(llm_result, payload, assessment, matches)
         diagnosis = llm_result.diagnosis
 
         if diagnosis.issue_type == IssueType.NO_ERROR:
