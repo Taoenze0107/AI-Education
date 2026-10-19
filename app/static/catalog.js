@@ -86,8 +86,8 @@ function catalogFilterRows(){
       const resources=node("div",null,"catalog-level-links");
       if(interactiveIds.has(topic.experiment_id)){
         name.append(node("small","预测 · 调参 · 实测 · 自检","catalog-interactive-tag"));
-        const enter=catalogButton("进入交互课 →",()=>window.startAcademyExperiment?.(topic.experiment_id),"catalog-interactive-link");
-        enter.setAttribute("aria-label",`进入${topic.title}交互课`);resources.append(enter);
+        const enter=catalogButton("先体验模型 →",()=>window.startAcademyExperiment?.(topic.experiment_id),"catalog-interactive-link");
+        enter.setAttribute("aria-label",`先体验${topic.title}模型`);resources.append(enter);
       }
       for(const [key,label] of Object.entries(CATALOG_LEVELS)){
         const cases=topic.cases.filter(c=>c.level===key);if(!cases.length||(level&&level!==key))continue;
@@ -136,7 +136,7 @@ function buildTextbookIndex(data){
   box.append(label,select,selection,node('p','已对照 5 本教材的 169 个目录条目；同一实验合并收录，综合名称提供注明范围的专题组合。','hint'));
   const d=detail('查看教材对照与来源',node('div'));d.lastChild.id='textbookRows';box.append(d);
   select.addEventListener('change',()=>{updateCatalogBookSelection();catalogArea='';goPage(`/experiments${select.value?'?book='+encodeURIComponent(select.value):''}`,{focus:false});});
-  document.querySelector('[data-view="catalog"] .page-heading').after(box);
+  $("catalogAdvancedFilters").append(box);
 }
 function updateCatalogBookSelection(){
   const select=$('catalogBook'),selection=$('catalogBookSelection'),title=select.selectedOptions[0]?.textContent||'全部资料';
@@ -145,6 +145,7 @@ function updateCatalogBookSelection(){
 function renderTextbookRows(){
   const requested=new URLSearchParams(location.search).get('book');catalogBook=catalogBooks.some(b=>b.book_id===requested)?requested:'';$('catalogBook').value=catalogBook;
   updateCatalogBookSelection();
+  if(catalogBook)$("catalogAdvancedFilters").open=true;
   const holder=$('textbookRows');holder.replaceChildren();
   for(const b of catalogBooks.filter(b=>!catalogBook||b.book_id===catalogBook)){
     const section=node('section',null,'textbook-book');section.append(node('h3',`${b.title} · ${b.authors}`),node('p',`${b.publisher} · ${b.items.length} 个目录条目`,'hint'));

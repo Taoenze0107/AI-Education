@@ -25,6 +25,11 @@
     "sha256": "74a59fd611f24cb7c8ed382b561c73c2c7a3132269c4c21c5ae8437a1789f12f"
   },
   {
+    "path": "ALL_INTERACTIVE_ANIMATIONS_20261018.md",
+    "bytes": 11354,
+    "sha256": "606ac0407216df63a5bd23871c0898695c0d56f9fcdb255f5cd9b98f233470b5"
+  },
+  {
     "path": "BACKGROUND_ASSETS.md",
     "bytes": 1676,
     "sha256": "bf79e5103fe3bec0ba8e1237345e65c353cb230ef405906195cafe0f7aafb906"
@@ -38,6 +43,11 @@
     "path": "Dockerfile",
     "bytes": 493,
     "sha256": "41a2d45938087793e8d4bac25ea4c9aee8d41a4774acd61fd22d529bac0ce33f"
+  },
+  {
+    "path": "EXPERIENCE_REFINEMENT_20261019.md",
+    "bytes": 5873,
+    "sha256": "4337f08e9addb88297afc3b240e12dc76268824616681cb6a884a92d112de0bb"
   },
   {
     "path": "EXPERIMENT_CATALOG.md",
@@ -196,8 +206,8 @@
   },
   {
     "path": "app/data/experiment_catalog.json",
-    "bytes": 1892886,
-    "sha256": "17f5e3d3e3793faa9ce16e0af70d1d80094acda3be0639b50f24380c314d04e8"
+    "bytes": 1893243,
+    "sha256": "a578700b76e556f1bd604b76ad8ff73e7d9fb1623976e644c9c3656231cd1d7a"
   },
   {
     "path": "app/data/knowledge_base.json",
@@ -285,14 +295,29 @@
     "sha256": "f7ae9df5d288dc4fee3deed036d095dc3344f7c8a541e6f5199acc7821a576b2"
   },
   {
+    "path": "app/static/academy-motion-electric.js",
+    "bytes": 17772,
+    "sha256": "99b35a64e579e0b49d2ba869a7aa11f862119e0dff7b6b5b66405d70672077ab"
+  },
+  {
+    "path": "app/static/academy-motion-matter.js",
+    "bytes": 21366,
+    "sha256": "7aabb210359ccf1b9bc89c269e62509f46cf8b28ddedcb0c3bffb049f7a1d0c8"
+  },
+  {
+    "path": "app/static/academy-motion-optics.js",
+    "bytes": 17653,
+    "sha256": "096771139f8f94bbebb653f4f76a7b58e5519abb8f723d1b3e3b5e2dc889d369"
+  },
+  {
     "path": "app/static/academy.css",
-    "bytes": 14959,
-    "sha256": "6981051aa7853b8f499a83c61de561898e3f9651d21c6546b18e2a3a815bab3c"
+    "bytes": 17296,
+    "sha256": "2a873189b27c0c5968944a10d4ea5e6a801abf00c663007767254fcbd979f51f"
   },
   {
     "path": "app/static/academy.js",
-    "bytes": 154625,
-    "sha256": "2d48475af52df3ac8b73cbdf84629d96e7c3aad164bab6e3a3b4adac918b4ec2"
+    "bytes": 162247,
+    "sha256": "fa30867d0e0c5c30f68b55796ecd74e999dd77297351ee1ad412f143b02cf805"
   },
   {
     "path": "app/static/account-sync.js",
@@ -301,8 +326,8 @@
   },
   {
     "path": "app/static/app.js",
-    "bytes": 75726,
-    "sha256": "596552f76397c5b2188e725d239b192fa9361a60ad3640c0f4ee49324854e6af"
+    "bytes": 78066,
+    "sha256": "b2fb3225cd5fdf7d58b9d3b906aa8023ecfb7e42528492e96e0df21cc4c18c59"
   },
   {
     "path": "app/static/catalog.css",
@@ -311,8 +336,8 @@
   },
   {
     "path": "app/static/catalog.js",
-    "bytes": 36335,
-    "sha256": "03a8ca4007ca484269f864782067d68c9a8bfcdb93a3c72f52029fde84c1bcc6"
+    "bytes": 36358,
+    "sha256": "1256375270c33064f0c144928a08427f6c7d5fa83db6d5291de75198aec51cf0"
   },
   {
     "path": "app/static/classroom-links.js",
@@ -326,18 +351,18 @@
   },
   {
     "path": "app/static/classroom.html",
-    "bytes": 2801,
-    "sha256": "4e100424a520d2941a997aaf74fd6115ec65e48b7291baba53adffadcb038cf1"
+    "bytes": 2872,
+    "sha256": "7931598cd6c284ef35fbd138ba2655bd8f96567712576a26af8122139322230e"
   },
   {
     "path": "app/static/classroom.js",
-    "bytes": 34213,
-    "sha256": "e3c766ea5832de7e452178c4e0036cd7e1785e053c46b1c1e14850bc056e2059"
+    "bytes": 34077,
+    "sha256": "2c1b49ef57629e626c4ed1c6ec61b4f3126b3b706ed31310b937684898f2bba2"
   },
   {
     "path": "app/static/flow.js",
-    "bytes": 9354,
-    "sha256": "20525475e566d50c66c01dcee7c1eb76d148e4f5f3843c07d0100c4ddcafe233"
+    "bytes": 9526,
+    "sha256": "051191d63ad7f853b98ce719eaf93a37b5903a15ef574492b8b46aa395f2eaeb"
   },
   {
     "path": "app/static/formula-catalog.js",
@@ -346,8 +371,8 @@
   },
   {
     "path": "app/static/guide.js",
-    "bytes": 36086,
-    "sha256": "f13daecb92467131ed398dde0afbfb02de4587415bc1cc160972efcb09f31380"
+    "bytes": 36267,
+    "sha256": "b6f02d3f623a70988874e181029eb77f58cdf9883ffd7a9b1211b778b08d42ae"
   },
   {
     "path": "app/static/images/book-lightbulb.jpg",
@@ -366,8 +391,8 @@
   },
   {
     "path": "app/static/index.html",
-    "bytes": 42019,
-    "sha256": "83bb80d71c2bce479e008e391b740e0cb43454d2197a63f40aa1a5882fd0c821"
+    "bytes": 41321,
+    "sha256": "37c7b11be01cac9a544d3c5530c4983a256d00b191d663ebae429992f0800c2a"
   },
   {
     "path": "app/static/learning-math.js",
@@ -381,8 +406,8 @@
   },
   {
     "path": "app/static/learning-review.js",
-    "bytes": 6159,
-    "sha256": "8dea2a21a546c4c5bb0d43c03197fdd18ce769f9858950d07aa92d0c96893c49"
+    "bytes": 6164,
+    "sha256": "387e7f025960429ca0d85d90ffda2a8fac7a53beedae68a6db7b9a7e7e56d67c"
   },
   {
     "path": "app/static/learning.css",
@@ -410,14 +435,19 @@
     "sha256": "35e943d26af88c8e6d700284584a105c62b437c2ab8758d8b3a37d7998adfd02"
   },
   {
+    "path": "app/static/task-first.css",
+    "bytes": 8344,
+    "sha256": "5dbbc88c30a89193d051ddb444f3ca8d1550bdc956c87270008b598cad46d049"
+  },
+  {
     "path": "app/static/tutor.css",
-    "bytes": 8634,
-    "sha256": "2a177e4d80e69e9e1e1c708a52c39a413566751607e4bc4b6a34f8cebe82f63d"
+    "bytes": 10260,
+    "sha256": "0c8b3f07f137b67c4b8e34b0be8d0b59686bf12296f9fc9f7faebf478f1b42d7"
   },
   {
     "path": "app/static/tutor.js",
-    "bytes": 30210,
-    "sha256": "1b3a34ec6b60272339f9f41cd89064a4bfe65eaa3b1df3d093fec9c86b76b212"
+    "bytes": 34834,
+    "sha256": "416552ce32f5431346be4576ad1762dc8101dda4740e91821ee67e5e08367042"
   },
   {
     "path": "app/static/university-classroom.css",
@@ -776,8 +806,8 @@
   },
   {
     "path": "app/tutor.py",
-    "bytes": 22688,
-    "sha256": "edd20184d5280a841d9efd3ca4a2f2d98720b431203d48fc21fee63d6c9c741d"
+    "bytes": 24601,
+    "sha256": "5ce32c27be03f19793ec1613fe54c5612749dfddf40c40d866774bfaa089be2c"
   },
   {
     "path": "eval_data/make_normal_cases.py",
@@ -865,9 +895,29 @@
     "sha256": "ab44923b9f41d276cbe02e91b9c5545d7d74b04af70ec48df63266aeb122d71f"
   },
   {
+    "path": "tests/academy_all_animations.cjs",
+    "bytes": 6644,
+    "sha256": "e21ba12e4bc8c4b5d6f2545e921f25609ecb5d3b209c7f24ec21410c41834b4b"
+  },
+  {
     "path": "tests/academy_models.cjs",
     "bytes": 36055,
     "sha256": "3cb8bc597a2e5a2d48abc685e8d8a9fd84a062c89f17a09a15b19d8862557a58"
+  },
+  {
+    "path": "tests/academy_motion_electric.cjs",
+    "bytes": 12467,
+    "sha256": "501946fbec3844773ac990e45c15cdf07ef5887ccb5369abd288ab2b2d38551e"
+  },
+  {
+    "path": "tests/academy_motion_matter.cjs",
+    "bytes": 10112,
+    "sha256": "394e0ddb33505647e4578528cebec4aebd166a1ba356ea0ee4a274222dffde7d"
+  },
+  {
+    "path": "tests/academy_motion_optics.cjs",
+    "bytes": 9704,
+    "sha256": "d10f8e31c25e287d680a07bbb5d13a7459a4734fae083c57108bcf25003853e9"
   },
   {
     "path": "tests/browser/README.md",
@@ -896,8 +946,8 @@
   },
   {
     "path": "tests/browser/tutor.cjs",
-    "bytes": 5627,
-    "sha256": "ea7437eeef02b390b4190bb60f969331544148991c786de5b9aaa1b438dafcc5"
+    "bytes": 6624,
+    "sha256": "1d79f05f0a83dbc56bade7b74c253974f17200758d6a3bc8e77242cdc5368092"
   },
   {
     "path": "tests/browser/workflow.cjs",
@@ -976,8 +1026,8 @@
   },
   {
     "path": "tests/test_page_navigation.py",
-    "bytes": 1364,
-    "sha256": "74bf0ffe02f8dd1a0ef8c50ad94fd31f8d630052685f62979a10b00b98e51d66"
+    "bytes": 1791,
+    "sha256": "def40b1356c1afdab683c18f9584fa404cb66a02f4a352682a2781fb5418a261"
   },
   {
     "path": "tests/test_stats.py",
@@ -991,8 +1041,13 @@
   },
   {
     "path": "tests/test_tutor.py",
-    "bytes": 14066,
-    "sha256": "5f3f53de5af4a5d56aaf11aff6a748127d3845315a6ef6e1abd7cfb1331c4a6f"
+    "bytes": 17641,
+    "sha256": "d3c2f419898efb0ce1990329aabce43e415d8a62edc3b1b569b2e7cfdc893a21"
+  },
+  {
+    "path": "tests/validation_state.cjs",
+    "bytes": 6177,
+    "sha256": "e1b19ca1e7de9e8be1e3e7baca3cbb9e8c9a389a0db48687dc74b4beb3a9c2c8"
   },
   {
     "path": "tools/build_textbook_catalog.py",

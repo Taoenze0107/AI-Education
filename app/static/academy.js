@@ -205,6 +205,9 @@
   Object.assign(supported, {"uniform_acceleration":{"title":"匀加速运动：车越来越快了吗？","subtitle":"让小车运动，联系位置、速度与时间。","goal":"区分初速度与加速度，理解速度图的斜率和截距。","formula":"v = v₀ + at","tex":"v=v_0+at","condition":"一维正向匀加速；x₀ = 0；初速度和加速度非负。演示使用真实时间，轨道固定显示 0–8 m，每段 3 s。","initial":{"velocity":0.2,"acceleration":0.5},"symbols":[["v₀","t = 0 时的初速度，单位 m/s；对应速度图截距。"],["a","恒加速度，单位 m/s²；对应 v–t 图斜率。"],["t","从初始状态起计时，单位 s。"],["x","位置 x = v₀t + ½at²，单位 m；位置不与时间等比例增长。"]]},"newtons_second_law":{"title":"牛顿第二定律：推力和质量怎样改变运动？","subtitle":"控制同一系统的质量与合外力，观察小车加速。","goal":"区分合外力与驱动力，比较质量对加速度的影响。","formula":"F合 = ma","tex":"F_{\\mathrm{net}}=ma","condition":"固定质量的质点系统，正向恒合外力；从静止开始，忽略摩擦或已计入合力。轨道固定显示 0–10 m，每段 2 s。","initial":{"mass":0.5,"force":0.6},"symbols":[["F合","全部外力的合力，单位 N；不是未扣摩擦的单独拉力。"],["m","系统总惯性质量，单位 kg；一段演示内保持不变。"],["a","加速度 a = F合/m，单位 m/s²。"],["t","从静止起计时；v = at，x = ½at²。"]]},"free_fall":{"title":"自由落体：相同时间走相同距离吗？","subtitle":"释放小球，观察下落速度与距离。","goal":"联系静止释放、时间平方和重力加速度，核查高度与计时零点。","formula":"h = ½gt²","tex":"h=\\frac{1}{2}gt^2","condition":"只受重力、从静止释放；g 在下落范围恒定，向下为正，忽略空气阻力。小球到达设定高度后停止；空间按当前高度缩放，不模拟碰撞。","initial":{"gravity":9.8,"height":2},"symbols":[["h","从释放点起的下落距离，单位 m；与 t² 成正比。"],["g","重力加速度，单位 m/s²；演示范围 5–15。"],["t","从释放瞬间计时，单位 s；实测 ms 先除以 1000 再平方。"],["v","向下速度 v = gt，单位 m/s；初速度为 0。"]]}});
   // Six additional lessons reuse the private progress and measured-data boundary.
   Object.assign(supported, {"work_energy":{"title":"功与动能：做功去了哪里？","subtitle":"让小车通过一段距离，比较净功与动能增量。","goal":"保留初始动能，区分净功与单个力做功。","formula":"W合 = ΔK = ½m(v²−v₀²)","tex":"W_{\\mathrm{net}}=\\Delta K=\\frac{m}{2}(v^2-v_0^2)","condition":"一维平动、恒正向合外力；质量恒定；忽略转动能。净功包含全部外力的功。固定显示0–4m轨道，达到目标距离后停止。","initial":{"mass":0.5,"force":0.5,"distance":2,"velocity":0.5},"symbols":[["W合","全部外力做功的总和，单位J；恒净力同向时W合=F合x。"],["ΔK","动能增量K末−K初，不能把末动能直接当增量。"],["v₀","初速度，单位m/s；不为零时必须保留½mv₀²。"],["m","平动系统总质量，单位kg；公式暂不包含转动动能。"]]},"centripetal_force":{"title":"向心力：速度方向一直在变","subtitle":"观察圆周运动的切向速度与指向圆心的合力。","goal":"理解径向合力与角速度平方的关系。","formula":"F径 = mrω²","tex":"F_r=mr\\omega^2","condition":"水平匀速圆周运动；r固定为0.10m，与资料页处理相同；质量恒定。图中箭头只表示方向，蓝色为速度，红色为径向合力。","initial":{"mass":0.1,"radius":0.1,"omega":4},"symbols":[["F径","向心力是径向合力的作用，不是已有外力之外额外添加的力。"],["ω","角速度用rad/s，不能把每分钟转数直接代入。"],["r","旋转轴到物体质心距离，本课固定为0.10m。"],["v","速率v=rω保持不变，但速度方向沿切线持续改变。"]]},"kinetic_friction":{"title":"滑动摩擦：撤去拉力后会怎样？","subtitle":"给物块初速度，观察它减速直到停止。","goal":"联系动摩擦、支持力与减速，并返回匀速牵引实测。","formula":"fₖ = μₖN，N = mg","tex":"f_k=\\mu_kN,\\quad N=mg","condition":"水平面、仅重力与支持力作用于竖直方向；先给初速度再撤去拉力，仅滑动摩擦使其减速；μₖ近似恒定，g=9.81m/s²。停止后不继续套滑动模型。","initial":{"mass":0.5,"coefficient":0.2,"velocity":3},"symbols":[["μₖ","动摩擦系数，无量纲；这是滑动阶段的经验近似。"],["N","无其他竖直力时N=mg；斜拉时不能直接照用。"],["fₖ","方向与相对滑动方向相反；停止后本演示置零，不模拟静摩擦。"],["实测","资料页采用匀速水平牵引，此时拉力与摩擦平衡。不要把本演示的减速度当作拉力读数。"]]},"damped_oscillation":{"title":"阻尼振动：振幅怎样慢慢变小？","subtitle":"看弹簧继续往返，同时观察包络收缩。","goal":"区分瞬时位移、包络振幅和阻尼周期。","formula":"A(t) = A₀e^(−βt)","tex":"A(t)=A_0e^{-\\beta t}","condition":"线性欠阻尼模型；x=A₀e^(−βt)cos(2πt/Td)，Td为阻尼周期。相位取0，x(0)=A₀且v(0)=−βA₀，非静止释放。演示10s后停止；图线为正包络，并非瞬时位移。","initial":{"amplitude":25,"beta":0.15,"period":1.2},"symbols":[["A(t)","正包络，单位mm；图线用于比较振幅衰减，不等于每一时刻的位移。"],["β","振幅衰减系数，单位s⁻¹；不要与能量衰减率混用。"],["Td","阻尼后的周期，单位s；不是无阻尼自然周期。"],["x","位移在正负包络之间往返；相位为0时初速度并非零。"]]},"sound_resonance":{"title":"共鸣管：为什么相邻共鸣差半波长？","subtitle":"切换第一次和第二次共鸣，观察空气沿管轴振动。","goal":"区分位移波节、波腹与相邻共鸣长度差。","formula":"c = 2f(L₂−L₁)","tex":"c=2f(L_2-L_1)","condition":"一端封闭一端开放；同一管径、同一频率的相邻共鸣。有效长度L+e，固定端修正e=0.70cm。粒子纵向位移放大；每2s展示一个示意周期，不表示实际频率、不发声。","initial":{"speed":343,"frequency":500,"correction":0.7,"mode":1},"symbols":[["L₁、L₂","物理管长；L₁+e=λ/4，L₂+e=3λ/4。同频相减可抵消共同端修正。"],["f","声源实际频率，单位Hz；粒子示意不按数百Hz闪动。"],["c","声速，单位m/s；同一空气条件下并不随频率任意改变。"],["位移","封闭端是空气位移波节，有效开端是位移波腹；压强的节点关系相反。"]]},"capacitor_discharge":{"title":"电容放电：电压为何越降越慢？","subtitle":"观察剩余电压、储能和指数曲线同步下降。","goal":"理解时间常数、剩余比例与毫秒换算。","formula":"U(t) = U₀e^(−t/RC)","tex":"U(t)=U_0e^{-t/(RC)}","condition":"理想一阶RC，初始电压U₀、终值为0；忽略探头负载。电阻kΩ×电容μF得到τ(ms)。教学进度每1s走过1τ，5τ后停图，电压仍约0.67%初值；非实时放电。","initial":{"resistance":10,"capacitance":1,"voltage":5},"symbols":[["τ","时间常数RC；本课以ms显示，公式使用同一时间单位。"],["U₀","t=0时电容电压；经过1τ剩U₀/e，充电63.2%不能混用。"],["E","电容储能E=½CU²；能量随电压平方下降。"],["对数图","正电压取ln(U/1V)对时间作图，斜率为−1/τ；零点和噪声底需先核查。"]]}});
+  // The lesson modules supply pure process samples and SVG painters; this core owns one clock.
+  const processSpecs = Object.fromEntries(Object.entries(window.LabAcademyAnimationModules || {}).filter(([id]) => supported[id]));
+  for (const [id, spec] of Object.entries(processSpecs)) supported[id].condition += ` ${spec.conditionNote}`;
   window.LabAcademyCourseList = Object.entries(supported).map(([experiment_id, config]) => ({experiment_id, title: config.title, summary: config.goal}));
   window.dispatchEvent(new Event("lab-academy-ready"));
   const get = id => document.getElementById(id);
@@ -215,13 +218,13 @@
   const records = new Map();
   let activeId = "", activePage = "", root = null, frame = null, generation = 0, observer, focusedLesson = "", lastAnimationTime = null;
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const record = id => { if (!records.has(id)) records.set(id, {params: {...supported[id].initial}, course: null, loading: false, loadedAt: 0, lastLoadAttempt: 0, error: "", explored: false, transferOpen: false, results: {}, answers: {}, selected: null, symbol: 0, pause: false, motion: {phase: 0, time: 0, speed: 1, completed: false, lastReadout: 0}, busy: new Set()}); return records.get(id); };
+  const record = id => { if (!records.has(id)) records.set(id, {params: {...supported[id].initial}, course: null, loading: false, loadedAt: 0, lastLoadAttempt: 0, error: "", explored: false, interacted: false, lessonOpen: false, visualDetailed: false, transferOpen: false, results: {}, answers: {}, selected: null, symbol: 0, pause: false, motion: {phase: 0, time: 0, speed: 1, completed: false, lastReadout: 0}, busy: new Set()}); return records.get(id); };
   function stopAnimation() { if (frame != null) cancelAnimationFrame(frame); frame = null; lastAnimationTime = null; }
   const transitIds = new Set(["uniform_acceleration", "newtons_second_law", "free_fall"]);
   const additionalMotionIds = new Set(["work_energy", "centripetal_force", "kinetic_friction", "damped_oscillation", "sound_resonance", "capacitor_discharge"]);
-  const finiteMotionIds = new Set([...transitIds, "work_energy", "kinetic_friction", "damped_oscillation", "capacitor_discharge"]);
-  const animatedIds = new Set(["simple_pendulum", "hookes_law", "spring_oscillation", ...transitIds, ...additionalMotionIds]);
-  const teachingTimeIds = new Set(["sound_resonance", "capacitor_discharge"]);
+  const finiteMotionIds = new Set([...transitIds, "work_energy", "kinetic_friction", "damped_oscillation", "capacitor_discharge", ...Object.keys(processSpecs).filter(id => !processSpecs[id].loop)]);
+  const animatedIds = new Set(["simple_pendulum", "hookes_law", "spring_oscillation", ...transitIds, ...additionalMotionIds, ...Object.keys(processSpecs)]);
+  const teachingTimeIds = new Set(["sound_resonance", "capacitor_discharge", ...Object.keys(processSpecs).filter(id => processSpecs[id].timeMode === "teaching")]);
   function routeExperiment() { const match = location.pathname.match(/^\/experiments\/([a-z0-9_]+)$/); return match ? match[1] : get("experimentId")?.value; }
   function ask(question, selection) { window.dispatchEvent(new CustomEvent("lab-academy-question", {detail: {question, experiment_id: activeId, selection}})); }
   async function api(path, data) {
@@ -247,20 +250,33 @@
   }
   function answeredPrediction(state) { return Object.values(state.results).some(result => result.attempt_count > 0) && !!state.results.prediction; }
   function stageNav(state) {
-    const nav = make("ol", null, "academy-stages"); nav.setAttribute("aria-label", "交互课路径");
-    [["先预测", !!state.results.prediction?.correct], ["探索模型", state.explored], ["记录实测", false], ["再验证", !!state.results.transfer?.correct]].forEach(([label, done], index) => {
+    const nav = make("ol", null, "academy-stages"); nav.setAttribute("aria-label", "交互课学习状态");
+    const raw = typeof rawLearningValues === "function" ? rawLearningValues() : {};
+    const hasReadings = Object.values(raw).some(value => Array.isArray(value) && value.length > 0);
+    const stages = [
+      ["先预测", state.results.prediction?.correct ? "本题答对" : answeredPrediction(state) ? "已尝试" : "待回答", !!state.results.prediction?.correct],
+      ["探索模型", state.interacted ? "已调参" : state.explored ? "已打开" : "待探索", false],
+      ["记录实测", hasReadings ? "含已填写读数" : "待记录", false],
+      ["再验证", state.results.transfer?.correct ? "本题答对" : state.results.transfer?.attempt_count ? "已尝试" : "待回答", !!state.results.transfer?.correct]
+    ];
+    stages.forEach(([label, status, done], index) => {
       const li = make("li", null, done ? "complete" : "");
       const current = !state.explored ? 0 : state.transferOpen ? 3 : 1;
       if (index === current) li.setAttribute("aria-current", "step");
-      li.append(make("span", done ? "✓" : String(index + 1).padStart(2, "0")), make("b", label)); nav.append(li);
+      const copy = make("div"); copy.append(make("b", label), make("small", status));
+      li.append(make("span", done ? "✓" : String(index + 1).padStart(2, "0")), copy); nav.append(li);
     }); return nav;
+  }
+  function refreshStageStatus() {
+    if (!activeId || !root) return;
+    const previous = root.querySelector(".academy-stages");
+    if (previous) previous.replaceWith(stageNav(record(activeId)));
   }
   function entry(state) {
     const config = supported[activeId], section = make("section", null, "academy-entry");
-    const copy = make("div"); copy.append(make("p", "INTERACTIVE LESSON / 交互课", "eyebrow"), make("h2", config.title), make("p", config.subtitle));
-    const action = make("a", "进入交互课 →", "academy-entry-link"); action.href = "/data";
-    if (activePage === "topic") action.addEventListener("click", event => { event.preventDefault(); window.startAcademyExperiment?.(activeId); });
-    else action.dataset.route = "";
+    const copy = make("div"); copy.append(make("h2", config.title), make("p", "还没有读数？先预测、观察动态模型，再开始实测。"));
+    const action = make("a", "先体验模型 →", "academy-entry-link"); action.href = "/data?lesson=prediction";
+    action.addEventListener("click", event => { event.preventDefault(); window.startAcademyExperiment?.(activeId, "prediction"); });
     section.append(copy, action); return section;
   }
   function renderContent() {
@@ -269,14 +285,15 @@
     root.replaceChildren();
     if (["experiment", "topic"].includes(activePage)) { root.append(entry(state)); return; }
     const contents = make("div", null, "academy-course-content");
-    if (activePage !== "data") {
-      const details = make("details", null, "academy-revisit"); details.append(make("summary", "回看交互课：预测、模型与理解检查"), contents); root.append(details);
-      details.addEventListener("toggle", () => { if (details.open) beginAnimation(); else stopAnimation(); });
-    } else root.append(contents);
+    const details = make("details", null, "academy-revisit");
+    const explicitLesson = activePage === "data" && ["prediction", "transfer"].includes(new URLSearchParams(location.search).get("lesson"));
+    details.open = state.lessonOpen || explicitLesson;
+    details.append(make("summary", activePage === "data" ? "预测与模型探索 · 教学仿真" : "回看交互课：预测、模型与理解检查"), contents); root.append(details);
+    details.addEventListener("toggle", () => { state.lessonOpen = details.open; if (details.open) beginAnimation(); else stopAnimation(); });
     const header = make("header", null, "academy-heading");
-    header.append(make("p", "INTERACTIVE LESSON / 交互课", "eyebrow"), make("h2", config.title), make("p", config.goal));
+    header.append(make("h2", config.title), make("p", config.goal));
     contents.append(header, stageNav(state));
-    const notice = make("p", "教学仿真 · 与下方实测分开。模型参数不会写入你的原始数据。", "academy-disclaimer"); contents.append(notice);
+    const notice = make("p", "教学仿真 · 模型参数不会写入你的原始数据。调参和打开模型分别记录，不代表已经掌握。", "academy-disclaimer"); contents.append(notice);
     const questionArea = make("section", null, "academy-prediction"); questionArea.setAttribute("aria-label", "先预测"); questionArea.append(make("p", "01 / 先预测", "academy-kicker"));
     if (state.loading) questionArea.append(make("p", "正在载入本次学习进度…", "academy-muted"));
     else if (state.error) {
@@ -299,6 +316,10 @@
       const continueArea = make("div", null, "academy-continue");
       const note = make("div"); note.append(make("strong", "03 / 回到自己的实验"), make("p", "用真实读数检验模型，记录实际条件与偏差。仿真不能代替测量。"));
       continueArea.append(note, button("去记录实测 ↓", () => {
+        if (!get("studentId")?.value.trim()) {
+          window.goPage?.("/experiment"); const identity = get("studentId");
+          identity?.focus(); identity?.scrollIntoView({block: "center", behavior: "auto"}); return;
+        }
         const target = document.querySelector('[data-view="data"] > .card');
         if (target) { window.flowReveal?.(target); target.scrollIntoView({behavior: reducedMotion.matches ? "auto" : "smooth", block: "start"}); const first = [...target.querySelectorAll("input,button,select,textarea")].find(el => !el.disabled && el.offsetParent !== null); first?.focus({preventScroll: true}); }
       }, "academy-text-button")); contents.append(continueArea);
@@ -371,8 +392,8 @@
     control.id = `academy-${activeId}-${key}`; control.type = "range"; control.min = min; control.max = max; control.step = step; control.value = value;
     const l = make("label", label); l.htmlFor = control.id; output.htmlFor = control.id; output.value = format(value); caption.append(l, output);
     control.setAttribute("aria-valuetext", format(value));
-    control.addEventListener("input", () => { const n = Number(control.value); output.value = format(n); control.setAttribute("aria-valuetext", format(n)); onInput(n);
-      if (transitIds.has(activeId) || additionalMotionIds.has(activeId) || activeId === "hookes_law") { const motion = record(activeId).motion; motion.time = 0; motion.phase = 0; motion.completed = false; }
+    control.addEventListener("input", () => { record(activeId).interacted = true; refreshStageStatus(); const n = Number(control.value); output.value = format(n); control.setAttribute("aria-valuetext", format(n)); onInput(n);
+      if (transitIds.has(activeId) || additionalMotionIds.has(activeId) || activeId === "hookes_law" || processSpecs[activeId]) { const motion = record(activeId).motion; motion.time = 0; motion.phase = 0; motion.completed = false; }
       updateVisual(); syncMotionControls(); if (frame == null) beginAnimation(); });
     holder.append(caption, control); parent.append(holder);
   }
@@ -384,14 +405,14 @@
       buildMotionControls(parent, state);
     } else if (activeId === "ohms_law") {
       range(parent, "resistance", "电阻 R", 100, 1000, 50, p.resistance, n => `${number(n)} Ω`, n => p.resistance = n);
-      range(parent, "voltage", "电压 U", .5, 5, .1, p.voltage, n => `${number(n)} V`, n => p.voltage = n);
+      range(parent, "voltage", "电压 U", 0, 5, .1, p.voltage, n => `${number(n)} V`, n => p.voltage = n);
       parent.append(make("p", "保持 R 不变，改变 U；再换一个 R，比较 U–I 图的斜率。", "academy-muted"));
     } else if (activeId === "rc_time_constant") {
       range(parent, "resistance", "电阻 R", 1, 50, 1, p.resistance, n => `${number(n)} kΩ`, n => p.resistance = n);
       range(parent, "capacitance", "电容 C", .5, 10, .5, p.capacitance, n => `${number(n)} μF`, n => p.capacitance = n);
-      range(parent, "time", "观察时刻 t", 0, 5, .1, p.time, n => `${number(n)} τ`, n => p.time = n);
+      range(parent, "time", "选点观察时刻 t", 0, 5, .1, p.time, n => `${number(n)} τ`, n => p.time = n);
       const modes = make("div", null, "academy-modes"); modes.setAttribute("role", "group"); modes.setAttribute("aria-label", "RC 模式");
-      [false, true].forEach(discharge => { const b = button(discharge ? "放电" : "充电", () => { p.discharge = discharge; [...modes.children].forEach(el => el.setAttribute("aria-pressed", String(el === b))); updateVisual(); }, "academy-mode"); b.setAttribute("aria-pressed", String(discharge === p.discharge)); modes.append(b); }); parent.append(modes);
+      [false, true].forEach(discharge => { const b = button(discharge ? "放电" : "充电", () => { state.interacted = true; refreshStageStatus(); p.discharge = discharge; state.motion.time = 0; state.motion.phase = 0; state.motion.completed = false; [...modes.children].forEach(el => el.setAttribute("aria-pressed", String(el === b))); updateVisual(); syncMotionControls(); if (frame == null) beginAnimation(); }, "academy-mode"); b.setAttribute("aria-pressed", String(discharge === p.discharge)); modes.append(b); }); parent.append(modes);
     } else if (activeId === "hookes_law") {
       range(parent, "stiffness", "劲度系数 k", 20, 100, 5, p.stiffness, n => `${number(n)} N/m`, n => p.stiffness = n);
       range(parent, "force", "外加拉力 F", 0, 4, .1, p.force, n => `${number(n)} N`, n => p.force = n);
@@ -436,6 +457,11 @@
       parent.append(make("p", "温度范围始终保持金属比水热。改变质量或比热容，观察平衡温度靠近哪一侧。", "academy-muted"));
     } else if (additionalMotionIds.has(activeId)) buildAdditionalMotionControls(parent, state);
     else buildExtendedControls(parent, state);
+    if (processSpecs[activeId]) {
+      parent.querySelectorAll(":scope > p.academy-muted").forEach(el => el.remove());
+      parent.append(make("p", processSpecs[activeId].note, "academy-muted"));
+      buildMotionControls(parent, state);
+    }
   }
   function buildExtendedControls(parent, state) {
     const p = state.params;
@@ -448,12 +474,12 @@
       total_internal_reflection: [["index", "入射介质折射率 n高", 1.3, 1.8, .05, ""], ["angle", "入射角 θ", 0, 80, "any", "°"]],
       thermal_expansion: [["alpha", "线膨胀系数 α / 10⁻⁶ K⁻¹", 2, 30, 1, ""], ["length", "金属杆原长 L₀", 20, 100, 5, "cm"], ["temperature", "温升 ΔT", 0, 80, 5, "℃"]],
       string_waves: [["length", "有效弦长 L", .4, 1.5, .05, "m"], ["tension", "弦张力 F", 1, 20, 1, "N"], ["density", "线密度 μ", .5, 5, .25, "g/m"]],
-      malus_law: [["angle", "检偏器夹角 θ", 0, 180, 5, "°"], ["intensity", "入射信号光强 I₀", .2, 1, .05, "相对单位"], ["background", "背景光强", 0, .2, .01, "相对单位"]]
+      malus_law: [["angle", "起始夹角 θ₀", 0, 180, 5, "°"], ["intensity", "入射信号光强 I₀", .2, 1, .05, "相对单位"], ["background", "背景光强", 0, .2, .01, "相对单位"]]
     };
     for (const [key, label, min, max, step, unit] of definitions[activeId] || []) range(parent, key, label, min, max, step, p[key], n => `${number(n)}${unit ? " " + unit : ""}`, n => p[key] = n);
     const notes = {archimedes: "体积为 0 时排开液体的质量和浮力均为 0；图中的排液体积不代表物体总容积。", resistivity: "固定材料和直径，看 R–L 直线；再把直径加倍，检查电阻是否变成四分之一。", joule_heating: "固定电流、电阻、质量与效率，观察温升随时间的关系。滑杆组合最高水温低于 38 ℃，不涉及沸腾。", transformer_ratio: "图线比较固定初级匝数下的次级电压；只模拟交流空载，不将线圈接入市电。", grating_diffraction: "图纵轴是定律要求的 sin θ；超过 1 表示该级次不存在，不会继续画出衍射光线。", total_internal_reflection: "折射要求的 sin θ 达到 1 是临界状态，超过 1 后仅绘制反射光；图中不表示反射光强。", thermal_expansion: "伸长示意放大 80 倍，读数使用真实模型数值；比较时固定材料与原长。", string_waves: "图中展示基模静态轮廓（振幅仅为示意），没有将振幅变化当作频率变化。", malus_law: "先把背景设为 0，再加入背景，比较 90° 的测得值；信号强度需扣除背景。"};
     parent.append(make("p", notes[activeId] || "", "academy-muted"));
-    if (activeId === "total_internal_reflection") parent.append(button("将入射角设为临界角", () => { p.angle = models.totalReflection(p.index, 1, 0).critical_deg; renderContent(); }, "academy-text-button"));
+    if (activeId === "total_internal_reflection") parent.append(button("将入射角设为临界角", () => { p.angle = models.totalReflection(p.index, 1, 0).critical_deg; state.motion.time = 0; state.motion.phase = 0; state.motion.completed = false; renderContent(); }, "academy-text-button"));
   }
   function buildAdditionalMotionControls(parent, state) {
     const p = state.params;
@@ -470,7 +496,7 @@
       const modes = make("div", null, "academy-modes"); modes.setAttribute("role", "group"); modes.setAttribute("aria-label", "共鸣模式");
       for (const mode of [1, 2]) {
         const b = button(mode === 1 ? "第一次共鸣" : "相邻第二次共鸣", () => {
-          p.mode = mode; state.motion.time = 0; state.motion.phase = 0; state.motion.completed = false;
+          state.interacted = true; refreshStageStatus(); p.mode = mode; state.motion.time = 0; state.motion.phase = 0; state.motion.completed = false;
           [...modes.children].forEach(el => el.setAttribute("aria-pressed", String(el === b))); updateVisual(); syncMotionControls(); if (frame == null) beginAnimation();
         }, "academy-mode"); b.setAttribute("aria-pressed", String(p.mode === mode)); modes.append(b);
       }
@@ -522,6 +548,10 @@
   function newSvg(label, height = 300) { const svg = svgEl("svg", {viewBox: `0 0 600 ${height}`, role: "img", "aria-label": label, class: "academy-chart"}); svg.append(svgEl("title", {}, label)); return svg; }
   function plot({label, xLabel, yLabel, maxX, maxY, points, line, threshold, selected, onSelect}) {
     const svg = newSvg(label), left = 68, right = 575, top = 25, bottom = 243;
+    svg.classList.add("academy-plot");
+    svg.dataset.xLabel = xLabel; svg.dataset.yLabel = yLabel;
+    svg.dataset.xRange = `0–${number(maxX)}`; svg.dataset.yRange = `0–${number(maxY)}`;
+    if (threshold) svg.dataset.threshold = threshold.label;
     svg.setAttribute("role", "group");
     const x = n => left + n / maxX * (right - left), y = n => bottom - n / maxY * (bottom - top);
     for (let i = 0; i <= 5; i++) {
@@ -574,7 +604,12 @@
     const readings = make("div", null, "academy-readings"); readings.id = "academyReadings";
     const graphic = make("div", null, "academy-graphic"); graphic.id = "academyGraphic";
     const selected = make("div", null, "academy-selected"); selected.id = "academySelected"; selected.setAttribute("aria-live", "polite");
-    parent.append(readings, graphic, selected, make("p", "可点击曲线上的圆点，或用 Tab 键选择，再向助教询问。", "academy-plot-help")); updateVisual();
+    const tools = make("div", null, "academy-graphic-tools");
+    const sizeToggle = button("查看清晰大图", () => {
+      state.visualDetailed = !state.visualDetailed; syncGraphicDetail();
+    }, "academy-button"); sizeToggle.id = "academyGraphicDetail"; sizeToggle.setAttribute("aria-controls", "academyGraphic");
+    tools.append(make("p", "概览看趋势；大图保留完整标注，可横向滑动查看。", "academy-plot-help"), sizeToggle);
+    parent.append(readings, tools, graphic, selected, make("p", "可用下方列表选择模拟点，也可点击图线圆点或用 Tab 键选择，再向助教询问。", "academy-plot-help")); updateVisual();
   }
   function reading(parent, label, value) { const item = make("div"); item.append(make("span", label), make("strong", value)); parent.append(item); }
   function pointLabel(eid, point) {
@@ -634,12 +669,43 @@
       chart = plot({label: `RC ${p.discharge ? "放电" : "充电"}教学曲线，标出一个时间常数的电压比例`, xLabel: "时间 t / ms", yLabel: "电容电压 Vc / V", maxX: 5 * current.tau_ms, maxY: 5.5, threshold: {x: threshold.time_ms, y: threshold.voltage_V, label: `τ · ${p.discharge ? "36.8%" : "63.2%"}`}, line: curve.map(point => ({x: point.time_ms, y: point.voltage_V})), points: points.map(point => ({x: point.time_ms, y: point.voltage_V, label: pointLabel(activeId, point)})), selected: points.findIndex(point => Math.abs(point.time_ms - state.selected.time_ms) < 1e-8), onSelect: index => choose(points[index], true)});
     }
     if (!chart) ({points, chart} = extendedVisual(state, current, graphic, readings, choose));
-    graphic.append(chart); paintMotion(true); holder.replaceChildren();
+    graphic.append(chart);
+    if (processSpecs[activeId]) mountProcessDrawing(state, graphic, readings, chart);
+    enhanceGraphics(graphic, chart); syncGraphicDetail();
+    paintMotion(true); holder.replaceChildren();
     const pointChoice = make("select"), pointChoiceLabel = make("label", "选择模拟点"); pointChoice.id = `academy-point-${activeId}`; pointChoiceLabel.htmlFor = pointChoice.id;
     points.forEach((point, index) => { const option = make("option", `${index + 1}. ${pointLabel(activeId, point)}`); option.value = index; option.selected = pointLabel(activeId, point) === pointLabel(activeId, state.selected); pointChoice.append(option); });
     pointChoice.addEventListener("change", () => { const index = Number(pointChoice.value); choose(points[index]); get(`academy-point-${activeId}`)?.focus({preventScroll: true}); });
     holder.append(pointChoiceLabel, pointChoice, make("span", "已选模拟点", "academy-kicker"), make("p", pointLabel(activeId, state.selected)));
     holder.append(button("解释这个点 ↗", () => { const point = {...state.selected}, label = pointLabel(activeId, point); ask(`这是教学仿真的点（不是我的实测数据）：${label}。适用条件：${supported[activeId].condition}。请解释它在图中的含义、单位与模型条件。`, {kind: "simulation_point", label, values: {...point, condition: supported[activeId].condition}}); }, "academy-text-button"));
+  }
+  function enhanceGraphics(graphic, chart) {
+    const axes = make("dl", null, "academy-axis-key");
+    for (const [label, value] of [["横轴", `${chart.dataset.xLabel} · ${chart.dataset.xRange}`], ["纵轴", `${chart.dataset.yLabel} · ${chart.dataset.yRange}`]]) {
+      const pair = make("div"); pair.append(make("dt", label), make("dd", value)); axes.append(pair);
+    }
+    if (chart.dataset.threshold) { const pair = make("div"); pair.append(make("dt", "参考线"), make("dd", chart.dataset.threshold)); axes.append(pair); }
+    chart.before(axes);
+    for (const svg of [...graphic.querySelectorAll(":scope > svg")]) {
+      const viewport = make("div", null, "academy-graphic-viewport");
+      viewport.tabIndex = 0; viewport.setAttribute("role", "region");
+      viewport.setAttribute("aria-label", `${svg.getAttribute("aria-label")}；大图模式可横向滚动`);
+      svg.before(viewport); viewport.append(svg);
+      if (svg !== chart) {
+        const legend = make("p", null, "academy-diagram-key");
+        const labels = [...new Set([...svg.querySelectorAll("text")].map(text => text.textContent.trim()).filter(text => text && !/[=0-9]/.test(text)))];
+        legend.textContent = labels.length ? `图示标记：${labels.join("；")}` : svg.getAttribute("aria-label");
+        viewport.after(legend);
+      }
+    }
+  }
+  function syncGraphicDetail() {
+    const graphic = get("academyGraphic"), control = get("academyGraphicDetail");
+    if (!graphic || !control || !activeId) return;
+    const detailed = record(activeId).visualDetailed;
+    graphic.classList.toggle("is-detailed", detailed);
+    control.textContent = detailed ? "返回图形概览" : "查看清晰大图";
+    control.setAttribute("aria-pressed", String(detailed));
   }
   // All diagrams use the same SI-derived readings as the plots; no readings are written to the experiment form.
   function schematic(label, height = 205) {
@@ -950,8 +1016,34 @@
   }
   function positionPendulum(theta, length) { const line = get("academyPendulumString"), bob = get("academyPendulumBob"); if (!line || !bob) return; const pixels = 55 + length / 1.5 * 80, x = 300 + pixels * Math.sin(theta), y = 14 + pixels * Math.cos(theta); line.setAttribute("x2", x); line.setAttribute("y2", y); bob.setAttribute("cx", x); bob.setAttribute("cy", y); }
   function motionReadout() { const el = make("p", "", "academy-motion-readout"); el.id = "academyMotionReadout"; el.setAttribute("aria-live", "off"); return el; }
+  function processContext(state, stage, readings = get("academyReadings"), chart = get("academyGraphic")?.querySelector('svg[role="group"]')) {
+    return {state, params: state.params, models, svgEl, schematic, newSvg, reading, number, stage, readings, chart};
+  }
+  function mountProcessDrawing(state, graphic, readings, chart) {
+    graphic.querySelectorAll(':scope > svg[role="img"], :scope > .academy-motion-readout').forEach(el => el.remove());
+    const drawing = processSpecs[activeId].mount(processContext(state, null, readings, chart));
+    drawing.id = "academyMotionDrawing";
+    drawing.dataset.animationId = activeId;
+    graphic.insertBefore(drawing, chart); graphic.insertBefore(motionReadout(), chart);
+    chart.append(svgEl("circle", {id: "academyMotionCursor", r: 6, class: "academy-motion-cursor", visibility: "hidden"}));
+  }
+  function paintProcessMotion(state) {
+    const spec = processSpecs[activeId], stage = get("academyMotionDrawing"); if (!stage) return "";
+    const progress = spec.loop ? (state.motion.time / spec.duration) % 1 : Math.min(1, state.motion.time / spec.duration);
+    const sample = spec.sample(state.params, progress, models);
+    spec.paint(processContext(state, stage), sample);
+    stage.dataset.progress = String(progress);
+    const cursor = get("academyMotionCursor"), value = sample.cursor;
+    if (cursor) {
+      const visible = value && [value.x, value.y, value.maxX, value.maxY].every(Number.isFinite) && value.maxX > 0 && value.maxY > 0 && value.x >= 0 && value.x <= value.maxX && value.y >= 0 && value.y <= value.maxY;
+      cursor.setAttribute("visibility", visible ? "visible" : "hidden");
+      if (visible) { cursor.setAttribute("cx", 68 + value.x / value.maxX * 507); cursor.setAttribute("cy", 243 - value.y / value.maxY * 218); }
+    }
+    return spec.readout(sample, state.params, number);
+  }
   function motionDuration(id, state) {
     const p = state.params;
+    if (processSpecs[id]) return processSpecs[id].duration;
     if (id === "free_fall") return Math.sqrt(2 * p.height / p.gravity);
     if (id === "uniform_acceleration") return 3;
     if (id === "work_energy") return 2 * p.distance / (models.workEnergy(p.mass, p.force, p.distance, p.velocity).velocity_m_s + p.velocity);
@@ -964,7 +1056,8 @@
     if (!animatedIds.has(activeId)) return;
     const state = record(activeId), p = state.params, motion = state.motion;
     let caption = "";
-    if (activeId === "simple_pendulum") positionPendulum(.139626 * Math.cos(motion.phase * 2 * Math.PI), p.length);
+    if (processSpecs[activeId]) caption = paintProcessMotion(state);
+    else if (activeId === "simple_pendulum") positionPendulum(.139626 * Math.cos(motion.phase * 2 * Math.PI), p.length);
     else if (activeId === "hookes_law") {
       const body = get("academyMotionBody"), coil = get("academyHookeCoil"); if (!body || !coil) return;
       const period = models.spring(p.mass, p.stiffness).period_s;
@@ -993,7 +1086,7 @@
     if (output && (forceReadout || timestamp - motion.lastReadout >= 100)) { output.textContent = caption; motion.lastReadout = timestamp; }
   }
   function animationAllowed(id, state) {
-    return activeId === id && records.get(id) === state && root?.isConnected && !root.hidden && !document.hidden && !reducedMotion.matches && state.explored && !state.pause && !state.motion.completed && (activePage === "data" || !!root.querySelector("details.academy-revisit")?.open) && !!get(id === "simple_pendulum" ? "academyPendulumBob" : id === "spring_oscillation" ? "academySpringMass" : "academyMotionBody");
+    return activeId === id && records.get(id) === state && root?.isConnected && !root.hidden && !document.hidden && !reducedMotion.matches && state.explored && !state.pause && !state.motion.completed && !!root.querySelector("details.academy-revisit")?.open && !!get(processSpecs[id] ? "academyMotionDrawing" : id === "simple_pendulum" ? "academyPendulumBob" : id === "spring_oscillation" ? "academySpringMass" : "academyMotionBody");
   }
   function beginAnimation() {
     stopAnimation(); if (!animatedIds.has(activeId)) return;
@@ -1005,7 +1098,7 @@
       if (finiteMotionIds.has(id)) {
         const duration = motionDuration(id, state);
         if (state.motion.time >= duration) { state.motion.time = duration; state.motion.completed = true; paintMotion(true, time); syncMotionControls(); lastAnimationTime = null; return; }
-      } else {
+      } else if (!processSpecs[id]) {
         const period = id === "simple_pendulum" ? models.pendulum(state.params.length).period_s : id === "centripetal_force" ? models.centripetal(state.params.mass, state.params.radius, state.params.omega).period_s : id === "sound_resonance" ? 2 : models.spring(state.params.mass, state.params.stiffness).period_s;
         state.motion.phase = (state.motion.phase + dt / period) % 1;
       }
@@ -1016,7 +1109,7 @@
   window.refreshAcademy = function () {
     const page = document.body.dataset.page || "home", id = routeExperiment();
     const oldGuide = get("learningGuide-data"), guideWrapper = get("academyMeasurementGuide");
-    if (guideWrapper && (page !== "data" || !supported[id])) { guideWrapper.before(oldGuide); guideWrapper.remove(); }
+    if (guideWrapper) { guideWrapper.before(oldGuide); guideWrapper.remove(); }
     if (!supportedPages.has(page) || !supported[id]) { stopAnimation(); if (root) root.hidden = true; activePage = page; activeId = ""; return; }
     const changed = activeId !== id || activePage !== page;
     activeId = id; activePage = page;
@@ -1030,15 +1123,12 @@
     const view = document.querySelector(`[data-view="${page}"]`); if (!view) return;
     const before = page === "data" ? view.querySelector(":scope > .card") : page === "topic" ? get("topicContent") : page === "experiment" ? view.querySelector(":scope > .card") : view.querySelector(":scope > .card, :scope > .page-actions");
     if (page === "data") {
-      view.querySelector(".page-heading").after(root);
-      let guide = get("academyMeasurementGuide");
-      if (!guide && oldGuide) {
-        guide = make("details", null, "academy-measurement-guide"); guide.id = "academyMeasurementGuide";
-        guide.append(make("summary", "测量前的操作提示"), oldGuide);
-      }
-      if (guide) root.after(guide);
-    } else if (root.parentElement !== view || (before && root.nextElementSibling !== before)) view.insertBefore(root, before);
+      view.querySelector(":scope > .card").after(root);
+      if (oldGuide) root.after(oldGuide);
+    } else if (page === "experiment") view.querySelector(":scope > .card").after(root);
+    else if (root.parentElement !== view || (before && root.nextElementSibling !== before)) view.insertBefore(root, before);
     if (changed || !root.children.length) renderContent();
+    refreshStageStatus();
     const data = record(id), stale = Date.now() - data.lastLoadAttempt > 30000;
     const due = Object.values(data.results).some(item => item.can_answer === false && item.due_at && Date.parse(item.due_at) <= Date.now());
     loadCourse(id, !!data.course && stale && (changed || due));
@@ -1046,7 +1136,10 @@
   };
   function focusLesson() {
     const lesson = new URLSearchParams(location.search).get("lesson");
-    if (activePage !== "data" || !["prediction", "transfer"].includes(lesson) || !record(activeId).course) return;
+    if (activePage !== "data" || !["prediction", "transfer"].includes(lesson)) { focusedLesson = ""; return; }
+    const disclosure = root?.querySelector("details.academy-revisit");
+    if (disclosure && !disclosure.open) disclosure.open = true;
+    if (!record(activeId).course) return;
     const key = `${generation}:${activeId}:${location.pathname + location.search}`; if (focusedLesson === key) return;
     const state = record(activeId);
     if (lesson === "transfer" && !state.transferOpen) { state.explored = true; state.transferOpen = true; renderContent(); }
@@ -1061,11 +1154,14 @@
       });
     }
   }
+  document.getElementById("diagnosisForm")?.addEventListener("input", event => { if (!event.target.closest("#academyRoot")) refreshStageStatus(); });
+  document.getElementById("diagnosisForm")?.addEventListener("change", event => { if (!event.target.closest("#academyRoot")) refreshStageStatus(); });
   window.addEventListener("lab-account-changed", () => { generation++; records.clear(); if (activeId) { renderContent(); loadCourse(activeId); } });
   document.addEventListener("visibilitychange", () => { if (document.hidden) stopAnimation(); else beginAnimation(); });
   window.addEventListener("pagehide", stopAnimation);
   window.addEventListener("tutor-ready", () => window.refreshAcademy());
   reducedMotion.addEventListener?.("change", () => { if (reducedMotion.matches) { stopAnimation(); if (animatedIds.has(activeId) && record(activeId).explored) paintMotion(true); } else beginAnimation(); syncMotionControls(); });
+  if (get("measurementRows")) new MutationObserver(refreshStageStatus).observe(get("measurementRows"), {childList: true, subtree: true});
   // Flow navigation is normally wired by refreshAcademy; this also handles direct loads.
   observer = new MutationObserver(() => { if (document.body.dataset.page !== activePage) window.refreshAcademy(); });
   observer.observe(document.body, {attributes: true, attributeFilter: ["data-page"]});

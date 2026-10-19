@@ -40,7 +40,7 @@
 .academy-text-button:hover:enabled { background: transparent; color: #6e1e2e; border-color: #6e1e2e; }
 .academy-muted, .academy-condition { color: var(--muted); font-size: 12px; line-height: 1.8; }
 .academy-error { color: #8f293c; font-size: 12px; line-height: 1.8; }
-.academy-response { padding: 14px 18px; margin-top: 16px; background: #f3f0e7; border-left: 3px solid #bd9c61; font-size: 12px; line-height: 1.85; }
+.academy-response { padding: 14px 18px; margin-top: 16px; background: #f3f0e7; border: 1px solid #bd9c61; font-size: 12px; line-height: 1.85; }
 .academy-response.is-correct { border-color: #365b55; background: #eef3ef; }
 .academy-response strong { font-size: 13px; font-weight: 500; }
 .academy-response p { margin: 6px 0 0; }
@@ -80,7 +80,7 @@
 .academy-readings strong { display: block; font-family: Georgia, serif; font-size: 24px; line-height: 1.5; font-weight: 400; font-variant-numeric: tabular-nums; margin-top: 4px; overflow-wrap: anywhere; }
 .academy-chart { width: 100%; height: auto; display: block; overflow: visible; margin-top: 12px; }
 .academy-grid { stroke: #e1e2de; stroke-width: 1; }
-.academy-axis { stroke: #8b9aa5; stroke-width: 1.2; fill: none; }
+.academy-axis { stroke: #687b89; stroke-width: 1.2; fill: none; }
 .academy-tick { fill: #65717b; font-size: 13px; font-family: system-ui, sans-serif; }
 .academy-axis-label { fill: #173e5d; font-size: 14px; font-family: system-ui, sans-serif; }
 .academy-model-line { stroke: #173e5d; fill: none; stroke-width: 2.5; }
@@ -91,7 +91,7 @@
 .academy-threshold-label { fill: #806328; font-size: 14px; font-family: system-ui, sans-serif; }
 .academy-pendulum { margin: 9px 0 0; background: #eeeee9; }
 .academy-support { stroke: #102d47; stroke-width: 3; }
-.academy-rest-line { stroke: #b8b9b3; stroke-width: 1; stroke-dasharray: 3 4; }
+.academy-rest-line { stroke: #788178; stroke-width: 1; stroke-dasharray: 3 4; }
 .academy-string { stroke: #173e5d; stroke-width: 2; }
 .academy-bob { fill: #8f293c; }
 .academy-selected { border-top: 1px solid #d9d7d1; padding: 13px 0 0; margin-top: 5px; }
@@ -183,3 +183,34 @@
 .academy-envelope{stroke:#9a6441;stroke-width:1.5;stroke-dasharray:4 4}
 .academy-air-particle{fill:#245f85}
 .academy-voltage-empty{fill:#dce3e6;stroke:#426c85;stroke-width:1}
+
+/* The same scene stays mounted in overview and detail: no duplicate clocks or selections. */
+.academy-stages small{display:block;font-size:12px;line-height:1.6;margin-top:4px;color:var(--muted)}
+.academy-stages b{font-size:14px}
+.academy-graphic-tools{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:16px}
+.academy-graphic-tools .academy-plot-help{margin:0;font-size:14px}
+.academy-graphic-tools button{flex-shrink:0;min-height:44px;font-size:14px}
+.academy-graphic-viewport{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-color:#687b89 #eeeee9;scrollbar-width:thin}
+.academy-graphic-viewport:focus-visible{outline:2px solid var(--crimson);outline-offset:3px}
+.academy-axis-key{display:grid;gap:7px;margin:18px 0 5px;font-size:14px;line-height:1.6}
+.academy-axis-key>div{display:flex;gap:10px;min-width:0}
+.academy-axis-key dt{flex:0 0 3em;color:var(--muted)}
+.academy-axis-key dd{margin:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.academy-diagram-key{display:none;font-size:14px;line-height:1.75;overflow-wrap:anywhere;margin:8px 0 14px}
+.academy-readings span,.academy-selected>label,.academy-selected>select,.academy-selected p,.academy-motion-readout{font-size:14px}
+.academy-graphic.is-detailed .academy-chart{width:720px;max-width:none}
+.academy-graphic.is-detailed .academy-tick{font-size:14px}
+.academy-graphic.is-detailed .academy-axis-label,.academy-graphic.is-detailed .academy-threshold-label{font-size:14px}
+@media(max-width:620px){
+ .academy-stages li{align-items:flex-start;flex-direction:column;gap:8px;padding:10px 3px}
+ .academy-stages b{font-size:13px}.academy-stages small{font-size:12px}
+ .academy-graphic-tools{align-items:flex-start;flex-direction:column;gap:10px}
+ .academy-graphic:not(.is-detailed) svg text{display:none}
+ .academy-graphic:not(.is-detailed) .academy-diagram-key{display:block}
+ .academy-readings{gap:12px}.academy-readings span{font-size:14px}
+ .academy-motion-readout{font-size:14px}.academy-plot-help{font-size:14px}
+ .academy-selected>select{min-height:44px;font-size:14px}
+ .academy-selected .academy-kicker{font-size:12px}
+ .academy-question legend{font-size:16px}.academy-choice{font-size:14px;min-height:44px}
+ .academy-condition,.academy-muted,.academy-symbol-explanation,.academy-motion-note{font-size:14px}
+}

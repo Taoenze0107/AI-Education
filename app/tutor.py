@@ -120,6 +120,8 @@ PROMPT = """你是大学物理实验课的随行助教。结合学生当前步�
 9. selected_content 是学生选中的图点或公式。data_source=teaching_simulation 表示教学仿真，
    不能称为学生实测数据；与 columns、parameters 中的实测录入分别解释。优先解释该选中内容，
    给出判断、对应数据依据、下一步动作与自检问题。仿真不构成仪器条件已满足的证据。
+10. 原始读数按表头单位保留，换算仅用于公式处理。current_mA 是原始电流的 mA 数值，读数栏不预先换成 A；
+    仅在代入公式或作 I(A) 图时除以 1000，不要让学生重复换算或改写原始读数。
 """
 
 
@@ -203,8 +205,6 @@ class TutorService:
                     result = analyze_readings(topic, reading)
                     calculation = {k: result[k] for k in ("result", "unit", "label", "metrics", "notes")}
                     add("info", "已完成当前模型的复算", "读数满足该计算模型的输入要求；仪器、操作和实验条件仍需自行核实。")
-                    if context.experiment_id == "ohms_law":
-                        add("info", "注意电流单位", "数据表使用 mA；公式 R=U/I 中电流使用 A，先除以 1000。", dict(kind="column", key="current_mA"))
                     for note in result["notes"][1:3]:
                         add("info", "解释结果前核实条件", note)
                 except (ValueError, ArithmeticError) as exc:
@@ -237,9 +237,30 @@ class TutorService:
             add("warning", "先复查未通过的条件", "、".join(failed[:4]))
         elif unchecked and context.stage in {"review", "checks", "diagnosis"}:
             add("pending", "有条件还待核实", "、".join(unchecked[:4]) + "。未经核实不要标为通过。")
+        # Entry and calculation use different units. Preserve the measured mA column;
+        # analyze_readings performs its own conversion exactly once for the fit.
+        if context.experiment_id == "ohms_law" and context.stage in {"data", "calculation", "diagnosis"}:
+            unit_detail = "读数栏按表头保留 mA 原值，勿预先换算；代入 R=U/I 时用 A（mA ÷ 1000）。"
+            sample = next(((i, v) for i, v in enumerate(context.columns.get("current_mA", []))
+                           if v is not None), None)
+            if sample:
+                index, value = sample
+                unit_detail += f" 当前第 {index + 1} 组：{value:g} mA = {value / 1000:g} A。"
+            add("info", "区分读数单位与计算单位", unit_detail, dict(kind="column", key="current_mA"))
         next_question = (topic.data_questions[0] if topic else "你正在测量什么量，最不确定的是哪一步？")
-        if context.stage in {"calculation", "diagnosis"}:
-            next_question = "把每个变量的单位写在旁边后，你的计算步骤还有哪一处需要确认？"
+        if context.stage in {"experiment", "home", "topic", "catalog"}:
+            next_question = "你准备测量什么量？开始前需要先确认哪一项仪器或模型条件？"
+        elif context.stage == "data" and context.experiment_id == "ohms_law":
+            next_question = "电压 V 与电流 mA 是否逐组对应，并按表头保留了原始读数？"
+        elif context.stage == "data":
+            units = "、".join(f"{column.label} {column.unit}" for column in topic.columns[:3]) if topic else "表头单位"
+            next_question = f"是否按表头（{units}）保留了原始读数，并逐组一一对应？"
+        elif context.stage in {"calculation", "diagnosis"}:
+            next_question = ("代入 R=U/I 时，电流是否已由原始 mA 除以 1000 换为 A，并保留了换算步骤？"
+                             if context.experiment_id == "ohms_law" else
+                             "把每个变量的单位写在旁边后，你的计算步骤还有哪一处需要确认？")
+        if context.selected_content and context.selected_content.data_source == "teaching_simulation":
+            next_question = "改变一个模型参数后，选中的图点怎样变化？这与实验关系是否一致？"
         return dict(items=items[:10], next_question=next_question,
                     calculation=calculation, formula_result=formula_result, mode="checks")
 

@@ -1,5 +1,9 @@
 "use strict";
 (() => {
+  // Automatic model calls belong to measured-record work, never resource browsing.
+  const autoRecordingAllowed = (stage, lesson) => ["data", "review", "observations", "checks", "calculation", "diagnosis", "revision"].includes(stage) && !["prediction", "transfer"].includes(lesson);
+  if (typeof module === "object" && module.exports) module.exports = {autoRecordingAllowed};
+  if (typeof document === "undefined") return;
   const get = id => document.getElementById(id);
   const make = (tag, text, cls) => {
     const el = document.createElement(tag);
@@ -22,19 +26,63 @@
   root.id = "labTutor";
   // Static markup only. Every student/model string is inserted with textContent below.
   root.innerHTML = `<button type="button" id="tutorToggle" class="tutor-toggle" aria-expanded="false" aria-controls="tutorPanel"><span aria-hidden="true">?</span> 问实验助教</button>
-    <aside id="tutorPanel" class="tutor-panel" aria-labelledby="tutorHeading" hidden>
-      <header class="tutor-header"><div><small>LEARNING COMPANION</small><h2 id="tutorHeading">一起检查这一步。</h2></div><button type="button" id="tutorClose" class="tutor-close" aria-label="关闭实验助教">×</button></header>
-      <p id="tutorContext" class="tutor-context"></p><p id="tutorMode" class="tutor-mode">正在连接助教…</p>
-      <div id="tutorMessages" class="tutor-messages" role="log" aria-label="你与实验助教的对话" aria-live="polite" aria-relevant="additions"></div>
-      <div class="tutor-prompts" aria-label="常用问题"><button type="button">这一步应该先检查什么？</button><button type="button">这些数据能说明什么？</button><button type="button">为什么要这样换算单位？</button></div>
-      <form id="tutorForm" class="tutor-form"><label for="tutorQuestion">写下你的疑问</label><textarea id="tutorQuestion" rows="3" maxlength="2000" placeholder="例如：我的结果偏小，应该从哪里开始核查？" required></textarea><label class="tutor-detail-option"><input type="checkbox" id="tutorExplain"> 希望看到更详细的解释或推导</label><div class="tutor-compose-actions"><span>会参考当前实验与已填写的内容</span><button type="submit" id="tutorSend">发送问题 →</button></div></form>
-      <p id="tutorError" class="tutor-error" role="status" hidden></p>
+    <aside id="tutorPanel" class="tutor-panel" role="dialog" aria-labelledby="tutorHeading" aria-describedby="tutorContext" hidden>
+      <header class="tutor-header"><h2 id="tutorHeading">一起检查这一步。</h2><button type="button" id="tutorClose" class="tutor-close" aria-label="关闭实验助教">×</button></header>
+      <div id="tutorBody" class="tutor-body" tabindex="0" aria-label="实验背景、对话与助教设置">
+        <p id="tutorContext" class="tutor-context"></p><p id="tutorMode" class="tutor-mode">正在连接助教…</p>
+        <div id="tutorMessages" class="tutor-messages" role="log" aria-label="你与实验助教的对话" aria-live="polite" aria-relevant="additions"></div>
+        <div class="tutor-prompts" aria-label="常用问题"><button type="button">这一步应该先检查什么？</button><button type="button">这些数据能说明什么？</button><button type="button">为什么要这样换算单位？</button></div>
+        <details class="tutor-settings"><summary>助教设置与自动提示</summary><div id="tutorSettings"><label class="tutor-detail-option"><input type="checkbox" id="tutorExplain"> 希望看到更详细的解释或推导</label></div></details>
+        <p id="tutorError" class="tutor-error" role="status" hidden></p>
+      </div>
+      <form id="tutorForm" class="tutor-form"><label for="tutorQuestion">写下你的疑问</label><textarea id="tutorQuestion" rows="2" maxlength="2000" placeholder="例如：结果偏小，先核查哪里？" required></textarea><div class="tutor-compose-actions"><span>结合当前实验与填写内容</span><button type="submit" id="tutorSend">发送问题 →</button></div></form>
     </aside>`;
   document.body.append(root);
-  const panel = get("tutorPanel"), messages = get("tutorMessages");
+  const panel = get("tutorPanel"), messages = get("tutorMessages"), scrollBody = get("tutorBody");
   const selectionBox = make("div", null, "tutor-selected-content");
   selectionBox.id = "tutorSelectedContent"; selectionBox.hidden = true;
   get("tutorContext").after(selectionBox);
+  let returnFocus = null, lastExternalTrigger = null;
+  const drawerViewport = matchMedia("(max-width:600px), (max-height:480px)");
+  const inertBackground = new Map();
+  function syncPanelViewport() {
+    const modal = !panel.hidden && drawerViewport.matches;
+    panel.setAttribute("aria-modal", String(modal));
+    document.documentElement.classList.toggle("tutor-drawer-open", modal);
+    if (modal) {
+      for (const sibling of document.body.children) {
+        if (sibling === root || inertBackground.has(sibling)) continue;
+        inertBackground.set(sibling, sibling.inert); sibling.inert = true;
+      }
+    } else {
+      for (const [sibling, wasInert] of inertBackground) sibling.inert = wasInert;
+      inertBackground.clear();
+    }
+    const viewport = window.visualViewport;
+    if (viewport && modal) {
+      panel.style.setProperty("--tutor-viewport-height", `${viewport.height}px`);
+      panel.style.setProperty("--tutor-viewport-top", `${viewport.offsetTop}px`);
+    } else {
+      panel.style.removeProperty("--tutor-viewport-height"); panel.style.removeProperty("--tutor-viewport-top");
+    }
+  }
+  drawerViewport.addEventListener("change", syncPanelViewport);
+  window.visualViewport?.addEventListener("resize", syncPanelViewport);
+  window.visualViewport?.addEventListener("scroll", syncPanelViewport);
+  // Capture the actual opener before lesson handlers dispatch their question event.
+  document.addEventListener("click", event => {
+    const trigger = event.target?.closest?.('button,a[href],input,select,textarea,[tabindex]');
+    if (trigger && !panel.contains(trigger)) lastExternalTrigger = trigger;
+  }, true);
+  function scrollToLatestMessage() {
+    if (panel.hidden || !messages.lastElementChild) return;
+    const message = messages.lastElementChild.getBoundingClientRect(), viewport = scrollBody.getBoundingClientRect();
+    if (message.bottom > viewport.bottom) scrollBody.scrollTop += message.bottom - viewport.bottom;
+  }
+  function showError() {
+    get("tutorError").hidden = false;
+    get("tutorError").scrollIntoView({block: "nearest"});
+  }
 
   async function api(path, data, signal) {
     const response = await fetch("/api/v1/tutor" + path, {
@@ -137,11 +185,28 @@
     };
   }
 
-  function open() { panel.hidden = false; get("tutorToggle").setAttribute("aria-expanded", "true"); refreshContext(); refreshStatus(); get("tutorQuestion").focus(); }
-  function close() { panel.hidden = true; get("tutorToggle").setAttribute("aria-expanded", "false"); get("tutorToggle").focus(); }
-  get("tutorToggle").addEventListener("click", () => panel.hidden ? open() : close());
+  function open(trigger = lastExternalTrigger || document.activeElement) {
+    if (panel.hidden) returnFocus = trigger && !panel.contains(trigger) ? trigger : get("tutorToggle");
+    panel.hidden = false; syncPanelViewport(); get("tutorToggle").setAttribute("aria-expanded", "true");
+    refreshContext(); refreshStatus(); get("tutorQuestion").focus({preventScroll: true});
+    scrollToLatestMessage();
+  }
+  function close() {
+    panel.hidden = true; syncPanelViewport(); get("tutorToggle").setAttribute("aria-expanded", "false");
+    const target = returnFocus?.isConnected && !returnFocus.disabled && returnFocus.getClientRects().length ? returnFocus : get("tutorToggle");
+    target.focus({preventScroll: true}); returnFocus = null;
+  }
+  get("tutorToggle").addEventListener("click", event => panel.hidden ? open(event.currentTarget) : close());
   get("tutorClose").addEventListener("click", close);
-  document.addEventListener("keydown", e => { if (e.key === "Escape" && !panel.hidden) close(); });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && !panel.hidden) { event.preventDefault(); close(); return; }
+    if (event.key === "Tab" && !panel.hidden && drawerViewport.matches) {
+      const controls = [...panel.querySelectorAll('button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),select:not(:disabled),summary,[tabindex="0"]')].filter(el => el.getClientRects().length);
+      const first = controls[0], last = controls.at(-1);
+      if (event.shiftKey && (document.activeElement === first || !panel.contains(document.activeElement))) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && (document.activeElement === last || !panel.contains(document.activeElement))) { event.preventDefault(); first?.focus(); }
+    }
+  });
   for (const button of root.querySelectorAll(".tutor-prompts button")) button.addEventListener("click", () => { get("tutorQuestion").value = button.textContent; get("tutorQuestion").focus(); });
   function renderSelection() {
     selectionBox.replaceChildren(); selectionBox.hidden = !selectedContent;
@@ -156,7 +221,7 @@
     if (!detail || detail.experiment_id !== context().experiment_id || !detail.selection) return;
     const selection = detail.selection;
     selectedContent = {kind: String(selection.kind || "simulation_point").slice(0, 40), label: String(selection.label || "当前仿真内容").slice(0, 240), data_source: "teaching_simulation", values: Object.fromEntries(Object.entries(selection.values || {}).slice(0, 24).filter(([key, v]) => key.length > 0 && key.length <= 80 && (typeof v === "string" || typeof v === "number" && Number.isFinite(v))).map(([key, v]) => [key, typeof v === "string" ? v.slice(0, 240) : v]))};
-    selectedExperiment = detail.experiment_id; renderSelection(); open();
+    selectedExperiment = detail.experiment_id; renderSelection(); open(detail.trigger || lastExternalTrigger || document.activeElement);
     get("tutorQuestion").value = String(detail.question || "请解释我选中的这个仿真点，并问我一个自检问题。").slice(0, 2000);
     get("tutorQuestion").focus();
   });
@@ -189,7 +254,7 @@
         links.append(link);
       }); details.append(links); item.append(details);
     }
-    messages.scrollTop = messages.scrollHeight;
+    scrollToLatestMessage();
   }
   async function refreshStatus() {
     const epoch = ++statusEpoch;
@@ -206,9 +271,9 @@
   }
 
   function autoAvailability() {
-    if (!statusConnected) return {ready: false, reason: status ? "暂时无法确认 AI 连接。重新检查连接后再开启；上方数据检查仍可使用。" : "正在确认 AI 连接，请稍候。", retry: true};
-    if (!status?.configured) return {ready: false, reason: "AI 服务尚未启用，暂不能开启自动提示。上方数据检查和课程资料仍可使用。"};
-    if (!status.signed_in) return {ready: false, reason: "请先登录班级账号，再开启 AI 自动提示。上方数据检查可直接使用。", login: true};
+    if (!statusConnected) return {ready: false, reason: status ? "暂时无法确认 AI 连接。重新检查连接后再开启；实测数据页的自动检查仍可使用。" : "正在确认 AI 连接，请稍候。", retry: true};
+    if (!status?.configured) return {ready: false, reason: "AI 服务尚未启用，暂不能开启自动提示。实测数据页的自动检查和课程资料仍可使用。"};
+    if (!status.signed_in) return {ready: false, reason: "请先登录班级账号，再开启 AI 自动提示。实测数据页的自动检查可直接使用。", login: true};
     return {ready: true};
   }
 
@@ -220,7 +285,7 @@
       toggle.checked = autoEnabled; toggle.disabled = !availability.ready;
       controls.dataset.enabled = String(autoEnabled);
       controls.querySelector(".tutor-auto-state").textContent = autoEnabled ? "已开启" : availability.ready ? "已关闭" : "暂不可用";
-      controls.querySelector(".tutor-auto-status").textContent = availability.ready ? (autoEnabled ? "已开启：暂停录入后，AI 会给出下一步提示。可再次点击方框关闭。" : autoPauseNotice || "已关闭：勾选方框后开启 AI 自动提示。") : availability.reason;
+      controls.querySelector(".tutor-auto-status").textContent = availability.ready ? (autoEnabled ? "已开启：仅在实测记录步骤暂停录入后给出提示，浏览资料与体验模型不会自动提问。可再次点击方框关闭。" : autoPauseNotice || "已关闭：勾选方框后开启 AI 自动提示。") : availability.reason;
       controls.querySelector(".tutor-auto-login").hidden = !availability.login;
       controls.querySelector(".tutor-auto-retry").hidden = !availability.retry;
     });
@@ -238,7 +303,7 @@
     const login = make("a", "去登录 →", "tutor-auto-login"); login.href = "/classroom"; login.hidden = true;
     const retry = make("button", "重新检查连接", "tutor-auto-retry"); retry.type = "button"; retry.hidden = true;
     retry.addEventListener("click", () => { refreshStatus(); });
-    const limits = make("small", "自动提示与主动提问共用每日额度，最多每 20 秒一次；上方自动数据检查不消耗 AI 提问额度。", "tutor-auto-note"); limits.id = limitsId;
+    const limits = make("small", "自动提示与主动提问共用每日额度，最多每 20 秒一次；实测数据页的自动检查不消耗 AI 提问额度。", "tutor-auto-note"); limits.id = limitsId;
     controls.append(option, description, login, retry, limits);
     toggle.addEventListener("change", () => {
       // Preserve the native checkbox state in one shared setting, including keyboard changes.
@@ -246,7 +311,10 @@
       const availability = autoAvailability();
       autoEnabled = availability.ready && toggle.checked; autoPauseNotice = ""; clearTimeout(autoTimer);
       syncAutoControls();
-      if (autoEnabled) { const current = context(); scheduleAuto(current, JSON.stringify(current), box); }
+      if (autoEnabled) {
+        const current = context(), currentBox = document.querySelector(`.tutor-feedback[data-tutor-stage="${current.stage}"]`);
+        if (currentBox) scheduleAuto(current, JSON.stringify(current), currentBox);
+      }
     });
     return controls;
   }
@@ -281,7 +349,7 @@
         box.setAttribute("aria-label", "当前步骤的检查与问题");
       }
       const lesson = ctx.stage === "data" && (window.LabAcademyCourseList || []).some(course => course.experiment_id === ctx.experiment_id);
-      const anchor = document.querySelector(lesson ? '[data-view="data"] > .card' : `[data-view="${ctx.stage}"] .page-heading`);
+      const anchor = document.querySelector(ctx.stage === "experiment" ? '[data-view="experiment"] > .card' : lesson ? '[data-view="data"] > .card' : `[data-view="${ctx.stage}"] .page-heading`);
       if (anchor && box.previousElementSibling !== anchor) anchor.after(box);
       scheduleFeedback();
     }
@@ -338,8 +406,8 @@
         const cleared = (previousChecks.get(checkKey) || []).filter(t => !pending.includes(t));
         if (cleared.length) box.append(make("p", "本次检查不再提示：" + cleared.join("、") + "。仍需核实原始记录与实验条件。", "tutor-check-cleared"));
         previousChecks.set(checkKey, pending);
-        box.append(autoControls(ctx, box)); syncAutoControls();
-        const ask = make("button", "和 AI 一起检查这一步 →", "tutor-inline-ask"); ask.type = "button"; ask.addEventListener("click", () => { open(); get("tutorQuestion").value = "请结合我当前的步骤和数据，帮我找出下一项需要检查的问题。"; }); box.append(ask);
+        syncAutoControls();
+        const ask = make("button", "问助教：这一步怎么检查 →", "tutor-inline-ask"); ask.type = "button"; ask.addEventListener("click", () => { open(ask); get("tutorQuestion").value = "请结合我当前的步骤和数据，帮我找出下一项需要检查的问题。"; }); box.append(ask);
         lastFeedback = fingerprint; lastFeedbackAt = Date.now();
         scheduleAuto(ctx, fingerprint, box);
       } catch (error) {
@@ -351,13 +419,16 @@
     }, 1100);
   }
 
+  function autoRecordingTarget(ctx, box) {
+    return autoRecordingAllowed(ctx.stage, new URLSearchParams(location.search).get("lesson")) && !!box?.isConnected && !box.hidden && box.dataset.tutorStage === ctx.stage;
+  }
   function scheduleAuto(ctx, fingerprint, box) {
     clearTimeout(autoTimer);
-    if (!autoEnabled || !autoAvailability().ready || autoSeen.has(fingerprint) || ctx.selected_content) return;
+    if (!autoRecordingTarget(ctx, box) || !autoEnabled || !autoAvailability().ready || autoSeen.has(fingerprint) || ctx.selected_content) return;
     autoTimer = setTimeout(async () => {
-      if (!autoEnabled || busy || document.hidden || JSON.stringify(context()) !== fingerprint) return;
+      if (!autoRecordingTarget(ctx, box) || !autoEnabled || busy || document.hidden || JSON.stringify(context()) !== fingerprint) return;
       await refreshStatus(); await historyPromise;
-      if (!autoEnabled || busy || !autoAvailability().ready || JSON.stringify(context()) !== fingerprint) return;
+      if (!autoRecordingTarget(ctx, box) || !autoEnabled || busy || !autoAvailability().ready || JSON.stringify(context()) !== fingerprint) return;
       autoSeen.add(fingerprint); lastAutoAt = Date.now(); busy = true;
       get("tutorSend").disabled = true; get("tutorSend").textContent = "正在检查…";
       const key = currentKey;
@@ -376,7 +447,7 @@
         if (error.status === 429 || error.status === 401) {
           autoEnabled = false;
           if (error.status === 401 && status) status = {...status, signed_in: false};
-          autoPauseNotice = error.status === 429 ? "请求或每日额度达到限制，自动提示已关闭。上方数据检查仍可使用。" : "登录状态已失效，自动提示已关闭。请重新登录。";
+          autoPauseNotice = error.status === 429 ? "请求或每日额度达到限制，自动提示已关闭。实测数据页的自动检查仍可使用。" : "登录状态已失效，自动提示已关闭。请重新登录。";
           syncAutoControls();
         }
       } finally { busy = false; get("tutorSend").disabled = false; get("tutorSend").textContent = "发送问题 →"; }
@@ -391,10 +462,10 @@
     // Re-resolve the actual owner before choosing the persistent chat thread.
     await refreshStatus(); await historyPromise;
     if (busy) return;
-    if (!status) { get("tutorError").textContent = "连接尚未就绪，请稍后重试。"; get("tutorError").hidden = false; refreshStatus(); return; }
+    if (!status) { get("tutorError").textContent = "连接尚未就绪，请稍后重试。"; showError(); refreshStatus(); return; }
     if (status.configured && !status.signed_in) {
       get("tutorError").replaceChildren(document.createTextNode("请先登录班级账号，再向 AI 提问。"));
-      const link = make("a", "去登录 →"); link.href = "/classroom"; get("tutorError").append(link); get("tutorError").hidden = false; return;
+      const link = make("a", "去登录 →"); link.href = "/classroom"; get("tutorError").append(link); showError(); return;
     }
     const ctx = context(), key = currentKey;
     busy = true; get("tutorSend").disabled = true; get("tutorSend").textContent = "正在检查…"; messages.setAttribute("aria-busy", "true");
@@ -405,7 +476,7 @@
     } catch (error) {
       if (currentKey === key) {
         get("tutorError").textContent = error.message || "回复暂未取得，请稍后检查对话记录再重试。";
-        get("tutorError").hidden = false;
+        showError();
         if (!value("tutorQuestion")) get("tutorQuestion").value = question;
       }
     } finally { busy = false; get("tutorSend").disabled = false; get("tutorSend").textContent = "发送问题 →"; messages.removeAttribute("aria-busy"); }
@@ -423,5 +494,6 @@
   window.addEventListener("lab-account-changed", () => { autoEnabled = false; autoPauseNotice = ""; statusConnected = false; clearTimeout(autoTimer); syncAutoControls(); historyEpoch++; messages.replaceChildren(); currentKey = ""; previousChecks.clear(); selectedContent = null; selectedExperiment = ""; renderSelection(); refreshStatus(); });
   window.addEventListener("focus", refreshStatus);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshStatus(); });
+  get("tutorSettings").append(autoControls({stage: "panel"}, get("tutorSettings")));
   refreshStatus();
 })();

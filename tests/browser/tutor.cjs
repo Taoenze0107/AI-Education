@@ -2,6 +2,16 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const {autoRecordingAllowed} = require('../../app/static/tutor.js');
+// Scope policy is tested without a DOM, timers, credentials or model requests.
+for (const stage of ['home','history','library','classroom','topic','catalog','practice','experiment']) {
+ assert.equal(autoRecordingAllowed(stage,null),false,`${stage} must not trigger automatic model calls`);
+}
+for (const stage of ['data','review','observations','checks','calculation','diagnosis','revision']) {
+ assert.equal(autoRecordingAllowed(stage,null),true,`${stage} is an opt-in measured-record step`);
+ for (const lesson of ['prediction','transfer']) assert.equal(autoRecordingAllowed(stage,lesson),false,`${lesson} experiences must not trigger automatic model calls`);
+}
+assert.equal(autoRecordingAllowed(undefined,null),false);
 const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const base = process.env.BASE_URL || 'http://127.0.0.1:8015';
 const out = process.env.TUTOR_QA_OUTPUT || '/private/tmp/lab-tutor-browser-qa';
@@ -21,7 +31,7 @@ fs.mkdirSync(out, {recursive:true});
   const checks=page.locator('.tutor-feedback[data-tutor-stage="data"]');
   await checks.filter({hasText:'各列数量不同'}).waitFor();
   await page.locator('#quickCurrent').fill('4, 8, 12, 16, 20');
-  await checks.filter({hasText:'注意电流单位'}).waitFor();
+  await checks.filter({hasText:'区分读数单位与计算单位'}).waitFor();
   assert.equal(modelRequests,0);
   report.checks.push('live mismatch and unit checks without model calls');
   await page.locator('#tutorToggle').click();
@@ -52,13 +62,16 @@ fs.mkdirSync(out, {recursive:true});
   await page.route('**/api/v1/tutor/chat',r=>{calls.push(r.request().postDataJSON());return r.fulfill({json:reply});});
   await page.reload();
   await page.locator('#tutorMode').filter({hasText:'AI 已连接'}).waitFor({state:'attached'});
-  await checks.filter({hasText:'注意电流单位'}).waitFor();
-  await checks.locator('.tutor-auto-option input').check();
+  await checks.filter({hasText:'区分读数单位与计算单位'}).waitFor();
+  await page.locator('#tutorToggle').click();
+  await page.locator('.tutor-settings > summary').click();
+  await page.locator('#tutorSettings .tutor-auto-option input').check();
+  await page.locator('#tutorClose').click();
   await checks.locator('.tutor-auto-reply').filter({hasText:'AI 随行提示'}).waitFor();
   assert.equal(calls.length,1);
   assert.deepEqual(calls[0].context.columns.current_mA,[4,8,12,16,20]);
-  await checks.locator('.tutor-auto-option input').uncheck();
   await page.locator('#tutorToggle').click();
+  await page.locator('#tutorSettings .tutor-auto-option input').uncheck();
   await page.locator('#tutorQuestion').fill('为什么除以 1000？');
   await page.locator('#tutorSend').click();
   await page.locator('#tutorSend').filter({hasText:'发送问题'}).waitFor();

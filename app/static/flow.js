@@ -95,6 +95,7 @@ function configureExperiment(){
 function renderPage({focus=false}={}){
  document.querySelectorAll("[data-view]").forEach(el=>el.hidden=el.dataset.view!==currentPage);
  document.body.dataset.page=currentPage;
+ window.reconcileValidationErrors?.(currentPage);
  document.querySelector(".flow-frame").hidden=!FLOW_PAGES.has(currentPage);
  const step=currentPage==="observations"||currentPage==="checks"?"review":currentPage==="revision"?"diagnosis":currentPage;
  for(const link of document.querySelectorAll(".step-nav a")){
@@ -136,14 +137,15 @@ document.addEventListener("click",event=>{
  event.preventDefault();
  if(state.busy){announce("正在处理，请稍候再跳转。");return;}
  const target=link.pathname+link.search;
- if((currentPage==="experiment"||currentPage==="home")&&target==="/data"&&!$("studentId").value.trim()){
-  goPage('/experiment');showErrors([{field:"studentId",message:"请先填写用于查找记录的编号。"}]);return;
+ const modelIntent=["prediction","transfer"].includes(new URLSearchParams(link.search).get("lesson"));
+ if(link.pathname==="/data"&&!modelIntent&&!$("studentId").value.trim()){
+  goPage('/experiment');showErrors([{field:"studentId",message:"请给这份实测记录填写一个匿名编号，然后继续。"}]);return;
  }
  goPage(target);
 });
 window.addEventListener("popstate",()=>{saveDraft();currentPage=pageForPath(location.pathname)||"home";renderPage({focus:true});});
 document.addEventListener("input",()=>{if(flowReady)saveDraft();});
-document.addEventListener("change",()=>{if(flowReady){configureExperiment();renderOverview();saveDraft();}});
+document.addEventListener("change",()=>{if(flowReady){configureExperiment();renderOverview();window.refreshAcademy?.();saveDraft();}});
 window.addEventListener("pagehide",saveDraft);
 window.addEventListener("tutor-ready",()=>{
  restoreDraft();flowReady=true;window.tutorReady=true;

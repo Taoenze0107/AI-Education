@@ -16,7 +16,7 @@
 
   window.startAcademyExperiment = (eid, nodeId) => {
     if (!courseList().some(course => course.experiment_id === eid) || (typeof state !== "undefined" && state.busy)) return;
-    const path = "/data" + (["prediction", "transfer"].includes(nodeId) ? "?lesson=" + nodeId : "");
+    const path = "/data?lesson=" + (["prediction", "transfer"].includes(nodeId) ? nodeId : "prediction");
     if (document.getElementById("experimentId")?.value === eid) { goPage(path); return; }
     const topic = typeof catalogTopic === "function" ? catalogTopic(eid) : null;
     if (!topic) { goPage("/experiments/" + eid); return; }

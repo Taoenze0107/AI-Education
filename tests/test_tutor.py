@@ -82,6 +82,68 @@ def test_independent_calculation_and_student_difference(lab):
     assert json.dumps(ctx) == original
 
 
+
+def test_ohms_unit_prompts_follow_entry_and_calculation_stages(lab):
+    app, client = lab
+    topic = app.state.tutor.catalog.by_id["ohms_law"]
+    assert "mA 录入" in topic.data_questions[0]
+    assert "计算代入时" in topic.data_questions[0]
+    assert topic.columns[1].key == "current_mA" and topic.columns[1].unit == "mA"
+    preparation = client.post(BASE + "/feedback", json={"experiment_id": "ohms_law", "stage": "experiment"}).json()
+    assert "开始前" in preparation["next_question"]
+    assert "换为 A" not in preparation["next_question"]
+    entry = client.post(BASE + "/feedback", json=context()).json()
+    assert "原始读数" in entry["next_question"] and "mA" in entry["next_question"]
+    unit_note = next(item for item in entry["items"] if item["title"] == "区分读数单位与计算单位")
+    assert "勿预先换算" in unit_note["detail"]
+    assert unit_note["target"] == {"kind": "column", "key": "current_mA"}
+    calculation = client.post(BASE + "/feedback", json={"experiment_id": "ohms_law", "stage": "calculation"}).json()
+    assert "除以 1000" in calculation["next_question"] and "保留了换算步骤" in calculation["next_question"]
+
+
+
+@pytest.mark.parametrize("experiment_id, raw_unit", [
+    ("spring_oscillation", "质量 g"),
+    ("double_slit", "mm"),
+    ("sound_resonance", "cm"),
+    ("resistivity", "cm"),
+    ("capacitor_discharge", "ms"),
+])
+def test_other_conversion_topics_keep_raw_input_units_in_data_stage(lab, experiment_id, raw_unit):
+    app, client = lab
+    body = client.post(BASE + "/feedback", json={"experiment_id": experiment_id, "stage": "data"}).json()
+    assert raw_unit in body["next_question"] and "保留了原始读数" in body["next_question"]
+    assert "已换成" not in body["next_question"]
+    # Catalog teaching questions distinguish the later calculation step as well.
+    topic = app.state.tutor.catalog.by_id[experiment_id]
+    assert any("读数栏保留" in question and "计算" in question for question in topic.data_questions)
+
+def test_ohms_original_milliamps_are_converted_once_without_mutation(lab):
+    _, client = lab
+    ctx = context(columns={"voltage_V": [1, 2, 3], "current_mA": [4, 8, 12]},
+                  formula="R=U/I", variables={"U": 3, "I": .012}, unit="Ω", student_result=250)
+    original = json.dumps(ctx, sort_keys=True)
+    body = client.post(BASE + "/feedback", json=ctx).json()
+    assert body["calculation"]["result"] == pytest.approx(250)
+    assert body["formula_result"] == pytest.approx(250)
+    assert not any(item["level"] == "warning" for item in body["items"])
+    assert any("4 mA = 0.004 A" in item["detail"] for item in body["items"])
+    assert json.dumps(ctx, sort_keys=True) == original
+    # Missing rows are not disguised as a zero-valued conversion example.
+    missing = client.post(BASE + "/feedback", json=context(columns={"current_mA": [None, 8]})).json()
+    note = next(item for item in missing["items"] if item["title"] == "区分读数单位与计算单位")
+    assert "第 2 组：8 mA = 0.008 A" in note["detail"]
+    assert missing["calculation"] is None
+
+
+def test_selected_simulation_questions_do_not_treat_it_as_raw_readings(lab):
+    _, client = lab
+    body = client.post(BASE + "/feedback", json=context(selected_content={
+        "kind": "simulation_point", "label": "模型图点", "data_source": "teaching_simulation", "values": {"voltage_V": 2}
+    })).json()
+    assert "模型参数" in body["next_question"] and "图点" in body["next_question"]
+    assert "原始读数" not in body["next_question"]
+
 def test_different_result_unit_is_not_compared_as_same_unit(lab):
     _, client = lab
     body = client.post(BASE + "/feedback", json=context(columns={"voltage_V": [1, 2, 3], "current_mA": [4, 8, 12]}, student_result=.25, unit="kΩ")).json()

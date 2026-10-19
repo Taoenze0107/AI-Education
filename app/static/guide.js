@@ -86,7 +86,7 @@ function questionsFor(page, plan) {
     calculation: { instruction: "写你自己的结果和计算步骤；自动得到的参考值用于核对。", questions: [["变量是否已经换成公式要求的单位？", "formula"], ["每一步代入了什么数？结果为什么合理？", "studentSteps"]], next: ["完成下面计算后，点击“提交诊断”。", null] },
     diagnosis: { instruction: "先看需要补什么，再看问题依据与建议。图中的完整度表示证据齐全程度。", questions: [["提示指向了哪个读数或哪一步计算？"], ["你准备改哪一项？用什么办法确认修改有效？"]], next: state.attempt ? ["修改后留下记录，再更新计算进行复查。", "/revision"] : ["先到计算页提交本次记录。", "/calculation"] },
     revision: { instruction: "说明修改前后差别，并留下复查依据。", questions: [["这次具体改了哪个数字、单位或步骤？", "revision"], ["修改后的结果是多少？如何验证？", "finalResult"]], next: ["保存修改后，更新计算并再次诊断。", "/calculation"] },
-    history: { instruction: "按自己的学生编号查找，对比每一轮的输入、诊断与修改。", questions: [["修改前后，哪条证据或计算发生了变化？"], ["下次实验还需要检查什么？"]], next: ["需要继续时，选择对应记录的“继续实验”。", null] },
+    history: { instruction: "按自己的记录编号查找，对比每一轮的输入、诊断与修改。", questions: [["修改前后，哪条证据或计算发生了变化？"], ["下次实验还需要检查什么？"]], next: ["需要继续时，选择对应记录的“继续实验”。", null] },
   }[page];
 }
 function refreshLearningGuides() {
@@ -100,12 +100,15 @@ function refreshLearningGuides() {
     const next = guide.querySelector(".guide-next");
     next.replaceChildren(info.next[1] ? learningLink(info.next[0], info.next[1]) : node("span", info.next[0]));
   }
-  const holder = $("learningProgress");
-  holder.replaceChildren(...progress.map(([title, filled], i) => {
-    const item = node("span", null, filled ? "filled" : "");
-    item.append(node("b", filled ? "✓" : String(i + 1)), node("span", `${title} · ${filled ? "已记录" : "待记录"}`));
-    return item;
-  }));
+  // One navigation row carries both position and recorded-state feedback.
+  for (const [i, link] of [...document.querySelectorAll(".step-nav a")].entries()) {
+    const filled = !!progress[i]?.[1];
+    link.dataset.recorded = String(filled);
+    link.querySelector("span").textContent = filled ? "✓" : String(i + 1).padStart(2, "0");
+    let label = link.querySelector(".step-recorded");
+    if (!label) { label = node("small", "", "step-recorded"); link.append(label); }
+    label.textContent = filled ? (i === 4 ? "已生成" : "已填写") : "";
+  }
   $("rcInputPanel").hidden = $("experimentId").value !== "rc_time_constant";
   $("pendulumInputPanel").hidden = $("experimentId").value !== "simple_pendulum";
   $("extendedDataPanel").hidden = !["rc_time_constant", "simple_pendulum"].includes($("experimentId").value);
@@ -354,13 +357,15 @@ function renderStudyNotes(plan) {
 function buildLearningViews() {
   for (const page of guideViews) {
     const view = document.querySelector(`[data-view="${page}"]`), heading = view.querySelector(".page-heading");
-    const guide = node("aside", null, "step-guide"); guide.id = `learningGuide-${page}`; guide.setAttribute("aria-label", "本步问题与指引");
-    const task = node("div", null, "guide-task"); task.append(node("p", "这一步要做什么", "eyebrow"), node("p", "", "guide-instruction"), node("p", "", "guide-next"));
-    const questions = node("div", null, "guide-questions"); questions.append(node("strong", "带着两个问题往下做"), node("ol"));
-    guide.append(task, questions); heading.after(guide);
+    const guide = node("details", null, "step-guide"); guide.id = `learningGuide-${page}`;
+    guide.append(node("summary", "本步提示与自查问题"));
+    const content = node("div", null, "step-guide-content");
+    const task = node("div", null, "guide-task"); task.append(node("p", "", "guide-instruction"), node("p", "", "guide-next"));
+    const questions = node("div", null, "guide-questions"); questions.append(node("strong", "想一想，再往下做"), node("ol"));
+    content.append(task, questions); guide.append(content);
+    const actions = view.querySelector(":scope > .page-actions");
+    if (actions) actions.before(guide); else view.append(guide);
   }
-  const progress = node("div", null, "learning-progress"); progress.id = "learningProgress"; progress.setAttribute("aria-label", "本次记录进度");
-  document.querySelector(".flow-frame").append(progress);
   buildSpecialData(); buildUnitTool();
   const summary = node("div", null, "learning-stats"); summary.id = "measurementSummary"; summary.hidden = true;
   document.querySelector('.advanced-data').before(summary, $("materialCharts"));

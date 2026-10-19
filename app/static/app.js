@@ -130,7 +130,10 @@ function persist() {
     /* Storage is optional; sessions remain on the server. */
   }
 }
-function clearErrors() {
+// Keep unresolved validation attached to its task; navigation must not carry a stale banner.
+let validationErrors = [];
+let validationPage = document.body.dataset.page || "home";
+function removeRenderedErrors() {
   $("errorSummary").hidden = true;
   $("errorList").replaceChildren();
   document.querySelectorAll(".field-error").forEach((item) => item.remove());
@@ -143,9 +146,23 @@ function clearErrors() {
     else element.removeAttribute("aria-describedby");
   });
 }
-function showErrors(errors) {
-  clearErrors();
-  errors.forEach((error, index) => {
+function clearErrors() {
+  validationErrors = [];
+  removeRenderedErrors();
+}
+function resolvedValidationError(error) {
+  const field = error.field ? $(error.field) : null;
+  if (!field) return !!error.hadField; // A removed dynamic row no longer needs a correction.
+  if (field.validity?.valid === false) return false;
+  if (error.requiredValue) return !!String(field.value || "").trim();
+  return error.nativeInvalid && field.validity?.valid === true;
+}
+function renderValidationErrors(page = document.body.dataset.page || validationPage) {
+  validationPage = page;
+  validationErrors = validationErrors.filter((error) => !resolvedValidationError(error));
+  removeRenderedErrors();
+  const visible = validationErrors.filter((error) => error.page === page);
+  visible.forEach((error, index) => {
     const field = error.field ? $(error.field) : null;
     const message = field?.labels?.[0]
       ? `${field.labels[0].textContent.trim()}：${error.message}`
@@ -170,10 +187,40 @@ function showErrors(errors) {
     } else item.textContent = error.message;
     $("errorList").append(item);
   });
-  $("errorSummary").hidden = false;
-  $("errorSummary").focus();
-  announce("操作未完成，请查看页面上方的问题列表。");
+  $("errorSummary").hidden = !visible.length;
+  return visible.length;
 }
+function showErrors(errors) {
+  const page = document.body.dataset.page || validationPage;
+  validationErrors = errors.map((error) => {
+    const field = error.field ? $(error.field) : null;
+    return {
+      ...error,
+      page: field?.closest("[data-view]")?.dataset.view || page,
+      requiredValue: !!field && !String(field.value || "").trim() &&
+        /请.*(?:填写|输入|选择)|不能为空|必填|at least 1 character|required/i.test(error.message),
+      nativeInvalid: field?.validity?.valid === false,
+      hadField: !!field,
+    };
+  });
+  // A submission can discover a problem in another task. Reveal that task first.
+  if (!validationErrors.some((error) => error.page === page)) {
+    const firstField = validationErrors.find((error) => error.field);
+    if (firstField) window.flowReveal?.($(firstField.field));
+  }
+  if (renderValidationErrors(document.body.dataset.page || page)) $("errorSummary").focus();
+  announce("操作未完成，请查看当前步骤的问题提示。");
+}
+window.reconcileValidationErrors = (page) => renderValidationErrors(page);
+window.clearFieldValidationErrors = (fieldId) => {
+  validationErrors = validationErrors.filter((error) => error.field !== fieldId);
+  renderValidationErrors();
+};
+for (const eventName of ["input", "change"]) document.addEventListener(eventName, (event) => {
+  if (event.target?.id && validationErrors.some((error) => error.field === event.target.id)) {
+    renderValidationErrors();
+  }
+});
 function invalid(errors) {
   const error = new Error("请检查输入");
   error.fields = errors;
@@ -860,6 +907,7 @@ function fillPayload(payload) {
   $("payload").value = pretty(p);
   sourceVisibility();
   window.refreshLearning?.({ hydrate: true });
+  window.refreshAcademy?.();
   window.refreshCatalog?.({ hydrate: true });
 }
 function fieldValue(row, role) {
@@ -1374,7 +1422,7 @@ function setSession(session) {
 async function ensureSession() {
   if (state.session) return state.session;
   const student = $("studentId").value.trim();
-  if (!student) invalid([{ field: "studentId", message: "请填写学生编号。" }]);
+  if (!student) invalid([{ field: "studentId", message: "请填写记录编号。" }]);
   const session = await request("/api/v1/sessions", {
     method: "POST",
     body: pretty({
@@ -1819,7 +1867,7 @@ $("newSessionButton").addEventListener("click", () =>
   action("正在保存实验信息…", async () => {
     // Explicit session creation is possible without also submitting an attempt.
     if (!$("studentId").value.trim())
-      invalid([{ field: "studentId", message: "请填写学生编号。" }]);
+      invalid([{ field: "studentId", message: "请填写记录编号。" }]);
     resetSession();
     await ensureSession();
     await loadHistory();
